@@ -27,7 +27,7 @@ C 2008/01/16 | J. SCHOENMAEKERS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       REAL(8)      VALVAR(NUMVAR)
       REAL(8)      VALCON(NUMCON+1)
@@ -192,7 +192,7 @@ C ======================================================================
               DO CON = 1,NUMCON+1
                   FAC = VARSCA(VAR) / CONSCA(CON)
                   FAC = 1D0
-                  DER = CONDER(CON,VAR) * FAC 
+                  DER = CONDER(CON,VAR) * FAC
                   RED = CONRED(CON,VAR) * FAC
                   IF (ABS(DER) .LT. 1D-6 .AND. ABS(RED) .LT. 1D-6) CYCLE
                   IF (DABS(DER-RED) .LT. 1D-2) CYCLE
@@ -384,7 +384,7 @@ C DESCALE VARIABLES
 C ----------------------------------------------------------------------
 C      CALL OGWMAT (3)
 C      CALL OGEVAL (VARVAL, VALCON, 0, CONDER, CALVAL, CALDER)
-      DO VAR = 1, NUMVAR       
+      DO VAR = 1, NUMVAR
           VALVAR(VAR) = VARVAL(VAR) * VARSCA(VAR)
       ENDDO
 C      IF (SENOPT .NE. 0) THEN
@@ -401,7 +401,7 @@ C ----------------------------------------------------------------------
       ENDDO
 C ======================================================================
       CALL OGWRIT (3,"")
-      CALL OGWRIT (3,"STATUS OF CONSTRAINTS:")        
+      CALL OGWRIT (3,"STATUS OF CONSTRAINTS:")
       CALL OGWRIT (3,"")
       CALL OGWRIT (3," ACT  PAS  NON COST___VAL CONSTRAINT")
       DO CON = 1, NUMCON
@@ -420,7 +420,7 @@ C ======================================================================
               CALL OGWRIT (3,STR)
           ENDIF
       ENDDO
-      
+
       DEALLOCATE  (VARSUM)
       DEALLOCATE  (VARCOR)
       DEALLOCATE  (CONCOR)

@@ -10,24 +10,24 @@ C OUT | QUASEN(NUMCON+1) | R*8 | STORED CONSTRAINTS CORRECTION VECTOR
 C OUT | CONSEN(NUMCON+1) | R*8 | STORED CONSTRAINTS VALUE
 C OUT | ACTSEN(NUMCON+1) | R*8 | STORED CONSTRAINTS ACTIVE
 C OUT | DERSEN(NUMCON+1, | R*8 | STORED DERIVATIVE
-C                NUMVAR) |     | 
+C                NUMVAR) |     |
 C OUT | ACTSAV(NUMCON+1) | I*4 | STORED ACTIVE CONSTRAINTS
 C OUT | CONSAV(NUMCON+4) | I*4 | STORED ACTIVE CONSTRAINTS
 C OUT | REDSAV(NUMCON+3, | R*8 | STORED DERIVATIVE
-C                NUMVAR) |     |     
+C                NUMVAR) |     |
 C OUT | DERSAV(NUMCON+3, | R*8 | STORED DERIVATIVE
-C                NUMVAR) |     |     
+C                NUMVAR) |     |
 C OUT | ACTNUM           | I*4 | NUMBER OF ACTIVE CONSTRAINTS
 C ======================================================================
 C 2021/07/19 | M. von Looz | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       REAL(8)      VARSEN(NUMVAR)
-      REAL(8)      QUASEN(NUMCON+1) 
-      REAL(8)      CONSEN(NUMCON+1) 
+      REAL(8)      QUASEN(NUMCON+1)
+      REAL(8)      CONSEN(NUMCON+1)
       INTEGER(4)   ACTSEN(NUMCON+1)
       REAL(8)      DERSEN(NUMCON+1,NUMVAR)
       INTEGER(4)   ACTSAV(NUMCON+1)

@@ -4,7 +4,7 @@ C 2014/07/29 | J. SCHOENMAEKERS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       CHARACTER*(*) STR
       INTEGER(4)LEV, RET, mexprintf, mexevalstring

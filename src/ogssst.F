@@ -1,4 +1,4 @@
-      SUBROUTINE OGSSST (VARSEN, QUASEN, CONSEN, ACTSEN, DERSEN, 
+      SUBROUTINE OGSSST (VARSEN, QUASEN, CONSEN, ACTSEN, DERSEN,
      &                   ACTSAV, CONSAV, REDSAV, DERSAV, ACTNUM)
 C ======================================================================
 C NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
@@ -10,24 +10,24 @@ C INP | QUASEN(NUMCON+1) | R*8 | STORED CONSTRAINTS CORRECTION VECTOR
 C INP | CONSEN(NUMCON+1) | R*8 | STORED CONSTRAINTS VALUE
 C INP | ACTSEN(NUMCON+1) | R*8 | STORED CONSTRAINTS ACTIVE
 C INP | DERSEN(NUMCON+1, | R*8 | STORED DERIVATIVE
-C                NUMVAR) |     | 
+C                NUMVAR) |     |
 C INP | ACTSAV(NUMCON+1) | I*4 | STORED ACTIVE CONSTRAINTS
 C INP | CONSAV(NUMCON+4) | I*4 | STORED ACTIVE CONSTRAINTS
 C INP | REDSAV(NUMCON+3, | R*8 | STORED DERIVATIVE
-C                NUMVAR) |     | 
+C                NUMVAR) |     |
 C INP | DERSAV(NUMCON+3, | R*8 | STORED DERIVATIVE
-C                NUMVAR) |     |     
+C                NUMVAR) |     |
 C INP | ACTNUM           | I*4 | NUMBER OF ACTIVE CONSTRAINTS
 C ======================================================================
 C 2021/07/19 | M. von Looz | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       REAL(8)      VARSEN(NUMVAR)
-      REAL(8)      QUASEN(NUMCON+1) 
-      REAL(8)      CONSEN(NUMCON+1) 
+      REAL(8)      QUASEN(NUMCON+1)
+      REAL(8)      CONSEN(NUMCON+1)
       INTEGER(4)   ACTSEN(NUMCON+1)
       REAL(8)      DERSEN(NUMCON+1,NUMVAR)
       INTEGER(4)   ACTSAV(NUMCON+1)

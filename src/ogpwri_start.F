@@ -13,13 +13,13 @@ C 2023/01/25 | W. MARTENS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       CHARACTER STR*256, FEAS*2, FMT*24
       REAL(8) OBJVAL, CONVIO, X
       INTEGER(4)VER, RET, NUMVIO, mexprintf, mexevalstring, ICONVIO
 C ======================================================================
-      WRITE(LOGLUP, '("OPTGRA plugin for pagmo/pygmo:")') 
+      WRITE(LOGLUP, '("OPTGRA plugin for pagmo/pygmo:")')
       IF     (VARDER .EQ. 0) THEN
             WRITE(LOGLUP, '("")')
       ELSEIF (VARDER .EQ. 1 .OR. VARDER .EQ. -1) THEN
@@ -53,4 +53,3 @@ C ======================================================================
       RETURN
       END
 
-    

@@ -13,7 +13,7 @@ C 2023/01/25 | W. MARTENS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       CHARACTER STR*256, FEAS*2, FMT*24
       REAL(8) OBJVAL, CONVIO, X
@@ -24,22 +24,22 @@ C ======================================================================
       ENDIF
 C Write termination message
       WRITE(LOGLUP, '("")')
-      WRITE(LOGLUP, '("Final values after iteration        ", I10:)') 
+      WRITE(LOGLUP, '("Final values after iteration        ", I10:)')
      &NUMITE
       WRITE(LOGLUP, '("Final objective value:              ", F10.4)')
      &OBJVAL
       WRITE(LOGLUP, '("Final constraint violation:         ", F10.4)')
-     &CONVIO      
-      WRITE(LOGLUP, '("Final num. of violated constraints: ",I10)') 
-     &NUMVIO 
+     &CONVIO
+      WRITE(LOGLUP, '("Final num. of violated constraints: ",I10)')
+     &NUMVIO
       IF (PYGFLA .EQ. 1) THEN
-            WRITE(LOGLUP, 
+            WRITE(LOGLUP,
      &      '("Successful termination: Optimal solution found.")')
       ELSE IF (PYGFLA .EQ. 2) THEN
-            WRITE(LOGLUP, 
+            WRITE(LOGLUP,
      &      '("Successful termination: Constraints matched.")')
       ELSE IF (PYGFLA .EQ. 3) THEN
-            WRITE(LOGLUP, '("Not converged.")') 
+            WRITE(LOGLUP, '("Not converged.")')
       ELSE IF (PYGFLA .EQ. 4) THEN
             WRITE(LOGLUP, '("Problem appears infeasible.")')
       ENDIF
@@ -49,4 +49,3 @@ C ======================================================================
       RETURN
       END
 
-    

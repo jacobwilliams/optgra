@@ -15,7 +15,7 @@ C 2008/01/16 | J. SCHOENMAEKERS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       INTEGER(4)   ITEMAX, ITECOR, ITEOPT, ITEDIV, ITECNV
       REAL(8)      MAXVAR

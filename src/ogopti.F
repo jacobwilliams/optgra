@@ -17,7 +17,7 @@ C 2008/01/16 | J. SCHOENMAEKERS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       REAL(8)      VARACC
 C ----------------------------------------------------------------------
@@ -136,7 +136,7 @@ C ======================================================================
       IF (NNN .GT. 999) THEN
           FINISH = 0
           WRITE (STR,*) "NNN=",NNN
-          CALL OGWRIT (2,STR) 
+          CALL OGWRIT (2,STR)
           GOTO 9999
       ENDIF
 C ======================================================================
@@ -170,7 +170,7 @@ C ----------------------------------------------------------------------
           LEN = CONLEN(CON)
           WRITE (STR,'(I4,5X,3(1X,D10.3),1X,A)')
      &           CON,DESNOR,MAX,VARMAX,NAM(1:LEN)
-          CALL OGWRIT (3,STR)      
+          CALL OGWRIT (3,STR)
           CALL OGEXCL (IND)
           GOTO 1110
       ENDIF
@@ -183,7 +183,7 @@ C ----------------------------------------------------------------------
       EPS = 1D-03
       MAX = -1D10
       MAX = 0D0
-C ----------------------------------------------------------------------      
+C ----------------------------------------------------------------------
       DO CON = 1, NUMCON
           IF (CONTYP(CON) .EQ. -2) CYCLE
           IF (CONACT(CON) .NE.  0) CYCLE
@@ -291,7 +291,7 @@ C ----------------------------------------------------------------------
           IF (VAL .GT. VARMAX) IND = 0
       ENDIF
 C ----------------------------------------------------------------------
-      IF (IND .NE. 0) THEN 
+      IF (IND .NE. 0) THEN
           IF (CONFIX(IND) .LE. 0) THEN
           IF (VAL .GT. VARMAX * 1D-1) IND = 0
           ENDIF
@@ -372,7 +372,7 @@ C ----------------------------------------------------------------------
       ELSEIF (MET .EQ. 1) THEN
           VARVEC = DESPRV - VARPRV
           IF (NORPRV**2 .GT. 1D-12) THEN
-          THT = - DOT_PRODUCT (VARDIR,VARVEC) / NORPRV ** 2   
+          THT = - DOT_PRODUCT (VARDIR,VARVEC) / NORPRV ** 2
           BET = DESNOR ** 2 / NORPRV ** 2
           ENDIF
       ELSEIF (MET .EQ. 2) THEN
@@ -388,7 +388,7 @@ C ----------------------------------------------------------------------
       ELSEIF (MET .EQ. 3) THEN
           IF (NORPRV .NE. 0D0) THEN
           THT = 1D0
-          BET = DESNOR ** 2 / NORPRV ** 2  
+          BET = DESNOR ** 2 / NORPRV ** 2
           ENDIF
       ENDIF
 C      WRITE (STR,'("THT=",D13.6)') THT
@@ -662,7 +662,7 @@ C ----------------------------------------------------------------------
           VAL = VAL * DESNOR
           IF (VAL .GT. 0D0 .AND. VAL .LT. FOLDIS) THEN
               FOLDIS = VAL
-              IND = CON 
+              IND = CON
           ENDIF
       ENDDO
 C ----------------------------------------------------------------------
@@ -781,7 +781,7 @@ C ----------------------------------------------------------------------
       IF (SENOPT .EQ. -1) THEN
       SENACT = CONACT(1:NUMCON)
       ENDIF
-C ----------------------------------------------------------------------    
+C ----------------------------------------------------------------------
       DEALLOCATE  (COSACT)
       DEALLOCATE  (VARVEC)
       DEALLOCATE  (VARWRK)

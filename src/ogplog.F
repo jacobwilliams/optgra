@@ -15,7 +15,7 @@ C 2023/01/25 | W. MARTENS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
 C Yes, we stay true to the original vintage F77 style with our
 C variable names just to confuse future developers :P

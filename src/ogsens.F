@@ -17,7 +17,7 @@ C 2008/01/16 | J. SCHOENMAEKERS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       INTEGER(4)   CONSTA(NUMCON         )
       REAL(8)      CONCON(NUMCON+1,NUMCON)
@@ -41,7 +41,7 @@ C SENSITIVITY OF CONTRAINTS W.R.T. ACTIVE CONSTRAINTS
 C ----------------------------------------------------------------------
       CONCON = 0D0
       DO CON = 1, NUMCON + 1
-         IF (CONACT(CON) .GT. 0) CONCON(CON,CON) = 1D0      
+         IF (CONACT(CON) .GT. 0) CONCON(CON,CON) = 1D0
          IF (CONACT(CON) .GT. 0) CYCLE
          CONREF = CONRED(CON,1:NUMACT)
          CALL OGRIGT (CONREF, CONREF)
@@ -88,7 +88,7 @@ C SENSITIVITY OF VARIABLES W.R.T. PARAMETERS
 C ----------------------------------------------------------------------
       VARVAR = 0D0
       DO PAR = 1, NUMVAR
-         VARVAR(PAR,PAR) = 1D0     
+         VARVAR(PAR,PAR) = 1D0
          IF (VARTYP(PAR) .NE. 1) CYCLE
          DO VAR = 1, NUMVAR
             IF (VARTYP(VAR) .NE. 0) CYCLE

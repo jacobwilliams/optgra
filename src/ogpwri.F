@@ -13,7 +13,7 @@ C 2023/01/25 | W. MARTENS | NEW
 C ======================================================================
       IMPLICIT NONE
 C ======================================================================
-#include <ogdata.inc>
+#include "ogdata.inc"
 C ======================================================================
       CHARACTER STR*256, FEAS*2, FMT*24
       REAL(8) OBJVAL, CONVIO, X
@@ -39,7 +39,7 @@ C Every 50 lines print the column names.
             ELSE
                   FEAS = "  "
             ENDIF
-    
+
 C Write the log line (different format depending on violation size)
       IF (CONVIO == 0D0) THEN
             FMT = '(I10,F15.4,I15,I15,A2)'
@@ -61,4 +61,3 @@ C ======================================================================
       RETURN
       END
 
-    
