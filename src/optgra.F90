@@ -48,6 +48,7 @@ SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
    ENDDO
 ! ======================================================================
 END SUBROUTINE mul2m
+
 SUBROUTINE mulvs(X,A,Z,Kd)
 ! ======================================================================
 ! VECTOR Z (1:KD) = VECTOR X (1:KD) * A
@@ -68,6 +69,7 @@ SUBROUTINE mulvs(X,A,Z,Kd)
    ENDDO
 ! ======================================================================
 END SUBROUTINE mulvs
+
 SUBROUTINE ogcdel(Delcon)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -90,6 +92,7 @@ SUBROUTINE ogcdel(Delcon)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogcdel
+
 SUBROUTINE ogclos()
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -144,6 +147,7 @@ SUBROUTINE ogclos()
    DEALLOCATE (Conopt)
 ! ======================================================================
 END SUBROUTINE ogclos
+
 SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
 ! ======================================================================
 ! CORRECTION PART
@@ -328,11 +332,11 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
             typ = Contyp(con)
             val = Conval(con)
             IF ( val<-1D0 ) THEN
-               err = dabs(val)
+               err = abs(val)
             ELSEIF ( typ/=0 ) THEN
                err = 0D0
             ELSEIF ( val>1D0 ) THEN
-               err = dabs(val)
+               err = abs(val)
             ELSE
                err = 0D0
             ENDIF
@@ -346,7 +350,7 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
                IF ( Vartyp(var)==1 ) CYCLE
                fac = fac + Conder(con,var)**2
             ENDDO
-            fac = dsqrt(fac)
+            fac = sqrt(fac)
             IF ( err==0D0 ) THEN
             ELSEIF ( fac/=0D0 ) THEN
                err = err/fac
@@ -432,10 +436,10 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
             IF ( Contyp(con)==-2 ) CYCLE
             conhit(con) = 0
             IF ( Conval(con)<-eps ) THEN
-               conerr = conerr + dabs(Conval(con))
+               conerr = conerr + abs(Conval(con))
             ELSEIF ( Contyp(con)/=0 ) THEN
             ELSEIF ( Conval(con)>+eps ) THEN
-               conerr = conerr + dabs(Conval(con))
+               conerr = conerr + abs(Conval(con))
             ENDIF
          ENDDO
 ! ----------------------------------------------------------------------
@@ -515,7 +519,7 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
 ! ----------------------------------------------------------------------
             corvec = Conred(vio,:)
 ! ----------------------------------------------------------------------
-            cornor = dsqrt(sum(corvec(Numact+1:Numvar)**2))
+            cornor = sqrt(sum(corvec(Numact+1:Numvar)**2))
 ! ----------------------------------------------------------------------
 ! MERIT PARTIAL W.R.T. CONSTRAINTS
 ! ----------------------------------------------------------------------
@@ -575,10 +579,10 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
                IF ( Conpri(con)>curpri ) CYCLE
                IF ( Conact(con)/=0 ) CYCLE
                del = dot_product(Conred(con,Numact+1:Numvar),Conred(vio,Numact+1:Numvar))
-               val = dabs(del)*Varmax/cornor
+               val = abs(del)*Varmax/cornor
                IF ( val<eps ) CYCLE
                fac = dot_product(Conred(con,1:Numvar),Conred(con,1:Numvar))
-               del = del/dsqrt(fac)
+               del = del/sqrt(fac)
                IF ( del<upr ) THEN
                   upr = del
                   ind = con
@@ -621,7 +625,7 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
          co0 = dot_product(varcor,varcor) - Varmax**2
          de2 = co1**2 - co2*co0
          IF ( de2>=0D0 .AND. co2/=0D0 ) THEN
-            dis = (dsqrt(de2)-co1)/co2
+            dis = (sqrt(de2)-co1)/co2
          ELSE
             dis = 0D0
          ENDIF
@@ -820,12 +824,12 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
             len = Conlen(con)
             val = Conval(con)
             IF ( val<-dlt ) THEN
-               conerr = conerr + dabs(val)
+               conerr = conerr + abs(val)
                WRITE (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
                CALL ogwrit(3,str)
             ELSEIF ( Contyp(con)/=0 ) THEN
             ELSEIF ( val>dlt ) THEN
-               conerr = conerr + dabs(val)
+               conerr = conerr + abs(val)
                WRITE (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
                CALL ogwrit(3,str)
             ENDIF
@@ -858,6 +862,7 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
    ENDDO SPAG_DispatchLoop_1
 ! ======================================================================
 END SUBROUTINE ogcorr
+
 SUBROUTINE ogcpri(Pricon)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -881,6 +886,7 @@ SUBROUTINE ogcpri(Pricon)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogcpri
+
 SUBROUTINE ogcsca(Scacon)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -904,6 +910,7 @@ SUBROUTINE ogcsca(Scacon)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogcsca
+
 SUBROUTINE ogcstr(Strcon,Lencon)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -931,6 +938,7 @@ SUBROUTINE ogcstr(Strcon,Lencon)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogcstr
+
 SUBROUTINE ogctyp(Typcon)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -956,6 +964,7 @@ SUBROUTINE ogctyp(Typcon)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogctyp
+
 SUBROUTINE ogderi(Dervar,Pervar)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -987,6 +996,7 @@ SUBROUTINE ogderi(Dervar,Pervar)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogderi
+
 SUBROUTINE ogdist(Maxvar,Sndvar)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -1013,6 +1023,7 @@ SUBROUTINE ogdist(Maxvar,Sndvar)
    Varsnd = Sndvar
 ! ======================================================================
 END SUBROUTINE ogdist
+
 SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
 ! ======================================================================
 ! COMPUTES SCALED CONTRAINTS+MERIT AND DERIVATIVES
@@ -1184,14 +1195,14 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
       IF ( cod==1 .AND. con<=Numcon ) typ = "GTE"
       IF ( cod==-1 .AND. con>Numcon ) typ = "MIN"
       IF ( cod==1 .AND. con>Numcon ) typ = "MAX"
-      IF ( cod==0 .AND. con<=Numcon .AND. dabs(val)>1D0 ) THEN
+      IF ( cod==0 .AND. con<=Numcon .AND. abs(val)>1D0 ) THEN
          sta = "VIO"
-         err = dabs(val)
+         err = abs(val)
          numvio = numvio + 1
       ENDIF
       IF ( cod/=0 .AND. con<=Numcon .AND. cod/=-2 .AND. -val>1D0 ) THEN
          sta = "VIO"
-         err = dabs(val)
+         err = abs(val)
          numvio = numvio + 1
       ENDIF
       conerr = conerr + err
@@ -1211,7 +1222,7 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
    CALL ogwrit(3,str)
 ! write pygmo-style log output
    objval = -Valcon(Numcon+1)
-   convio = dsqrt(convio)
+   convio = sqrt(convio)
    ! CALL ogpwri(objval,numvio,convio,Dervar)  ! JW : this routine doesn't have a Dervar dummy arg
    CALL ogpwri(objval,numvio,convio) ! JW : replaced with this
 ! ======================================================================
@@ -1328,6 +1339,7 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
    DEALLOCATE (convec)
 ! ======================================================================
 END SUBROUTINE ogeval
+
 SUBROUTINE ogexcl(Exc)
 ! ======================================================================
 ! REMOVE CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
@@ -1368,9 +1380,9 @@ SUBROUTINE ogexcl(Exc)
       DO col = act , act + 1
          val = val + Conred(con,col)**2
       ENDDO
-      val = dsqrt(val)
+      val = sqrt(val)
       IF ( Conred(con,act)>0D0 ) val = -val
-      IF ( dabs(val)<1D-15 ) THEN
+      IF ( abs(val)<1D-15 ) THEN
          WRITE (Loglun,*) "OGEXCL-ERROR: CONSTRAINTS SINGULAR"
          CALL ogwrit(2,str)
          WRITE (Loglun,*) "VAL=" , val
@@ -1400,6 +1412,7 @@ SUBROUTINE ogexcl(Exc)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogexcl
+
 SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN
@@ -1596,13 +1609,13 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
                      der = Conder(con,var)*fac
                      red = Conred(con,var)*fac
                      IF ( abs(der)<1D-6 .AND. abs(red)<1D-6 ) CYCLE
-                     IF ( dabs(der-red)<1D-2 ) CYCLE
+                     IF ( abs(der-red)<1D-2 ) CYCLE
                      IF ( der/=0D0 ) THEN
                         fac = red/der
                      ELSE
                         fac = 0D0
                      ENDIF
-                     IF ( dabs(fac-1D0)<1D-2 ) CYCLE
+                     IF ( abs(fac-1D0)<1D-2 ) CYCLE
                      WRITE (str,'("VAR/CON/ANA/NUM/A2N=",2I4,3(1X,D13.6))') var , con , red , der , fac
                      CALL ogwrit(1,str)
                      nam = Varstr(var)
@@ -1830,6 +1843,7 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
    ENDDO SPAG_DispatchLoop_1
 ! ======================================================================
 END SUBROUTINE ogexec
+
 SUBROUTINE oggsst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
@@ -1904,6 +1918,7 @@ SUBROUTINE oggsst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav
    ENDDO
 ! ======================================================================
 END SUBROUTINE oggsst
+
 SUBROUTINE ogincl(Inc)
 ! ======================================================================
 ! ADDS CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
@@ -1949,9 +1964,9 @@ SUBROUTINE ogincl(Inc)
 ! PERMUTATION TO GET MAXIMUM PIVOT
 ! ----------------------------------------------------------------------
    ind = Numact
-   max = dabs(Conred(Inc,ind))
+   max = abs(Conred(Inc,ind))
    DO col = Numact + 1 , lst
-      val = dabs(Conred(Inc,col))
+      val = abs(Conred(Inc,col))
       IF ( val>max ) THEN
          ind = col
          max = val
@@ -1975,7 +1990,7 @@ SUBROUTINE ogincl(Inc)
 ! ======================================================================
 ! REDUCE FOR NEW ACTIVE CONSTRAINT
 ! ----------------------------------------------------------------------
-   IF ( dabs(Conred(Inc,Numact))<1D-12 ) THEN
+   IF ( abs(Conred(Inc,Numact))<1D-12 ) THEN
       WRITE (str,*) "OGINCL-WARNING: CONSTRAINT SINGULAR"
       CALL ogwrit(2,str)
       WRITE (str,*) "INC=" , Inc
@@ -1987,7 +2002,7 @@ SUBROUTINE ogincl(Inc)
       RETURN
    ENDIF
 ! ----------------------------------------------------------------------
-   val = dsqrt(sum(Conred(Inc,Numact:lst)**2))
+   val = sqrt(sum(Conred(Inc,Numact:lst)**2))
    IF ( Conred(Inc,Numact)>0D0 ) val = -val
 ! ----------------------------------------------------------------------
    Conred(Inc,Numact) = Conred(Inc,Numact) - val
@@ -2011,6 +2026,7 @@ SUBROUTINE ogincl(Inc)
    Conred(Inc,Numact+1:lst) = 0D0
 ! ======================================================================
 END SUBROUTINE ogincl
+
 SUBROUTINE oginit(Varnum,Connum)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -2154,6 +2170,7 @@ SUBROUTINE oginit(Varnum,Connum)
    Conopt = 0
 ! ======================================================================
 END SUBROUTINE oginit
+
 SUBROUTINE ogiter(Itemax,Itecor,Iteopt,Itediv,Itecnv)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -2186,6 +2203,7 @@ SUBROUTINE ogiter(Itemax,Itecor,Iteopt,Itediv,Itecnv)
    IF ( Cnvite>Optite ) Cnvite = Optite
 ! ======================================================================
 END SUBROUTINE ogiter
+
 SUBROUTINE ogleft(Actinp,Actout)
 ! ======================================================================
 ! LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
@@ -2219,6 +2237,7 @@ SUBROUTINE ogleft(Actinp,Actout)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogleft
+
 SUBROUTINE ogomet(Metopt)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -2241,6 +2260,7 @@ SUBROUTINE ogomet(Metopt)
    Optmet = Metopt
 ! ======================================================================
 END SUBROUTINE ogomet
+
 SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
 ! ======================================================================
 ! OPTIMISATION PART
@@ -2393,7 +2413,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
 ! DERIVATIVES OF MERIT W.R.T. ACTIVE CONSTRAINTS
 ! ----------------------------------------------------------------------
             CALL ogrigt(-Conred(cos,1:Numact),cosact)
-            Desnor = dsqrt(sum(Conred(cos,Numact+1:Numvar)**2))
+            Desnor = sqrt(sum(Conred(cos,Numact+1:Numvar)**2))
 ! ----------------------------------------------------------------------
 ! CONSTRAINT REMOVAL
 ! ----------------------------------------------------------------------
@@ -2405,7 +2425,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                IF ( Contyp(con)==0 ) CYCLE
                val = cosact(act)
                fac = dot_product(Conred(con,1:Numvar),Conred(con,1:Numvar))
-               fac = dsqrt(fac)
+               fac = sqrt(fac)
                val = val*fac
                IF ( val>=exc ) CYCLE
                IF ( val>max ) CYCLE
@@ -2436,10 +2456,10 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                   IF ( Contyp(con)==-2 ) CYCLE
                   IF ( Conact(con)/=0 ) CYCLE
                   del = dot_product(Conred(con,Numact+1:Numvar),Conred(cos,Numact+1:Numvar))/Desnor
-                  val = dabs(del)*Varmax
+                  val = abs(del)*Varmax
                   IF ( val<eps ) CYCLE
                   fac = dot_product(Conred(con,1:Numvar),Conred(con,1:Numvar))
-                  fac = dsqrt(fac)
+                  fac = sqrt(fac)
                   del = del/fac
                   IF ( del<0D0 .AND. del<max ) THEN
                      max = del
@@ -2495,7 +2515,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
 ! IF CONVERGENCE
 ! ----------------------------------------------------------------------
             cosimp = Desnor*Varmax
-            IF ( dabs(cosimp)<=1D0 ) THEN
+            IF ( abs(cosimp)<=1D0 ) THEN
                foldis = 0D0
                Finish = 1
                WRITE (str,'("FINAL...............:",1X,D13.6,'//'11X,1(1X,D10.3),1X,D16.9)') foldis , cosimp , Conval(cos) + cosimp
@@ -2530,7 +2550,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
             ENDDO
 ! ----------------------------------------------------------------------
             IF ( ind/=0 ) THEN
-               val = dsqrt(sum((Varval-Varref+Vardes*dis/Desnor)**2))
+               val = sqrt(sum((Varval-Varref+Vardes*dis/Desnor)**2))
                IF ( val>Varmax ) ind = 0
             ENDIF
 ! ----------------------------------------------------------------------
@@ -2573,7 +2593,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                ENDDO
                desprv(var) = val
             ENDDO
-            Desnor = dsqrt(sum(desprv**2))
+            Desnor = sqrt(sum(desprv**2))
             WRITE (str,'("DESNOR=",D13.6)') Desnor
 !      CALL OGWRIT (2,STR)
 ! ----------------------------------------------------------------------
@@ -2586,7 +2606,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                ENDDO
                varprv(var) = val
             ENDDO
-            norprv = dsqrt(sum(varprv**2))
+            norprv = sqrt(sum(varprv**2))
             WRITE (str,'("NORPRV=",D13.6)') norprv
 !      CALL OGWRIT (2,STR)
 ! ----------------------------------------------------------------------
@@ -2599,7 +2619,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                ENDDO
                Vardir(var) = val
             ENDDO
-            nor = dsqrt(sum(Vardir**2))
+            nor = sqrt(sum(Vardir**2))
             WRITE (str,'("NOR=",D13.6)') nor
 !      CALL OGWRIT (2,STR)
 ! ----------------------------------------------------------------------
@@ -2623,7 +2643,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                varwrk = Varref - Vargrd
                val = dot_product(varwrk,varvec)
                fac = dot_product(Vardir,varvec)
-               IF ( dabs(val)>1D-12 .AND. dabs(fac)>1D-12 ) THEN
+               IF ( abs(val)>1D-12 .AND. abs(fac)>1D-12 ) THEN
                   tht = -dot_product(varwrk,varwrk)/val
                   varwrk = -varvec*tht - varwrk
                   bet = dot_product(varwrk,desprv)/fac
@@ -2643,16 +2663,16 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
 !      WRITE (STR,*) "THT/BET=",THT,BET
 !      CALL OGWRIT (2,STR)
             Vardes = tht*desprv + bet*Vardir
-            Desnor = dsqrt(sum(Vardes**2))
+            Desnor = sqrt(sum(Vardes**2))
             nor = Desnor
             DO con = 1 , Numcon
                IF ( Contyp(con)==-2 ) CYCLE
                IF ( Conact(con)/=0 ) CYCLE
                del = dot_product(Conder(con,1:Numvar),Vardes(1:Numvar))/nor
-               val = dabs(del)*Varmax
+               val = abs(del)*Varmax
                IF ( val<eps ) CYCLE
                fac = dot_product(Conder(con,1:Numvar),Conder(con,1:Numvar))
-               del = del/dsqrt(fac)
+               del = del/sqrt(fac)
                nam = Constr(con)
                len = Conlen(con)
                typ = Contyp(con)
@@ -2678,7 +2698,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                   bet = 0D0
                   tht = 1D0
                   del = dot_product(Conder(con,1:Numvar),Conder(cos,1:Numvar))
-                  val = dabs(del)*Varmax/Desnor
+                  val = abs(del)*Varmax/Desnor
 !          WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)')
 !     &           CON,TYP,-DESNOR,VAL,DEL,NAM(1:LEN)
 !          CALL OGWRIT (2,STR)
@@ -2692,7 +2712,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                tht = 1D0
             ENDIF
             Vardes = tht*desprv + bet*Vardir
-            Desnor = dsqrt(sum(Vardes**2))
+            Desnor = sqrt(sum(Vardes**2))
             EXIT SPAG_Loop_1_2
          ENDDO SPAG_Loop_1_2
          SPAG_Loop_1_3: DO
@@ -2706,7 +2726,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
             WRITE (str,'("SECOND ORDER CORRECTION")')
             CALL ogwrit(3,str)
             Vardes = tht*desprv + bet*Vardir
-            Desnor = dsqrt(sum(Vardes**2))
+            Desnor = sqrt(sum(Vardes**2))
 ! ----------------------------------------------------------------------
 ! MAXIMUM TRAVEL DISTANCE
 ! ----------------------------------------------------------------------
@@ -2719,7 +2739,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                co1 = dot_product(Vardes,varvec)
                co2 = Desnor**2
                det = co1**2 - co0*co2
-               dis = (dsqrt(det)-co1)/co2
+               dis = (sqrt(det)-co1)/co2
             ENDIF
             dis = dis*Desnor
             maxdis = dis
@@ -2763,7 +2783,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
             ENDDO
             CALL ogleft(corvec,corvec)
 ! ----------------------------------------------------------------------
-            cornor = dsqrt(sum(corvec(1:Numact)**2))*0.5D0/Desnor/Desnor
+            cornor = sqrt(sum(corvec(1:Numact)**2))*0.5D0/Desnor/Desnor
             CALL ogwrit(3,"")
             WRITE (str,'("STEEPEST ASCENT  NORM: ",D13.6)') Desnor
             CALL ogwrit(3,str)
@@ -2830,7 +2850,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
 ! ======================================================================
 ! IF CONVERGENCE
 ! ----------------------------------------------------------------------
-            IF ( dabs(cosimp)<=1D0 ) THEN
+            IF ( abs(cosimp)<=1D0 ) THEN
                WRITE (str,'("FINAL...............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9,2D11.3)') foldis , quacor , cosimp ,       &
                     & Conval(cos) + cosimp , tht , bet
                CALL ogwrit(2,str)
@@ -2869,7 +2889,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                IF ( co2/=0D0 ) THEN
                   det = co1**2 - co2*co0
                   IF ( det<0D0 ) CYCLE
-                  det = dsqrt(det)
+                  det = sqrt(det)
                   val = 1D10
                   fac = (-co1+det)/co2
                   IF ( fac>0D0 .AND. fac<val ) val = fac
@@ -2924,7 +2944,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
                varvec(var) = fac*(Vardes(var)+(val*fac*0.5D0))
                dis = dis + varvec(var)*varvec(var)
             ENDDO
-            dis = dsqrt(dis)
+            dis = sqrt(dis)
 ! ----------------------------------------------------------------------
             WRITE (str,*) "REFDIS=" , refdis
             CALL ogwrit(3,str)
@@ -2945,7 +2965,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
 ! ----------------------------------------------------------------------
             Varacc = Varacc + foldis
             Varval = Varval + varvec
-            ccc = dsqrt(sum((Varval-Varref)**2)) - Varmax**2
+            ccc = sqrt(sum((Varval-Varref)**2)) - Varmax**2
             IF ( ccc>=0D0 ) THEN
                WRITE (str,*) "CCC > 0" , ccc
                CALL ogwrit(3,str)
@@ -3011,6 +3031,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
    ENDDO SPAG_DispatchLoop_1
 ! ======================================================================
 END SUBROUTINE ogopti
+
 SUBROUTINE ogplog(Luplog,Bosver)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3041,6 +3062,7 @@ SUBROUTINE ogplog(Luplog,Bosver)
    Pygfla = 0     ! pygmo output status flag: 0: continue iterating, 1: final output
 ! ======================================================================
 END SUBROUTINE ogplog
+
 SUBROUTINE ogpwri(Objval,Numvio,Convio)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3095,6 +3117,7 @@ SUBROUTINE ogpwri(Objval,Numvio,Convio)
 ! ======================================================================
 END SUBROUTINE ogpwri
 
+
 SUBROUTINE ogpwri_end(Objval,Numvio,Convio)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3135,6 +3158,7 @@ SUBROUTINE ogpwri_end(Objval,Numvio,Convio)
 
 ! ======================================================================
 END SUBROUTINE ogpwri_end
+
 
 SUBROUTINE ogpwri_start()
 ! ======================================================================
@@ -3180,6 +3204,7 @@ SUBROUTINE ogpwri_start()
 ! ======================================================================
 END SUBROUTINE ogpwri_start
 
+
 SUBROUTINE ogrigt(Actinp,Actout)
 ! ======================================================================
 ! RIGHT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
@@ -3214,6 +3239,7 @@ SUBROUTINE ogrigt(Actinp,Actout)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogrigt
+
 SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
@@ -3338,6 +3364,7 @@ SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogsens
+
 SUBROUTINE ogsopt(Optsen)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3362,6 +3389,7 @@ SUBROUTINE ogsopt(Optsen)
    Senopt = Optsen
 ! ======================================================================
 END SUBROUTINE ogsopt
+
 SUBROUTINE ogssst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
@@ -3441,6 +3469,7 @@ SUBROUTINE ogssst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogssst
+
 SUBROUTINE ogvsca(Scavar)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3463,6 +3492,7 @@ SUBROUTINE ogvsca(Scavar)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogvsca
+
 SUBROUTINE ogvstr(Strvar,Lenvar)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3490,6 +3520,7 @@ SUBROUTINE ogvstr(Strvar,Lenvar)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogvstr
+
 SUBROUTINE ogvtyp(Typvar)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3514,6 +3545,7 @@ SUBROUTINE ogvtyp(Typvar)
    ENDDO
 ! ======================================================================
 END SUBROUTINE ogvtyp
+
 SUBROUTINE ogwlog(Lunlog,Levlog)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3538,6 +3570,7 @@ SUBROUTINE ogwlog(Lunlog,Levlog)
    Loglev = Levlog
 ! ======================================================================
 END SUBROUTINE ogwlog
+
 SUBROUTINE ogwmat(Levmat)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3558,6 +3591,7 @@ SUBROUTINE ogwmat(Levmat)
    Matlev = Levmat
 ! ======================================================================
 END SUBROUTINE ogwmat
+
 SUBROUTINE ogwrit(Lev,Str)
 ! ======================================================================
 ! 2014/07/29 | J. SCHOENMAEKERS | NEW
@@ -3575,6 +3609,7 @@ SUBROUTINE ogwrit(Lev,Str)
    ENDIF
 ! ======================================================================
 END SUBROUTINE ogwrit
+
 SUBROUTINE ogwtab(Luntab,Levtab)
 ! ======================================================================
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
@@ -3599,6 +3634,7 @@ SUBROUTINE ogwtab(Luntab,Levtab)
    Tablev = Levtab
 ! ======================================================================
 END SUBROUTINE ogwtab
+
 SUBROUTINE sum2v(V1,V2,V,K)
 ! ======================================================================
 ! V(1:K) = V1(1:K) + V2(1:K)
@@ -3614,3 +3650,4 @@ SUBROUTINE sum2v(V1,V2,V,K)
    ENDDO
 ! ======================================================================
 END SUBROUTINE sum2v
+
