@@ -1,3 +1,31 @@
+module optgra_module
+
+   use iso_fortran_env, only: wp => real64, ip => int32
+
+   implicit none
+
+   abstract interface
+      subroutine calval_f(varvec,Valcon,i)
+         !! FUNCTION FOR VALUES
+         !! INPUT AND OUTPUT NOT SCALED
+         import :: wp
+         real(wp), dimension(:), intent(in) :: varvec !! size is Numvar
+         real(wp), dimension(:), intent(out) :: Valcon !! size is Numcon+1
+         integer, intent(in) :: i !! JW: THIS IS NOT DOCUMENTED ?
+      end subroutine calval_f
+      subroutine calder_f(varvec,convec,Dercon)
+         !! FUNCTION FOR VALUES AND DERIVATIVES
+         !! INPUT AND OUTPUT NOT SCALED
+         import :: wp
+         real(wp), dimension(:), intent(in) :: varvec !! size is Numvar
+         real(wp), dimension(:), intent(out) :: convec !! size is Numcon+1
+         real(wp), dimension(:,:), intent(out) :: Dercon !! size is Numcon+1,Numvar
+      end subroutine calder_f
+
+   end interface
+
+contains
+
 SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
 ! ======================================================================
 ! A(K:K+N1,L:L+N) = A1(K1:K1+N1,L1:L1+N2) *
@@ -7,8 +35,8 @@ SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
 !         <0: TRANSPOSE IS USED
 ! ======================================================================
    IMPLICIT NONE
-   REAL*8 A , A1 , A2 , f1 , f2
-   INTEGER*4 i , i1 , i2 , ic , ir , K , K1 , K2 , L , L1 , L2 , M , M1 , M2 , N , N1 , N2
+   real(wp) A , A1 , A2 , f1 , f2
+   integer(ip) i , i1 , i2 , ic , ir , K , K1 , K2 , L , L1 , L2 , M , M1 , M2 , N , N1 , N2
 ! ======================================================================
    DIMENSION A1(M1,*) , A2(M2,*) , A(M,*)
 ! ======================================================================
@@ -59,15 +87,11 @@ SUBROUTINE mulvs(X,A,Z,Kd)
 !I KD  I4     NUMBER OF ELEMENTS TO BE USED
 ! ======================================================================
    IMPLICIT NONE
-   REAL*8 A , X , Z
-   INTEGER*4 i , Kd
-! ======================================================================
-   DIMENSION X(*) , Z(*)
-! ======================================================================
+   real(wp) A , X(*) , Z(*)
+   integer(ip) i , Kd
    DO i = 1 , Kd
       Z(i) = X(i)*A
    ENDDO
-! ======================================================================
 END SUBROUTINE mulvs
 
 SUBROUTINE ogcdel(Delcon)
@@ -83,9 +107,9 @@ SUBROUTINE ogcdel(Delcon)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Delcon(Numcon+1)
+   real(wp),intent(in) :: Delcon(Numcon+1)
 ! ======================================================================
-   INTEGER(4) con
+   integer(ip) con
 ! ======================================================================
    DO con = 1 , Numcon
       Sendel(con) = Delcon(con)
@@ -160,35 +184,36 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Varacc
-   INTEGER(4) Finish
-   EXTERNAL Calval , Calder
+   real(wp) Varacc
+   integer(ip) Finish
+   procedure(Calval_f) :: Calval
+   procedure(Calder_f) :: Calder
 ! ======================================================================
-   INTEGER(4) coritr , numfff , minpri , maxpri , curpri
-   REAL(8) cornor , foldis , cstval
-   REAL(8) conerr , Toterr , Norerr
-   REAL(8) corinv , varvio , conmax , normax
-   INTEGER(4) conind , norind , inelop , maxitr
+   integer(ip) coritr , numfff , minpri , maxpri , curpri
+   real(wp) cornor , foldis , cstval
+   real(wp) conerr , Toterr , Norerr
+   real(wp) corinv , varvio , conmax , normax
+   integer(ip) conind , norind , inelop , maxitr
 ! ----------------------------------------------------------------------
-   INTEGER(4) con , var , act , ind , len , cos , stp
-   INTEGER(4) typ , cor , pri , vio , fff
-   REAL(8) val , fac , upr , del , co2 , co1 , co0 , de2 , dis
-   REAL(8) eps , err , dlt , sca , dif
-   REAL(8) exc
+   integer(ip) con , var , act , ind , len , cos , stp
+   integer(ip) typ , cor , pri , vio , fff
+   real(wp) val , fac , upr , del , co2 , co1 , co0 , de2 , dis
+   real(wp) eps , err , dlt , sca , dif
+   real(wp) exc
    CHARACTER str*256 , nam*256
 ! ======================================================================
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: cosact
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varvec
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varsav
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varcor
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: corvec
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: consav
-   INTEGER(4) , DIMENSION(:) , ALLOCATABLE :: conttt
-   INTEGER(4) , DIMENSION(:) , ALLOCATABLE :: concor
-   INTEGER(4) , DIMENSION(:) , ALLOCATABLE :: coninc
-   INTEGER(4) , DIMENSION(:) , ALLOCATABLE :: conhit
-   INTEGER(4) , DIMENSION(:) , ALLOCATABLE :: fffcon
-   INTEGER(4) , DIMENSION(:) , ALLOCATABLE :: prisav
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: cosact
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varsav
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varcor
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: corvec
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: consav
+   integer(ip) , DIMENSION(:) , ALLOCATABLE :: conttt
+   integer(ip) , DIMENSION(:) , ALLOCATABLE :: concor
+   integer(ip) , DIMENSION(:) , ALLOCATABLE :: coninc
+   integer(ip) , DIMENSION(:) , ALLOCATABLE :: conhit
+   integer(ip) , DIMENSION(:) , ALLOCATABLE :: fffcon
+   integer(ip) , DIMENSION(:) , ALLOCATABLE :: prisav
    INTEGER :: spag_nextblock_1
    spag_nextblock_1 = 1
    SPAG_DispatchLoop_1: DO
@@ -877,9 +902,9 @@ SUBROUTINE ogcpri(Pricon)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Pricon(Numcon+1)
+   integer(ip),intent(in) :: Pricon(Numcon+1)
 ! ======================================================================
-   INTEGER(4) con
+   integer(ip) con
 ! ======================================================================
    DO con = 1 , Numcon + 1
       Conpri(con) = Pricon(con)
@@ -901,9 +926,9 @@ SUBROUTINE ogcsca(Scacon)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Scacon(Numcon+1)
+   real(wp),intent(in) :: Scacon(Numcon+1)
 ! ======================================================================
-   INTEGER(4) con
+   integer(ip) con
 ! ======================================================================
    DO con = 1 , Numcon + 1
       Consca(con) = Scacon(con)
@@ -926,10 +951,10 @@ SUBROUTINE ogcstr(Strcon,Lencon)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   CHARACTER*80 Strcon(Numcon+1)
-   INTEGER(4) Lencon(Numcon+1)
+   CHARACTER*80,intent(in) :: Strcon(Numcon+1)
+   integer(ip),intent(in) :: Lencon(Numcon+1)
 ! ======================================================================
-   INTEGER(4) con , len
+   integer(ip) con , len
 ! ======================================================================
    DO con = 1 , Numcon + 1
       len = min(Lencon(con),80)
@@ -955,9 +980,9 @@ SUBROUTINE ogctyp(Typcon)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Typcon(Numcon+1)
+   integer(ip),intent(in) :: Typcon(Numcon+1)
 ! ======================================================================
-   INTEGER(4) con
+   integer(ip) con
 ! ======================================================================
    DO con = 1 , Numcon + 1
       Contyp(con) = Typcon(con)
@@ -984,10 +1009,10 @@ SUBROUTINE ogderi(Dervar,Pervar)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Dervar
-   REAL(8) Pervar(Numvar)
+   integer(ip),intent(in) :: Dervar
+   real(wp),intent(in) :: Pervar(Numvar)
 ! ======================================================================
-   INTEGER(4) var
+   integer(ip) var
 ! ======================================================================
    Varder = Dervar
 ! ----------------------------------------------------------------------
@@ -1016,8 +1041,8 @@ SUBROUTINE ogdist(Maxvar,Sndvar)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Maxvar
-   REAL(8) Sndvar
+   real(wp),intent(in) :: Maxvar
+   real(wp),intent(in) :: Sndvar
 ! ======================================================================
    Varmax = Maxvar
    Varsnd = Sndvar
@@ -1051,20 +1076,20 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Valvar(Numvar)
-   REAL(8) Valcon(Numcon+1)
-   INTEGER(4) Dervar
-   REAL(8) Dercon(Numcon+1,Numvar)
-   EXTERNAL calval
-   EXTERNAL calder
+   real(wp) Valvar(Numvar)
+   real(wp) Valcon(Numcon+1)
+   integer(ip) Dervar
+   real(wp) Dercon(Numcon+1,Numvar)
+   procedure(Calval_f) :: Calval
+   procedure(Calder_f) :: Calder
 ! ======================================================================
-   INTEGER(4) var , con , cod , len , ind , numvio
-   REAL(8) val , sca , fac , per , sav , der , err , conerr , convio
+   integer(ip) var , con , cod , len , ind , numvio
+   real(wp) val , sca , fac , per , sav , der , err , conerr , convio
    CHARACTER typ*3 , sta*3 , nam*80 , str*256
-   REAL(8) ggg(4,4) , bbb(4) , vvv(4) , objval
+   real(wp) ggg(4,4) , bbb(4) , vvv(4) , objval
 ! ======================================================================
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varvec
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: convec
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: convec
 ! ----------------------------------------------------------------------
    ALLOCATE (varvec(Numvar))
    ALLOCATE (convec(Numcon+1))
@@ -1116,6 +1141,7 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
 ! GET RESULTS
 ! GET DERIVATIVES IF USER DEFINED
 ! ----------------------------------------------------------------------
+   write(*,*) '1'
    IF ( Dervar==0 ) THEN
       CALL calval(varvec,Valcon,0)
    ELSEIF ( Dervar==1 .OR. Dervar==-1 ) THEN
@@ -1274,7 +1300,7 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
          per = Varper(var)
          sav = varvec(var)
          varvec(var) = sav + per
-         CALL calval(varvec,Dercon(1,var),0)
+         CALL calval(varvec,Dercon(1:,var),0)  ! JW added : here
          varvec(var) = sav - per
          CALL calval(varvec,convec,0)
          fac = 0.5D0/per
@@ -1292,7 +1318,7 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
          per = Varper(var)
          sav = varvec(var)
          varvec(var) = sav + per
-         CALL calval(varvec,Dercon(1,var),0)
+         CALL calval(varvec,Dercon(1:,var),0)  ! JW added : here
          fac = 1.0D0/per
          DO con = 1 , Numcon + 1
             Dercon(con,var) = (Dercon(con,var)-convec(con))*fac
@@ -1355,10 +1381,10 @@ SUBROUTINE ogexcl(Exc)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Exc
+   integer(ip) Exc
 ! ======================================================================
-   REAL(8) val , bet , gam
-   INTEGER(4) row , col , act , con
+   real(wp) val , bet , gam
+   integer(ip) row , col , act , con
    CHARACTER str*256
 ! ======================================================================
 ! ADJUST LIST OF ACTIVE CONSTRAINTS
@@ -1444,23 +1470,25 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Valvar(Numvar)
-   REAL(8) Valcon(Numcon+1)
-   INTEGER(4) Finopt , finish , Finite , itecor , iteopt
-   EXTERNAL Calval
-   EXTERNAL Calder
+   real(wp),intent(inout) :: Valvar(Numvar)
+   real(wp),intent(out) :: Valcon(Numcon+1)
+   integer(ip),intent(out) :: Finopt
+   integer(ip),intent(out) :: Finite
+   integer(ip) :: finish , itecor , iteopt
+   procedure(Calval_f) :: Calval
+   procedure(Calder_f) :: Calder
 ! ======================================================================
-   INTEGER(4) var , con , typ , len , num , numvio
-   REAL(8) val , sca , red , der , fac , old , convio
+   integer(ip) var , con , typ , len , num , numvio
+   real(wp) val , sca , red , der , fac , old , convio
    CHARACTER str*256 , nam*256
 ! ----------------------------------------------------------------------
-   INTEGER(4) numequ , itediv , itecnv
-   REAL(8) varacc , cosnew , cosold , varsav , meamer
-   REAL(8) conerr , desnor , norerr , meaerr
+   integer(ip) numequ , itediv , itecnv
+   real(wp) varacc , cosnew , cosold , varsav , meamer
+   real(wp) conerr , desnor , norerr , meaerr
 ! ======================================================================
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varsum
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varcor
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: concor
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varsum
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varcor
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: concor
    INTEGER :: spag_nextblock_1
    spag_nextblock_1 = 1
    SPAG_DispatchLoop_1: DO
@@ -1580,7 +1608,13 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
 ! GET VALUES AND GRADIENTS
 ! ======================================================================
             IF ( Senopt<=0 ) THEN
+               write(*,*) 'about to call obeval'
+               write(*,*) 'Varval=',Varval
+               write(*,*) 'Conval=',Conval
+               write(*,*) 'Varder=',Varder
+               write(*,*) 'Conder=',Conder(1:Numcon+1,:)
                CALL ogeval(Varval,Conval,Varder,Conder(1:Numcon+1,:),Calval,Calder)
+               write(*,*) 'done calling obeval'
             ELSEIF ( Senopt==+1 .OR. Senopt==+3 ) THEN
                Varval = Senvar
                CALL ogeval(Varval,Conval,0,Conder(1:Numcon+1,:),Calval,Calder)
@@ -1660,8 +1694,7 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
 ! ----------------------------------------------------------------------
             CALL ogcorr(varacc,finish,conerr,norerr,Calval,Calder)
 ! ----------------------------------------------------------------------
-            IF ( Tablev>=1 ) WRITE (Tablun,'(I4,1X,"COR",1X,1000(1X,D10.3))') Numite , (Varval(var),var=1,Numvar) ,                &
-                                  & (Conval(con),con=1,Numcon)
+            IF ( Tablev>=1 ) WRITE (Tablun,'(I4,1X,"COR",1X,1000(1X,D10.3))') Numite , (Varval(var),var=1,Numvar) , (Conval(con),con=1,Numcon)
 ! ----------------------------------------------------------------------
             IF ( Senopt/=0 ) THEN
                IF ( finish/=0 ) EXIT SPAG_Loop_1_1
@@ -1740,7 +1773,7 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
          IF ( Senopt<+3 ) THEN
             varsav = Varmax
             Varmax = Varmax*10D-1
-            CALL ogopti(varacc,numequ,finish,desnor,Calval)
+            CALL ogopti(varacc,numequ,finish,desnor,Calval,Calder)
             Varmax = varsav
          ENDIF
 ! ----------------------------------------------------------------------
@@ -1870,18 +1903,18 @@ SUBROUTINE oggsst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Varsen(Numvar)
-   REAL(8) Quasen(Numcon+1)
-   REAL(8) Consen(Numcon+1)
-   INTEGER(4) Actsen(Numcon+1)
-   REAL(8) Dersen(Numcon+1,Numvar)
-   INTEGER(4) Actsav(Numcon+1)
-   INTEGER(4) Consav(Numcon+4)
-   REAL(8) Redsav(Numcon+3,Numvar)
-   REAL(8) Dersav(Numcon+3,Numvar)
+   real(wp) Varsen(Numvar)
+   real(wp) Quasen(Numcon+1)
+   real(wp) Consen(Numcon+1)
+   integer(ip) Actsen(Numcon+1)
+   real(wp) Dersen(Numcon+1,Numvar)
+   integer(ip) Actsav(Numcon+1)
+   integer(ip) Consav(Numcon+4)
+   real(wp) Redsav(Numcon+3,Numvar)
+   real(wp) Dersav(Numcon+3,Numvar)
 ! ======================================================================
-   INTEGER(4) Actnum
-   INTEGER(4) var , con
+   integer(ip) Actnum
+   integer(ip) var , con
 ! ======================================================================
 ! Variable values saved for sensitivity
 ! ----------------------------------------------------------------------
@@ -1933,10 +1966,10 @@ SUBROUTINE ogincl(Inc)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Inc
+   integer(ip) Inc
 ! ======================================================================
-   REAL(8) val , fac , gam , sav , max
-   INTEGER(4) row , col , ind , lst
+   real(wp) val , fac , gam , sav , max
+   integer(ip) row , col , ind , lst
    CHARACTER str*256
 ! ======================================================================
 ! GENERAL
@@ -2042,10 +2075,10 @@ SUBROUTINE oginit(Varnum,Connum)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Varnum
-   INTEGER(4) Connum
+   integer(ip) Varnum
+   integer(ip) Connum
 ! ======================================================================
-   INTEGER(4) var , con
+   integer(ip) var , con
 ! ======================================================================
 ! VARIABLES
 ! ----------------------------------------------------------------------
@@ -2190,7 +2223,7 @@ SUBROUTINE ogiter(Itemax,Itecor,Iteopt,Itediv,Itecnv)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Itemax , Itecor , Iteopt , Itediv , Itecnv
+   integer(ip) Itemax , Itecor , Iteopt , Itediv , Itecnv
 ! ======================================================================
    Maxite = Itemax
    Corite = Itecor
@@ -2221,11 +2254,11 @@ SUBROUTINE ogleft(Actinp,Actout)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Actinp(Numcon)
-   REAL(8) Actout(Numcon)
+   real(wp) Actinp(Numcon)
+   real(wp) Actout(Numcon)
 ! ======================================================================
-   INTEGER(4) row , col , act
-   REAL(8) val
+   integer(ip) row , col , act
+   real(wp) val
 ! ======================================================================
    DO act = 1 , Numact
       row = Actcon(act)
@@ -2255,13 +2288,13 @@ SUBROUTINE ogomet(Metopt)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Metopt
+   integer(ip) Metopt
 ! ======================================================================
    Optmet = Metopt
 ! ======================================================================
 END SUBROUTINE ogomet
 
-SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
+SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval,Calder)
 ! ======================================================================
 ! OPTIMISATION PART
 ! ======================================================================
@@ -2282,35 +2315,36 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Varacc
+   real(wp) Varacc
 ! ----------------------------------------------------------------------
-   INTEGER(4) Numequ
-   INTEGER(4) Finish
-   EXTERNAL Calval
+   integer(ip) Numequ
+   integer(ip) Finish
+   procedure(Calval_f) :: Calval
+   procedure(Calder_f) :: Calder    ! JW : not originally here [i think not used]
 ! ======================================================================
-   INTEGER(4) staflg , faccnt , numcor
-   REAL(8) Desnor , foldis , cosimp , cornor , quacor , refdis
-   REAL(8) co0 , co1 , co2 , nor
-   REAL(8) cosco2 , cosco1
-   REAL(8) maxdis , norprv
+   integer(ip) staflg , faccnt , numcor
+   real(wp) Desnor , foldis , cosimp , cornor , quacor , refdis
+   real(wp) co0 , co1 , co2 , nor
+   real(wp) cosco2 , cosco1
+   real(wp) maxdis , norprv
 ! ----------------------------------------------------------------------
-   INTEGER(4) con , var , cos , act , ind , len , inc
-   INTEGER(4) nnn , typ , des , prv , met
-   REAL(8) val , max , det , ccc , dis
-   REAL(8) fac , del , exc , eps , imp
-   REAL(8) bet , tht
+   integer(ip) con , var , cos , act , ind , len , inc
+   integer(ip) nnn , typ , des , prv , met
+   real(wp) val , max , det , ccc , dis
+   real(wp) fac , del , exc , eps , imp
+   real(wp) bet , tht
    CHARACTER str*256 , nam*256
 ! ======================================================================
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: cosact
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varvec
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varwrk
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: corvec
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: desder
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: desprv
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: varprv
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: convec
-   REAL(8) , DIMENSION(:) , ALLOCATABLE :: conqua
-   INTEGER(4) , DIMENSION(:) , ALLOCATABLE :: concor
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: cosact
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varwrk
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: corvec
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: desder
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: desprv
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: varprv
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: convec
+   real(wp) , DIMENSION(:) , ALLOCATABLE :: conqua
+   integer(ip) , DIMENSION(:) , ALLOCATABLE :: concor
    INTEGER :: spag_nextblock_1
    spag_nextblock_1 = 1
    SPAG_DispatchLoop_1: DO
@@ -2765,7 +2799,8 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval)
             IF ( Senopt<=0 .OR. nnn==1 ) THEN
                fac = Varstp/Desnor
                varvec = Varref + Vardes*Varstp/Desnor
-               CALL ogeval(varvec,convec,0,Conder,Calval,Calval)
+               !CALL ogeval(varvec,convec,0,Conder,Calval,Calval)  ! JW : is this a typo ??
+               CALL ogeval(varvec,convec,0,Conder,Calval,Calder)   ! JW : replaced with this
                conqua = matmul(Conder(1:cos,1:Numvar),Vardes(1:Numvar))
                conqua = 2D0*(convec-Conref-conqua*fac)/fac**2
             ENDIF
@@ -3053,8 +3088,8 @@ SUBROUTINE ogplog(Luplog,Bosver)
 ! ======================================================================
 ! Yes, we stay true to the original vintage F77 style with our
 ! variable names just to confuse future developers :P
-   INTEGER(4) Luplog
-   INTEGER(4) Bosver
+   integer(ip) Luplog
+   integer(ip) Bosver
 ! ======================================================================
    Loglup = Luplog
    Verbos = Bosver
@@ -3081,8 +3116,8 @@ SUBROUTINE ogpwri(Objval,Numvio,Convio)
    INCLUDE "ogdata.inc"
 ! ======================================================================
    CHARACTER feas*2 , fmt*24
-   REAL(8) Objval , Convio
-   INTEGER(4) Numvio
+   real(wp) Objval , Convio
+   integer(ip) Numvio
 ! ======================================================================
    IF ( Verbos==0 ) RETURN
 ! Print header
@@ -3135,8 +3170,8 @@ SUBROUTINE ogpwri_end(Objval,Numvio,Convio)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Objval , Convio
-   INTEGER(4) Numvio
+   real(wp) Objval , Convio
+   integer(ip) Numvio
 ! ======================================================================
    IF ( Pygfla==0 ) RETURN
 ! Write termination message
@@ -3222,11 +3257,11 @@ SUBROUTINE ogrigt(Actinp,Actout)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Actinp(Numcon)
-   REAL(8) Actout(Numcon)
+   real(wp) Actinp(Numcon)
+   real(wp) Actout(Numcon)
 ! ======================================================================
-   INTEGER(4) row , col , act
-   REAL(8) val
+   integer(ip) row , col , act
+   real(wp) val
 ! =====================================================================
    DO col = Numact , 1 , -1
       val = Actinp(col)
@@ -3261,14 +3296,14 @@ SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Consta(Numcon)
-   REAL(8) Concon(Numcon+1,Numcon)
-   REAL(8) Convar(Numcon+1,Numvar)
-   REAL(8) Varcon(Numvar,Numcon)
-   REAL(8) Varvar(Numvar,Numvar)
+   integer(ip) Consta(Numcon)
+   real(wp) Concon(Numcon+1,Numcon)
+   real(wp) Convar(Numcon+1,Numvar)
+   real(wp) Varcon(Numvar,Numcon)
+   real(wp) Varvar(Numvar,Numvar)
 ! ======================================================================
-   REAL(8) val , sca
-   INTEGER(4) var , con , act , par , ind , typ
+   real(wp) val , sca
+   integer(ip) var , con , act , par , ind , typ
 ! ======================================================================
 ! CONVERGED
 ! ----------------------------------------------------------------------
@@ -3384,7 +3419,7 @@ SUBROUTINE ogsopt(Optsen)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Optsen
+   integer(ip) Optsen
 ! ======================================================================
    Senopt = Optsen
 ! ======================================================================
@@ -3416,18 +3451,18 @@ SUBROUTINE ogssst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Varsen(Numvar)
-   REAL(8) Quasen(Numcon+1)
-   REAL(8) Consen(Numcon+1)
-   INTEGER(4) Actsen(Numcon+1)
-   REAL(8) Dersen(Numcon+1,Numvar)
-   INTEGER(4) Actsav(Numcon+1)
-   INTEGER(4) Consav(Numcon+4)
-   REAL(8) Redsav(Numcon+3,Numvar)
-   REAL(8) Dersav(Numcon+3,Numvar)
+   real(wp) Varsen(Numvar)
+   real(wp) Quasen(Numcon+1)
+   real(wp) Consen(Numcon+1)
+   integer(ip) Actsen(Numcon+1)
+   real(wp) Dersen(Numcon+1,Numvar)
+   integer(ip) Actsav(Numcon+1)
+   integer(ip) Consav(Numcon+4)
+   real(wp) Redsav(Numcon+3,Numvar)
+   real(wp) Dersav(Numcon+3,Numvar)
 ! ======================================================================
-   INTEGER(4) Actnum
-   INTEGER(4) var , con
+   integer(ip) Actnum
+   integer(ip) var , con
 ! ======================================================================
 ! Variable values saved for sensitivity
 ! ----------------------------------------------------------------------
@@ -3475,7 +3510,7 @@ SUBROUTINE ogvsca(Scavar)
 ! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
 ! DEFINE VARIABLE SCALE FACTOR
 ! ======================================================================
-! INP | SCAVAR(NUMVAR)   | I*4 | VARIABLES SCALE FACTOR
+! INP | SCAVAR(NUMVAR)   | R*8 | VARIABLES SCALE FACTOR
 ! ======================================================================
 ! 2008/01/16 | J. SCHOENMAEKERS | NEW
 ! ======================================================================
@@ -3483,9 +3518,9 @@ SUBROUTINE ogvsca(Scavar)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   REAL(8) Scavar(Numvar)
+   real(wp) Scavar(Numvar)
 ! ======================================================================
-   INTEGER(4) var
+   integer(ip) var
 ! ======================================================================
    DO var = 1 , Numvar
       Varsca(var) = Scavar(var)
@@ -3509,9 +3544,9 @@ SUBROUTINE ogvstr(Strvar,Lenvar)
    INCLUDE "ogdata.inc"
 ! ======================================================================
    CHARACTER*80 Strvar(Numvar)
-   INTEGER(4) Lenvar(Numvar)
+   integer(ip) Lenvar(Numvar)
 ! ======================================================================
-   INTEGER(4) var , len
+   integer(ip) var , len
 ! ======================================================================
    DO var = 1 , Numvar
       len = min(Lenvar(var),80)
@@ -3536,9 +3571,9 @@ SUBROUTINE ogvtyp(Typvar)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Typvar(Numvar)
+   integer(ip) Typvar(Numvar)
 ! ======================================================================
-   INTEGER(4) var
+   integer(ip) var
 ! ======================================================================
    DO var = 1 , Numvar
       Vartyp(var) = Typvar(var)
@@ -3563,8 +3598,8 @@ SUBROUTINE ogwlog(Lunlog,Levlog)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Lunlog
-   INTEGER(4) Levlog
+   integer(ip) Lunlog
+   integer(ip) Levlog
 ! ======================================================================
    Loglun = Lunlog
    Loglev = Levlog
@@ -3586,7 +3621,7 @@ SUBROUTINE ogwmat(Levmat)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Levmat
+   integer(ip) Levmat
 ! ======================================================================
    Matlev = Levmat
 ! ======================================================================
@@ -3601,7 +3636,7 @@ SUBROUTINE ogwrit(Lev,Str)
    INCLUDE "ogdata.inc"
 ! ======================================================================
    CHARACTER*(*) Str
-   INTEGER(4) Lev
+   integer(ip) Lev
 ! ======================================================================
    IF ( Lev<=Loglev ) THEN
       WRITE (Loglun,'(A)') Str
@@ -3627,8 +3662,8 @@ SUBROUTINE ogwtab(Luntab,Levtab)
 ! ======================================================================
    INCLUDE "ogdata.inc"
 ! ======================================================================
-   INTEGER(4) Luntab
-   INTEGER(4) Levtab
+   integer(ip) Luntab
+   integer(ip) Levtab
 ! ======================================================================
    Tablun = Luntab
    Tablev = Levtab
@@ -3640,8 +3675,8 @@ SUBROUTINE sum2v(V1,V2,V,K)
 ! V(1:K) = V1(1:K) + V2(1:K)
 ! ======================================================================
    IMPLICIT NONE
-   INTEGER*4 i , K
-   REAL*8 V , V1 , V2
+   integer(ip) i , K
+   real(wp) V , V1 , V2
 ! ======================================================================
    DIMENSION V1(*) , V2(*) , V(*)
 ! ======================================================================
@@ -3651,3 +3686,4 @@ SUBROUTINE sum2v(V1,V2,V,K)
 ! ======================================================================
 END SUBROUTINE sum2v
 
+end module optgra_module
