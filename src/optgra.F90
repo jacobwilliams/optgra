@@ -1,3 +1,7 @@
+!****************************************************************************************************
+!>
+!  Near-linear optimisation tool tailored for s/c trajectory design.
+
 module optgra_module
 
    use iso_fortran_env, only: wp => real64, ip => int32
@@ -9,6 +13,7 @@ module optgra_module
          !! FUNCTION FOR VALUES
          !! INPUT AND OUTPUT NOT SCALED
          import :: wp
+         implicit none
          real(wp), dimension(:), intent(in) :: varvec !! size is Numvar
          real(wp), dimension(:), intent(out) :: Valcon !! size is Numcon+1
          integer, intent(in) :: i !! JW: THIS IS NOT DOCUMENTED ?
@@ -17,6 +22,7 @@ module optgra_module
          !! FUNCTION FOR VALUES AND DERIVATIVES
          !! INPUT AND OUTPUT NOT SCALED
          import :: wp
+         implicit none
          real(wp), dimension(:), intent(in) :: varvec !! size is Numvar
          real(wp), dimension(:), intent(out) :: convec !! size is Numcon+1
          real(wp), dimension(:,:), intent(out) :: Dercon !! size is Numcon+1,Numvar
@@ -24,30 +30,107 @@ module optgra_module
 
    end interface
 
+   !.... this was the include file (minus the common blocks)
+   !     should be moving into a class to make it threadsafe .... TODO  -JW
+! ======================================================================
+! INCLUDE FILE OGDATA
+! ======================================================================
+! CONTAINS PARAMETERS AND COMMON DATA OF THE OPTIMISATION
+! ======================================================================
+      integer(ip),   PARAMETER :: MAXSTR = 80
+! ======================================================================
+      integer(ip)                            :: NUMVAR = 0
+      real(wp),      DIMENSION(:  ), allocatable :: VARVAL
+      integer(ip),   DIMENSION(:  ), allocatable :: VARTYP
+      real(wp),      DIMENSION(:  ), allocatable :: VARSCA
+      CHARACTER(len=maxstr),    DIMENSION(:  ), allocatable :: VARSTR
+      integer(ip),   DIMENSION(:  ), allocatable :: VARLEN
+      real(wp),      DIMENSION(:  ), allocatable :: VARREF
+      real(wp),      DIMENSION(:  ), allocatable :: VARDES
+      real(wp),      DIMENSION(:  ), allocatable :: VARGRD
+      real(wp),      DIMENSION(:  ), allocatable :: VARDIR
+      real(wp),      DIMENSION(:  ), allocatable :: FUNVAR
+      real(wp),      DIMENSION(:  ), allocatable :: SENVAR
+! ----------------------------------------------------------------------
+      integer(ip)                            :: NUMCON = 0
+      real(wp),      DIMENSION(:  ), allocatable :: CONVAL
+      integer(ip),   DIMENSION(:  ), allocatable :: CONTYP
+      integer(ip),   DIMENSION(:  ), allocatable :: CONPRI
+      real(wp),      DIMENSION(:  ), allocatable :: CONSCA
+      CHARACTER(len=maxstr),    DIMENSION(:  ), allocatable :: CONSTR
+      integer(ip),   DIMENSION(:  ), allocatable :: CONLEN
+      real(wp),      DIMENSION(:  ), allocatable :: CONREF
+      real(wp),      DIMENSION(:  ), allocatable :: SENQUA
+      real(wp),      DIMENSION(:  ), allocatable :: SENCON
+      real(wp),      DIMENSION(:  ), allocatable :: SENDEL
+      integer(ip),   DIMENSION(:  ), allocatable :: SENACT
+! ----------------------------------------------------------------------
+      integer(ip)                            :: OPTMET = 0
+      integer(ip)                            :: MAXITE = 0
+      integer(ip)                            :: CORITE = 0
+      integer(ip)                            :: OPTITE = 0
+      integer(ip)                            :: DIVITE = 0
+      integer(ip)                            :: CNVITE = 0
+      real(wp)                               :: VARMAX = 0
+      real(wp)                               :: VARSND = 0
+      real(wp)                               :: VARSTP = 0
+! ----------------------------------------------------------------------
+      integer(ip)                            :: VARDER = 0
+      real(wp),      DIMENSION(:  ), allocatable :: VARPER
+! ----------------------------------------------------------------------
+      integer(ip)                            :: LOGLUN = 0  ! log file unit
+      integer(ip)                            :: LOGLEV = 0  ! log level
+! ----------------------------------------------------------------------
+      integer(ip)                            :: LOGLUP = 0  ! pygmo log file unit
+      integer(ip)                            :: VERBOS = 0  ! pygmo verbosity
+      integer(ip)                            :: FEVALS = 0  ! pygmo: number of const fun evals
+      integer(ip)                            :: PYGFLA = 0  ! pygmo: flag indicating status of optimisation
+      integer(ip)                            :: NUMITE = 0  ! number of iterations
+! ----------------------------------------------------------------------
+      integer(ip)                            :: MATLEV = 0
+! ----------------------------------------------------------------------
+      integer(ip)                            :: TABLUN = 0
+      integer(ip)                            :: TABLEV = 0
+! ----------------------------------------------------------------------
+      integer(ip)                            :: SENOPT = 0
+! ----------------------------------------------------------------------
+      integer(ip)                            :: NUMACT = 0
+      integer(ip),   DIMENSION(:  ), allocatable :: ACTCON
+      integer(ip),   DIMENSION(:  ), allocatable :: CONFIX
+      integer(ip),   DIMENSION(:  ), allocatable :: CONACT
+      real(wp),      DIMENSION(:,:), allocatable :: CONDER
+      real(wp),      DIMENSION(:,:), allocatable :: CONRED
+      real(wp),      DIMENSION(:,:), allocatable :: SENDER
+      integer(ip)                            :: CONVER = 0
+      integer(ip),   DIMENSION(:  ), allocatable :: CONOPT
+! ----------------------------------------------------------------------
+
 contains
+!****************************************************************************************************
 
 SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
-! ======================================================================
-! A(K:K+N1,L:L+N) = A1(K1:K1+N1,L1:L1+N2) *
-!                   A2(K2:K2+N2,L2:L2+N3)
-! ======================================================================
-! KI  I4  >0: NORMAL USAGE
-!         <0: TRANSPOSE IS USED
-! ======================================================================
+
+   !! Matrix multiply.
+   !!
+   !! `A(K:K+N1,L:L+N) = A1(K1:K1+N1,L1:L1+N2) * A2(K2:K2+N2,L2:L2+N3)`
+
    IMPLICIT NONE
-   real(wp) A , A1 , A2 , f1 , f2
-   integer(ip) i , i1 , i2 , ic , ir , K , K1 , K2 , L , L1 , L2 , M , M1 , M2 , N , N1 , N2
-! ======================================================================
-   DIMENSION A1(M1,*) , A2(M2,*) , A(M,*)
-! ======================================================================
+
+   integer,intent(in) :: m1, m2, m, k, k1, k2, l, l1 , l2 , n , n1 , n2
+   real(wp),intent(out) :: A(M,*)
+   real(wp),intent(in) :: A1(M1,*)
+   real(wp),intent(in) :: A2(M2,*)
+
+   real(wp) :: f1 , f2
+   integer(ip) :: i , i1 , i2 , ic , ir
+
    DO i1 = K , K + N1 - 1
       DO i = L , L + N - 1
          A(i1,i) = 0D0
       ENDDO
    ENDDO
-! ======================================================================
+
    DO i1 = 0 , N1 - 1
-! ----------------------------------------------------------------------
       DO i2 = 0 , N2 - 1
          IF ( K1>=0 ) THEN
             f1 = A1(i1+K1,i2+L1)
@@ -55,7 +138,6 @@ SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
             f1 = A1(i2-K1,i1+L1)
          ENDIF
          IF ( f1/=0D0 ) THEN
-! ----------------------------------------------------------------------
             DO i = 0 , N - 1
                IF ( K2>=0 ) THEN
                   f2 = A2(i2+K2,i+L2)
@@ -70,66 +152,49 @@ SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
                ENDIF
             ENDDO
          ENDIF
-! ----------------------------------------------------------------------
       ENDDO
-! ----------------------------------------------------------------------
    ENDDO
-! ======================================================================
+
 END SUBROUTINE mul2m
 
 SUBROUTINE mulvs(X,A,Z,Kd)
-! ======================================================================
-! VECTOR Z (1:KD) = VECTOR X (1:KD) * A
-! ======================================================================
-!I X   R8  *  VECTOR
-!I A   R8     SCALAR
-!I Z   R8  *  VECTOR
-!I KD  I4     NUMBER OF ELEMENTS TO BE USED
-! ======================================================================
+   !! Scalar Vector multiply.
+   !!
+   !! `Z (1:KD) = X (1:KD) * A`
    IMPLICIT NONE
-   real(wp) A , X(*) , Z(*)
-   integer(ip) i , Kd
+   real(wp),intent(in) :: A !! SCALAR
+   real(wp),intent(in) :: X(*) !! VECTOR
+   real(wp),intent(out) :: Z(*) !! VECTOR
+   integer(ip),intent(in) :: Kd !! NUMBER OF ELEMENTS TO BE USED
+   integer(ip) :: i
    DO i = 1 , Kd
       Z(i) = X(i)*A
    ENDDO
 END SUBROUTINE mulvs
 
 SUBROUTINE ogcdel(Delcon)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE CONSTRAINT + MERIT CONVERGENCE THRESHOLDS
-! ======================================================================
-! INP | DELCON(NUMCON+1) | R*8 | CONSTRAINTS DELTAS (1:NUMCON)
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+   !! DEFINE CONSTRAINT + MERIT CONVERGENCE THRESHOLDS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp),intent(in) :: Delcon(Numcon+1)
-! ======================================================================
-   integer(ip) con
-! ======================================================================
+
+   real(wp),intent(in) :: Delcon(Numcon+1) !! CONSTRAINTS DELTAS (1:NUMCON)
+
+   integer(ip) :: con
+
    DO con = 1 , Numcon
       Sendel(con) = Delcon(con)
    ENDDO
-! ======================================================================
 END SUBROUTINE ogcdel
 
 SUBROUTINE ogclos()
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEALLOCATION OF ARRAYS
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+   !! DEALLOCATION OF ARRAYS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-! VARIABLES
-! ----------------------------------------------------------------------
+
+   ! VARIABLES
    DEALLOCATE (Varval)
    DEALLOCATE (Vartyp)
    DEALLOCATE (Varsca)
@@ -141,9 +206,8 @@ SUBROUTINE ogclos()
    DEALLOCATE (Vardir)
    DEALLOCATE (Funvar)
    DEALLOCATE (Senvar)
-! ======================================================================
-! CONSTRAINTS
-! ----------------------------------------------------------------------
+
+   ! CONSTRAINTS
    DEALLOCATE (Conval)
    DEALLOCATE (Contyp)
    DEALLOCATE (Conpri)
@@ -155,13 +219,11 @@ SUBROUTINE ogclos()
    DEALLOCATE (Sencon)
    DEALLOCATE (Sendel)
    DEALLOCATE (Senact)
-! ======================================================================
-! DERIVATIVES
-! ----------------------------------------------------------------------
+
+   ! DERIVATIVES
    DEALLOCATE (Varper)
-! ======================================================================
-! WORKING VECTORS
-! ----------------------------------------------------------------------
+
+   ! WORKING VECTORS
    DEALLOCATE (Actcon)
    DEALLOCATE (Confix)
    DEALLOCATE (Conact)
@@ -169,26 +231,22 @@ SUBROUTINE ogclos()
    DEALLOCATE (Conred)
    DEALLOCATE (Sender)
    DEALLOCATE (Conopt)
-! ======================================================================
+
 END SUBROUTINE ogclos
 
 SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
-! ======================================================================
-! CORRECTION PART
-! ======================================================================
-! SUBROUTINES CALLED: OGRIGT, OGLEFT, OGEXCL, OGINCL, OGEVAL
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! CORRECTION PART
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
+
    real(wp) Varacc
    integer(ip) Finish
    procedure(Calval_f) :: Calval
    procedure(Calder_f) :: Calder
-! ======================================================================
+
    integer(ip) coritr , numfff , minpri , maxpri , curpri
    real(wp) cornor , foldis , cstval
    real(wp) conerr , Toterr , Norerr
@@ -200,7 +258,7 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
    real(wp) val , fac , upr , del , co2 , co1 , co0 , de2 , dis
    real(wp) eps , err , dlt , sca , dif
    real(wp) exc
-   CHARACTER str*256 , nam*256
+   CHARACTER(len=256) :: str , nam
 ! ======================================================================
    real(wp) , DIMENSION(:) , ALLOCATABLE :: cosact
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
@@ -889,203 +947,159 @@ SUBROUTINE ogcorr(Varacc,Finish,Toterr,Norerr,Calval,Calder)
 END SUBROUTINE ogcorr
 
 SUBROUTINE ogcpri(Pricon)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE CONTRAINT PRIORITY
-! ======================================================================
-! INP | PRICON(NUMCON+1) | I*4 | CONSTRAINTS PRIORITY (1:NUMCON)
-!     |                  |     | -> 1-N
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE CONTRAINT PRIORITY
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip),intent(in) :: Pricon(Numcon+1)
-! ======================================================================
+
+   integer(ip),intent(in) :: Pricon(Numcon+1) !! CONSTRAINTS PRIORITY (1:NUMCON)
+                                              !! -> 1-N
+
    integer(ip) con
-! ======================================================================
+
    DO con = 1 , Numcon + 1
       Conpri(con) = Pricon(con)
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogcpri
 
 SUBROUTINE ogcsca(Scacon)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE CONSTRAINT + MERIT CONVERGENCE THRESHOLDS
-! ======================================================================
-! INP | SCACON(NUMCON+1) | R*8 | CONSTRAINTS CONVER THRESHOLD (1:NUMCON)
-!     |                  |     | MERIT       CONVER THRESHOLD (1+NUMCON)
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE CONSTRAINT + MERIT CONVERGENCE THRESHOLDS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp),intent(in) :: Scacon(Numcon+1)
-! ======================================================================
+
+   real(wp),intent(in) :: Scacon(Numcon+1) !! CONSTRAINTS CONVER THRESHOLD (1:NUMCON)
+                                           !! MERIT       CONVER THRESHOLD (1+NUMCON)
+
    integer(ip) con
-! ======================================================================
+
    DO con = 1 , Numcon + 1
       Consca(con) = Scacon(con)
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogcsca
 
 SUBROUTINE ogcstr(Strcon,Lencon)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE CONSTRAINT + MERIT STRING
-! ======================================================================
-! INP | STRCON(NUMCON+1) | C80 | CONIABLES NAME STRING
-! ----------------------------------------------------------------------
-! INP | LENCON(NUMCON+1) | I*4 | CONIABLES NAME LENGTH
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE CONSTRAINT + MERIT STRING
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   CHARACTER*80,intent(in) :: Strcon(Numcon+1)
-   integer(ip),intent(in) :: Lencon(Numcon+1)
-! ======================================================================
+
+   character(len=maxstr),intent(in) :: Strcon(Numcon+1) !! CONIABLES NAME STRING
+   integer(ip),intent(in) :: Lencon(Numcon+1) !! CONIABLES NAME LENGTH
+
    integer(ip) con , len
-! ======================================================================
+
    DO con = 1 , Numcon + 1
-      len = min(Lencon(con),80)
+      len = min(Lencon(con),maxstr)
       Constr(con) = Strcon(con)
       Conlen(con) = len
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogcstr
 
 SUBROUTINE ogctyp(Typcon)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE CONTRAINT + MERIT TYPE
-! ======================================================================
-! INP | TYPCON(NUMCON+1) | I*4 | CONSTRAINTS TYPE (1:NUMCON)
-!     |                  |     | -> 1=GTE -1=LTE 0=EQU -2=DERIVED DATA
-!     |                  |     | MERIT       TYPE (1+NUMCON)
-!     |                  |     | -> 1=MAX -1=MIN
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE CONTRAINT + MERIT TYPE
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip),intent(in) :: Typcon(Numcon+1)
-! ======================================================================
+
+   integer(ip),intent(in) :: Typcon(Numcon+1) !! CONSTRAINTS TYPE (1:NUMCON)
+                                              !! -> 1=GTE -1=LTE 0=EQU -2=DERIVED DATA
+                                              !! MERIT       TYPE (1+NUMCON)
+                                              !! -> 1=MAX -1=MIN
+
    integer(ip) con
-! ======================================================================
+
    DO con = 1 , Numcon + 1
       Contyp(con) = Typcon(con)
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogctyp
 
 SUBROUTINE ogderi(Dervar,Pervar)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE COMPUTATION OF DERIVATIVES
-! ======================================================================
-! INP | DERVAR           | I*4 | DERIVATIVES COMPUTATION MODE
-!     |                  |     | -> 1: USER DEFINED
-!     |                  |     | -> 2: NUMERIC WITH DOUBLE DIFFERENCING
-!     |                  |     | -> 3: NUMERIC WITH SINGLE DIFFERENCING
-! ----------------------------------------------------------------------
-! INP | PERVAR(NUMVAR)   | R*8 | VARIABLES PERTURBATION FOR DERIVATIVES
-!     |                  |     | -> NOT SCALED
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE COMPUTATION OF DERIVATIVES
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip),intent(in) :: Dervar
-   real(wp),intent(in) :: Pervar(Numvar)
-! ======================================================================
+
+   integer(ip),intent(in) :: Dervar !! DERIVATIVES COMPUTATION MODE
+                                    !!  * 1: USER DEFINED
+                                    !!  * 2: NUMERIC WITH DOUBLE DIFFERENCING
+                                    !!  * 3: NUMERIC WITH SINGLE DIFFERENCING
+   real(wp),intent(in) :: Pervar(Numvar) !! VARIABLES PERTURBATION FOR DERIVATIVES
+                                         !! -> NOT SCALED
+
    integer(ip) var
-! ======================================================================
+
    Varder = Dervar
-! ----------------------------------------------------------------------
+
    DO var = 1 , Numvar
       Varper(var) = Pervar(var)
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogderi
 
 SUBROUTINE ogdist(Maxvar,Sndvar)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE OPTIMISATION CONTROL PARAMETERS
-! ======================================================================
-! INP | ITEMAX           | I*4 | MAXIMUM NUMBER OF ITERATIONS
-! ----------------------------------------------------------------------
-! INP | MAXVAR           | R*8 | MAXIMUM DISANCE PER ITERATION
-!     |                  |     | -> SCALED
-! ----------------------------------------------------------------------
-! INP | SNDVAR           | R*8 | PERTURBATION FOR SND ORDER DERIVATIVES
-!     |                  |     | -> SCALED
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE OPTIMISATION CONTROL PARAMETERS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp),intent(in) :: Maxvar
-   real(wp),intent(in) :: Sndvar
-! ======================================================================
+
+   real(wp),intent(in) :: Maxvar !! MAXIMUM DISTANCE PER ITERATION
+                                 !!  -> SCALED
+   real(wp),intent(in) :: Sndvar !! PERTURBATION FOR 2ND ORDER DERIVATIVES
+                                 !!  -> SCALED
+
    Varmax = Maxvar
    Varsnd = Sndvar
-! ======================================================================
+
 END SUBROUTINE ogdist
 
 SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
-! ======================================================================
-! COMPUTES SCALED CONTRAINTS+MERIT AND DERIVATIVES
-! FROM     SCALED VARIABLES
-! ======================================================================
-! INP | DERVAR           | I*4 | DERIVATIVES COMPUTATION MODE
-!     |                  |     | -> 0: VALUES ONLY
-!     |                  |     | -> 1: USER DEFINED
-!     |                  |     | -> 2: NUMERIC WITH DOUBLE DIFFERENCING
-!     |                  |     | -> 3: NUMERIC WITH SINGLE DIFFERENCING
-! ----------------------------------------------------------------------
-! INP | CALVAL           | EXT | FUNCTION FOR VALUES
-!     |                  |     | -> CALVAL (VALVAR, VALCON)
-!     |                  |     | -> INPUT AND OUTPUT NOT SCALED
-! ----------------------------------------------------------------------
-! INP | CALDER           | EXT | FUNCTION FOR VALUES AND DERIVATIVES
-!     |                  |     | -> CALDER (VALVAR, VALCON, DERCON)
-!     |                  |     | -> INPUT AND OUTPUT NOT SCALED
-! ======================================================================
-! SUBROUTINES CALLED: CALVAL, CALDER
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! COMPUTES SCALED CONTRAINTS+MERIT AND DERIVATIVES
+   !! FROM     SCALED VARIABLES
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp) Valvar(Numvar)
-   real(wp) Valcon(Numcon+1)
-   integer(ip) Dervar
-   real(wp) Dercon(Numcon+1,Numvar)
-   procedure(Calval_f) :: Calval
-   procedure(Calder_f) :: Calder
-! ======================================================================
+
+   real(wp),intent(in) :: Valvar(Numvar)
+   real(wp),intent(out) :: Valcon(Numcon+1)
+   integer(ip),intent(in) :: Dervar !! DERIVATIVES COMPUTATION MODE
+                                    !!  * 0: VALUES ONLY
+                                    !!  * 1: USER DEFINED
+                                    !!  * 2: NUMERIC WITH DOUBLE DIFFERENCING
+                                    !!  * 3: NUMERIC WITH SINGLE DIFFERENCING
+   real(wp),intent(out) :: Dercon(Numcon+1,Numvar)
+   procedure(Calval_f) :: Calval !! FUNCTION FOR VALUES
+                                 !! -> CALVAL (VALVAR, VALCON)
+                                 !! -> INPUT AND OUTPUT NOT SCALED
+   procedure(Calder_f) :: Calder !! FUNCTION FOR VALUES AND DERIVATIVES
+                                 !! -> CALDER (VALVAR, VALCON, DERCON)
+                                 !! -> INPUT AND OUTPUT NOT SCALED
+
    integer(ip) var , con , cod , len , ind , numvio
    real(wp) val , sca , fac , per , sav , der , err , conerr , convio
-   CHARACTER typ*3 , sta*3 , nam*80 , str*256
+   character(len=3) :: typ
+   character(len=3) :: sta
+   character(len=maxstr) :: nam
+   character(len=256) :: str
+
    real(wp) ggg(4,4) , bbb(4) , vvv(4) , objval
 ! ======================================================================
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
@@ -1141,7 +1155,6 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
 ! GET RESULTS
 ! GET DERIVATIVES IF USER DEFINED
 ! ----------------------------------------------------------------------
-   write(*,*) '1'
    IF ( Dervar==0 ) THEN
       CALL calval(varvec,Valcon,0)
    ELSEIF ( Dervar==1 .OR. Dervar==-1 ) THEN
@@ -1237,6 +1250,10 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
       IF ( err>fac ) fac = err
       nam = Constr(con)
       len = Conlen(con)
+      ! write(*,*) 'con = ', con
+      ! write(*,*) 'val = ', val
+      ! write(*,*) 'Valcon = ', Valcon
+      ! write(*,*) 'sca = ', sca
       WRITE (str,'("CON/VAL/SCA/TYP/STA/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A3,1X,A)') con , val*sca , sca , typ , sta , nam(1:len)
       CALL ogwrit(3,str)
    ENDDO
@@ -1367,25 +1384,19 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
 END SUBROUTINE ogeval
 
 SUBROUTINE ogexcl(Exc)
-! ======================================================================
-! REMOVE CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
-! ======================================================================
-! INP | EXC              | I*4 | CONSTRAINT TO BE REMOVED
-!     |                  |     | SEQUENCE NUMBER IN ACTIVE LIST
-! ======================================================================
-! SUBROUTINES CALLED: NONE
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! REMOVE CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Exc
-! ======================================================================
+
+   integer(ip),intent(in) :: Exc !! CONSTRAINT TO BE REMOVED
+                                 !! SEQUENCE NUMBER IN ACTIVE LIST
+
    real(wp) val , bet , gam
    integer(ip) row , col , act , con
-   CHARACTER str*256
+   CHARACTER(len=256) :: str
 ! ======================================================================
 ! ADJUST LIST OF ACTIVE CONSTRAINTS
 ! ----------------------------------------------------------------------
@@ -1440,56 +1451,45 @@ SUBROUTINE ogexcl(Exc)
 END SUBROUTINE ogexcl
 
 SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN
-! ======================================================================
-! I/O | VALVAR(NUMVAR)   | R*8 | VARIABLES VALUE
-!     |                  |     | -> NOT SCALED
-! ----------------------------------------------------------------------
-! OUT | VALCON(NUMCON+1) | R*8 | CONSTRAINTS VALUE (1:NUMCON)
-!     |                  |     | MERIT       VALUE (1+NUMCON)
-!     |                  |     | -> NOT SCALED
-! ----------------------------------------------------------------------
-! OUT | FINOPT           | I*4 | TERMINATION STATUS
-!     |                  |     | -> 1=    MATCHED &     OPTIMAL
-!     |                  |     | -> 2=    MATCHED & NOT OPTIMAL
-!     |                  |     | -> 3=NOT MATCHED & NOT OPTIMAL
-!     |                  |     | -> 4=NOT FEASIBL & NOT OPTIMAL
-! ----------------------------------------------------------------------
-! INP | CALVAL           | EXT | FUNCTION FOR VALUES
-!     |                  |     | -> CALDER (VALVAR, VALCON)
-!     |                  |     | -> INPUT AND OUTPUT NOT SCALED
-! ----------------------------------------------------------------------
-! INP | CALDER           | EXT | FUNCTION FOR VALUES AND DERIVATIVES
-!     |                  |     | -> CALDER (VALVAR, VALCON, CONDER)
-!     |                  |     | -> INPUT AND OUTPUT NOT SCALED
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+!! Main routine.
+!!
+!! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp),intent(inout) :: Valvar(Numvar)
-   real(wp),intent(out) :: Valcon(Numcon+1)
-   integer(ip),intent(out) :: Finopt
+
+   real(wp),intent(inout) :: Valvar(Numvar) !! VARIABLES VALUE
+                                            !! -> NOT SCALED
+   real(wp),intent(out) :: Valcon(Numcon+1) !! CONSTRAINTS VALUE (1:NUMCON)
+                                            !! MERIT       VALUE (1+NUMCON)
+                                            !! -> NOT SCALED
+   integer(ip),intent(out) :: Finopt !! TERMINATION STATUS
+                                     !!
+                                     !!  * 1=    MATCHED &     OPTIMAL
+                                     !!  * 2=    MATCHED & NOT OPTIMAL
+                                     !!  * 3=NOT MATCHED & NOT OPTIMAL
+                                     !!  * 4=NOT FEASIBL & NOT OPTIMAL
    integer(ip),intent(out) :: Finite
+   procedure(Calval_f) :: Calval !! FUNCTION FOR VALUES
+                                 !! -> CALDER (VALVAR, VALCON)
+                                 !! -> INPUT AND OUTPUT NOT SCALED
+   procedure(Calder_f) :: Calder !! FUNCTION FOR VALUES AND DERIVATIVES
+                                 !! -> CALDER (VALVAR, VALCON, CONDER)
+                                 !! -> INPUT AND OUTPUT NOT SCALED
+
    integer(ip) :: finish , itecor , iteopt
-   procedure(Calval_f) :: Calval
-   procedure(Calder_f) :: Calder
-! ======================================================================
-   integer(ip) var , con , typ , len , num , numvio
-   real(wp) val , sca , red , der , fac , old , convio
-   CHARACTER str*256 , nam*256
-! ----------------------------------------------------------------------
+   integer(ip) :: var , con , typ , len , num , numvio
+   real(wp) :: val , sca , red , der , fac , old , convio
+   CHARACTER(len=256) :: str , nam
+
    integer(ip) numequ , itediv , itecnv
    real(wp) varacc , cosnew , cosold , varsav , meamer
    real(wp) conerr , desnor , norerr , meaerr
-! ======================================================================
+
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varsum
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varcor
    real(wp) , DIMENSION(:) , ALLOCATABLE :: concor
    INTEGER :: spag_nextblock_1
+
    spag_nextblock_1 = 1
    SPAG_DispatchLoop_1: DO
       SELECT CASE (spag_nextblock_1)
@@ -1553,7 +1553,7 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
 ! ======================================================================
 ! HEADER FOR TABLE
 ! ----------------------------------------------------------------------
-         IF ( Tablev>=1 ) WRITE (Tablun,'("ITER",1X,"OPT",1X,1000(1X,I10))') (var,var=1,Numvar) , (con,con=1,Numcon)
+         IF ( Tablev>=1 ) WRITE (Tablun,'("ITER",1X,"OPT",1X,*(1X,I10))') (var,var=1,Numvar) , (con,con=1,Numcon)
          spag_nextblock_1 = 2
       CASE (2)
          SPAG_Loop_1_1: DO
@@ -1610,10 +1610,10 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
             IF ( Senopt<=0 ) THEN
                write(*,*) 'about to call obeval'
                write(*,*) 'Varval=',Varval
-               write(*,*) 'Conval=',Conval
                write(*,*) 'Varder=',Varder
-               write(*,*) 'Conder=',Conder(1:Numcon+1,:)
                CALL ogeval(Varval,Conval,Varder,Conder(1:Numcon+1,:),Calval,Calder)
+               write(*,*) 'Conval=',Conval
+               write(*,*) 'Conder=',Conder(1:Numcon+1,:)
                write(*,*) 'done calling obeval'
             ELSEIF ( Senopt==+1 .OR. Senopt==+3 ) THEN
                Varval = Senvar
@@ -1694,7 +1694,7 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
 ! ----------------------------------------------------------------------
             CALL ogcorr(varacc,finish,conerr,norerr,Calval,Calder)
 ! ----------------------------------------------------------------------
-            IF ( Tablev>=1 ) WRITE (Tablun,'(I4,1X,"COR",1X,1000(1X,D10.3))') Numite , (Varval(var),var=1,Numvar) , (Conval(con),con=1,Numcon)
+            IF ( Tablev>=1 ) WRITE (Tablun,'(I4,1X,"COR",1X,*(1X,D10.3))') Numite , (Varval(var),var=1,Numvar) , (Conval(con),con=1,Numcon)
 ! ----------------------------------------------------------------------
             IF ( Senopt/=0 ) THEN
                IF ( finish/=0 ) EXIT SPAG_Loop_1_1
@@ -1878,46 +1878,30 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
 END SUBROUTINE ogexec
 
 SUBROUTINE oggsst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
-! Function to get sensitivity state data, necessary for serialization.
-! Do not use this directly except in serialization routines
-! ======================================================================
-! OUT | VARSEN(NUMVAR)   | I*4 | STORED VARIABLES VALUE
-! OUT | QUASEN(NUMCON+1) | R*8 | STORED CONSTRAINTS CORRECTION VECTOR
-! OUT | CONSEN(NUMCON+1) | R*8 | STORED CONSTRAINTS VALUE
-! OUT | ACTSEN(NUMCON+1) | R*8 | STORED CONSTRAINTS ACTIVE
-! OUT | DERSEN(NUMCON+1, | R*8 | STORED DERIVATIVE
-!                NUMVAR) |     |
-! OUT | ACTSAV(NUMCON+1) | I*4 | STORED ACTIVE CONSTRAINTS
-! OUT | CONSAV(NUMCON+4) | I*4 | STORED ACTIVE CONSTRAINTS
-! OUT | REDSAV(NUMCON+3, | R*8 | STORED DERIVATIVE
-!                NUMVAR) |     |
-! OUT | DERSAV(NUMCON+3, | R*8 | STORED DERIVATIVE
-!                NUMVAR) |     |
-! OUT | ACTNUM           | I*4 | NUMBER OF ACTIVE CONSTRAINTS
-! ======================================================================
-! 2021/07/19 | M. von Looz | NEW
-! ======================================================================
+
+   !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
+   !!
+   !! Function to get sensitivity state data, necessary for serialization.
+   !! Do not use this directly except in serialization routines
+   !!
+   !! 2021/07/19 | M. von Looz | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp) Varsen(Numvar)
-   real(wp) Quasen(Numcon+1)
-   real(wp) Consen(Numcon+1)
-   integer(ip) Actsen(Numcon+1)
-   real(wp) Dersen(Numcon+1,Numvar)
-   integer(ip) Actsav(Numcon+1)
-   integer(ip) Consav(Numcon+4)
-   real(wp) Redsav(Numcon+3,Numvar)
-   real(wp) Dersav(Numcon+3,Numvar)
-! ======================================================================
-   integer(ip) Actnum
+
+   real(wp),intent(out) :: Varsen(Numvar) !! STORED VARIABLES VALUE
+   real(wp),intent(out) :: Quasen(Numcon+1) !! STORED CONSTRAINTS CORRECTION VECTOR
+   real(wp),intent(out) :: Consen(Numcon+1) !! STORED CONSTRAINTS VALUE
+   integer(ip),intent(out) :: Actsen(Numcon+1) !! STORED CONSTRAINTS ACTIVE
+   real(wp),intent(out) :: Dersen(Numcon+1,Numvar) !! STORED DERIVATIVE
+   integer(ip),intent(out) :: Actsav(Numcon+1) !! STORED ACTIVE CONSTRAINTS
+   integer(ip),intent(out) :: Consav(Numcon+4) !! STORED ACTIVE CONSTRAINTS
+   real(wp),intent(out) :: Redsav(Numcon+3,Numvar) !! STORED DERIVATIVE
+   real(wp),intent(out) :: Dersav(Numcon+3,Numvar) !! STORED DERIVATIVE
+   integer(ip),intent(out) :: Actnum !! NUMBER OF ACTIVE CONSTRAINTS
+
    integer(ip) var , con
-! ======================================================================
-! Variable values saved for sensitivity
-! ----------------------------------------------------------------------
+
+   ! Variable values saved for sensitivity
    Actnum = Numact
 
    DO var = 1 , Numvar
@@ -1932,9 +1916,8 @@ SUBROUTINE oggsst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav
          Dersen(con,var) = Sender(con,var)
       ENDDO
    ENDDO
-! ======================================================================
-! Temporary status saved of which constraints are active
-! ----------------------------------------------------------------------
+
+   ! Temporary status saved of which constraints are active
    DO con = 1 , Numcon + 1
       Actsav(con) = Actcon(con)
    ENDDO
@@ -1949,35 +1932,27 @@ SUBROUTINE oggsst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav
          Dersav(con,var) = Conder(con,var)
       ENDDO
    ENDDO
-! ======================================================================
+
 END SUBROUTINE oggsst
 
 SUBROUTINE ogincl(Inc)
-! ======================================================================
-! ADDS CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
-! ======================================================================
-! INP | INC              | I*4 | CONSTRAINT TO BE INCLUDED
-! ======================================================================
-! SUBROUTINES CALLED: NONE
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! ADDS CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Inc
-! ======================================================================
+
+   integer(ip),intent(in) :: Inc !! CONSTRAINT TO BE INCLUDED
+
    real(wp) val , fac , gam , sav , max
    integer(ip) row , col , ind , lst
-   CHARACTER str*256
-! ======================================================================
-! GENERAL
-! ----------------------------------------------------------------------
+   CHARACTER(len=256) :: str
+
+   ! GENERAL
    Numact = Numact + 1
-! ======================================================================
-! PERMUTATION TO GET ZERO DERIVATIVES AT END FOR NEW ACTIVE CONSTRAINT
-! ----------------------------------------------------------------------
+
+   ! PERMUTATION TO GET ZERO DERIVATIVES AT END FOR NEW ACTIVE CONSTRAINT
    lst = Numvar
    DO col = Numvar , Numact , -1
       IF ( Conred(Inc,col)==0D0 ) THEN
@@ -1993,9 +1968,8 @@ SUBROUTINE ogincl(Inc)
          lst = lst - 1
       ENDIF
    ENDDO
-! ======================================================================
-! PERMUTATION TO GET MAXIMUM PIVOT
-! ----------------------------------------------------------------------
+
+   ! PERMUTATION TO GET MAXIMUM PIVOT
    ind = Numact
    max = abs(Conred(Inc,ind))
    DO col = Numact + 1 , lst
@@ -2005,7 +1979,7 @@ SUBROUTINE ogincl(Inc)
          max = val
       ENDIF
    ENDDO
-! ----------------------------------------------------------------------
+
    IF ( ind/=Numact ) THEN
       DO row = 1 , Numcon + 3
          IF ( Conact(row)<=0 ) THEN
@@ -2015,14 +1989,12 @@ SUBROUTINE ogincl(Inc)
          ENDIF
       ENDDO
    ENDIF
-! ======================================================================
-! UPDATE LIST OF ACTIVE CONSTRAINTS
-! ----------------------------------------------------------------------
+
+   ! UPDATE LIST OF ACTIVE CONSTRAINTS
    Actcon(Numact) = Inc
    Conact(Inc) = Numact
-! ======================================================================
-! REDUCE FOR NEW ACTIVE CONSTRAINT
-! ----------------------------------------------------------------------
+
+   ! REDUCE FOR NEW ACTIVE CONSTRAINT
    IF ( abs(Conred(Inc,Numact))<1D-12 ) THEN
       WRITE (str,*) "OGINCL-WARNING: CONSTRAINT SINGULAR"
       CALL ogwrit(2,str)
@@ -2034,16 +2006,16 @@ SUBROUTINE ogincl(Inc)
       Conact(Inc) = 0
       RETURN
    ENDIF
-! ----------------------------------------------------------------------
+
    val = sqrt(sum(Conred(Inc,Numact:lst)**2))
    IF ( Conred(Inc,Numact)>0D0 ) val = -val
-! ----------------------------------------------------------------------
+
    Conred(Inc,Numact) = Conred(Inc,Numact) - val
-! ----------------------------------------------------------------------
+
    sav = Conred(Inc,Numact)
    fac = 1D0/sav
    Conred(Inc,Numact:lst) = Conred(Inc,Numact:lst)*fac
-! ----------------------------------------------------------------------
+
    fac = sav/val
    DO row = 1 , Numcon + 3
       IF ( Conact(row)<=0 ) THEN
@@ -2054,36 +2026,28 @@ SUBROUTINE ogincl(Inc)
          ENDIF
       ENDIF
    ENDDO
-! ----------------------------------------------------------------------
+
    Conred(Inc,Numact) = val
    Conred(Inc,Numact+1:lst) = 0D0
-! ======================================================================
+
 END SUBROUTINE ogincl
 
 SUBROUTINE oginit(Varnum,Connum)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! ALLOCATION OF ARRAYS AND INITIALISATION OF PARAMETERS
-! ======================================================================
-! INP | VARNUM           | I*4 | NUMBER OF VARIABLES
-! ----------------------------------------------------------------------
-! INP | CONNUM           | I*4 | NUMBER OF CONSTRAINTS
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! ALLOCATION OF ARRAYS AND INITIALISATION OF PARAMETERS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Varnum
-   integer(ip) Connum
-! ======================================================================
+
+   integer(ip),intent(in) :: Varnum !! NUMBER OF VARIABLES
+   integer(ip),intent(in) :: Connum !! NUMBER OF CONSTRAINTS
+
    integer(ip) var , con
-! ======================================================================
-! VARIABLES
-! ----------------------------------------------------------------------
+
+   ! VARIABLES
    Numvar = Varnum
-! ----------------------------------------------------------------------
+
    ALLOCATE (Varval(Numvar))
    ALLOCATE (Vartyp(Numvar))
    ALLOCATE (Varsca(Numvar))
@@ -2095,7 +2059,7 @@ SUBROUTINE oginit(Varnum,Connum)
    ALLOCATE (Vardir(Numvar))
    ALLOCATE (Funvar(Numvar))
    ALLOCATE (Senvar(Numvar))
-! ----------------------------------------------------------------------
+
    DO var = 1 , Numvar
       Varval(var) = 0D0
       Vartyp(var) = 0
@@ -2109,11 +2073,10 @@ SUBROUTINE oginit(Varnum,Connum)
       Funvar(var) = 0D0
       Senvar(var) = 0D0
    ENDDO
-! ======================================================================
-! CONSTRAINTS
-! ----------------------------------------------------------------------
+
+   ! CONSTRAINTS
    Numcon = Connum
-! ----------------------------------------------------------------------
+
    ALLOCATE (Conval(Numcon+1))
    ALLOCATE (Contyp(Numcon+1))
    ALLOCATE (Conpri(Numcon+1))
@@ -2125,7 +2088,7 @@ SUBROUTINE oginit(Varnum,Connum)
    ALLOCATE (Sencon(Numcon+1))
    ALLOCATE (Sendel(Numcon+1))
    ALLOCATE (Senact(Numcon+1))
-! ----------------------------------------------------------------------
+
    DO con = 1 , Numcon + 1
       Conval(con) = 0D0
       Contyp(con) = 0
@@ -2139,9 +2102,8 @@ SUBROUTINE oginit(Varnum,Connum)
       Sendel(con) = 0D0
       Senact(con) = 0
    ENDDO
-! ======================================================================
-! CONTROL
-! ----------------------------------------------------------------------
+
+   ! CONTROL
    Optmet = 2
    Maxite = 10
    Corite = 10
@@ -2150,42 +2112,33 @@ SUBROUTINE oginit(Varnum,Connum)
    Cnvite = 10
    Varmax = 10D0
    Varsnd = 1D0
-! ======================================================================
-! DERIVATIVES
-! ----------------------------------------------------------------------
+
+   ! DERIVATIVES
    Varder = 1
-! ----------------------------------------------------------------------
    ALLOCATE (Varper(Numvar))
-! ----------------------------------------------------------------------
    DO var = 1 , Numvar
       Varper(var) = 1D-03
    ENDDO
-! ======================================================================
-! LOG FILE
-! ----------------------------------------------------------------------
+
+   ! LOG FILE
    Loglun = 6
    Loglev = 1
-! ======================================================================
-! PYGMO LOG FILE
-! ----------------------------------------------------------------------
+
+   ! PYGMO LOG FILE
    Loglup = 7
    Loglev = 0
-! ======================================================================
-! MATLAB CONSOLE
-! ----------------------------------------------------------------------
+
+   ! MATLAB CONSOLE
    Matlev = 0
-! ======================================================================
-! TABLE FILE
-! ----------------------------------------------------------------------
+
+   ! TABLE FILE
    Tablun = 6
    Tablev = 0
-! ======================================================================
-! LINEAR OPTIMISATION MODE
-! ----------------------------------------------------------------------
+
+   ! LINEAR OPTIMISATION MODE
    Senopt = 0
-! ======================================================================
-! WORKING VECTORS
-! ----------------------------------------------------------------------
+
+   ! WORKING VECTORS
    ALLOCATE (Actcon(Numcon+1))
    ALLOCATE (Confix(Numcon))
    ALLOCATE (Conact(Numcon+4))
@@ -2193,7 +2146,6 @@ SUBROUTINE oginit(Varnum,Connum)
    ALLOCATE (Conred(Numcon+3,Numvar))
    ALLOCATE (Sender(Numcon+3,Numvar))
    ALLOCATE (Conopt(Numcon+1))
-! ----------------------------------------------------------------------
    Numact = 0
    Actcon = 0
    Conact = 0
@@ -2201,30 +2153,23 @@ SUBROUTINE oginit(Varnum,Connum)
    Conder = 0D0
    Conred = 0D0
    Conopt = 0
-! ======================================================================
+
 END SUBROUTINE oginit
 
 SUBROUTINE ogiter(Itemax,Itecor,Iteopt,Itediv,Itecnv)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE OPTIMISATION CONTROL PARAMETERS
-! ======================================================================
-! INP | ITEMAX           | I*4 | MAXIMUM NUMBER OF ITERATIONS
-! ----------------------------------------------------------------------
-! INP | MAXVAR           | R*8 | MAXIMUM DISANCE PER ITERATION
-!     |                  |     | -> SCALED
-! ----------------------------------------------------------------------
-! INP | SNDVAR           | R*8 | PERTURBATION FOR SND ORDER DERIVATIVES
-!     |                  |     | -> SCALED
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE OPTIMISATION CONTROL PARAMETERS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Itemax , Itecor , Iteopt , Itediv , Itecnv
-! ======================================================================
+
+   integer(ip),intent(in) :: Itemax !! MAXIMUM NUMBER OF ITERATIONS
+   integer(ip),intent(in) :: Itecor
+   integer(ip),intent(in) :: Iteopt
+   integer(ip),intent(in) :: Itediv
+   integer(ip),intent(in) :: Itecnv
+
    Maxite = Itemax
    Corite = Itecor
    Optite = Iteopt
@@ -2234,32 +2179,24 @@ SUBROUTINE ogiter(Itemax,Itecor,Iteopt,Itediv,Itecnv)
    IF ( Optite>Maxite ) Optite = Maxite
    IF ( Divite>Corite ) Divite = Corite
    IF ( Cnvite>Optite ) Cnvite = Optite
-! ======================================================================
+
 END SUBROUTINE ogiter
 
 SUBROUTINE ogleft(Actinp,Actout)
-! ======================================================================
-! LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
-! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS
-! ======================================================================
-! INP | ACTINP(NUMCON)   | R*8 | VECTOR INITAL
-! ----------------------------------------------------------------------
-! OUT | ACTOUT(NUMCON)   | R*8 | VECTOR FINAL (MAY BE SAME AS ACTINP)
-! ======================================================================
-! SUBROUTINES CALLED: NONE
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
+   !! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp) Actinp(Numcon)
-   real(wp) Actout(Numcon)
-! ======================================================================
+
+   real(wp),intent(in) :: Actinp(Numcon) !! VECTOR INITAL
+   real(wp),intent(out) :: Actout(Numcon) !! VECTOR FINAL (MAY BE SAME AS ACTINP)
+
    integer(ip) row , col , act
    real(wp) val
-! ======================================================================
+
    DO act = 1 , Numact
       row = Actcon(act)
       val = Actinp(act)
@@ -2268,73 +2205,54 @@ SUBROUTINE ogleft(Actinp,Actout)
       ENDDO
       Actout(act) = val/Conred(row,act)
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogleft
 
 SUBROUTINE ogomet(Metopt)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE OPTIMISATION CONTROL PARAMETERS
-! ======================================================================
-! INP | METOPT | I*4 | OPTIMISATION METHOD
-!     |        |     | 3: CONJUGATE GRADIENT METHOD
-!     |        |     | 2: SPETRAL CONJUGATE GRADIENT METHOD
-!     |        |     | 1: MODIFIED SPETRAL CONJUGATE GRADIENT METHOD
-!     |        |     | 0: STEEPEST DESCENT METHOD
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE OPTIMISATION CONTROL PARAMETERS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Metopt
-! ======================================================================
+
+   integer(ip),intent(in) :: Metopt !! OPTIMISATION METHOD:
+                                    !!  * 3: CONJUGATE GRADIENT METHOD
+                                    !!  * 2: SPETRAL CONJUGATE GRADIENT METHOD
+                                    !!  * 1: MODIFIED SPETRAL CONJUGATE GRADIENT METHOD
+                                    !!  * 0: STEEPEST DESCENT METHOD
+
    Optmet = Metopt
-! ======================================================================
+
 END SUBROUTINE ogomet
 
 SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval,Calder)
-! ======================================================================
-! OPTIMISATION PART
-! ======================================================================
-! I/O | VARACC           | R*8 | ITERATION SCALED DISTANCE ACCUMULATED
-! ----------------------------------------------------------------------
-! INP | NUMEQU           | I*4 | NUMBER OF EQUALITY CONSTRAINTS
-! ----------------------------------------------------------------------
-! OUT | FINISH           | I*4 | 0=LIMIT 1=OPTIM
-! ----------------------------------------------------------------------
-! INP | CALVAL           | EXT | FUNCTION FOR VALUES
-!     |                  |     | CALDER (VARVAL, CONVAL)
-! ======================================================================
-! SUBROUTINES CALLED: INVRGT, INVLFT, ACTEXC, ACTINC, OGEVAL
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! OPTIMISATION PART
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp) Varacc
-! ----------------------------------------------------------------------
-   integer(ip) Numequ
-   integer(ip) Finish
-   procedure(Calval_f) :: Calval
-   procedure(Calder_f) :: Calder    ! JW : not originally here [i think not used]
-! ======================================================================
+
+   real(wp),intent(inout) :: Varacc !! ITERATION SCALED DISTANCE ACCUMULATED
+   integer(ip),intent(in) :: Numequ !! NUMBER OF EQUALITY CONSTRAINTS
+   integer(ip),intent(out) :: Finish !! 0=LIMIT 1=OPTIM
+   procedure(Calval_f) :: Calval !! FUNCTION FOR VALUES CALDER (VARVAL, CONVAL)
+   procedure(Calder_f) :: Calder !! JW : not originally here. added for consistent interface. [not used]
+
    integer(ip) staflg , faccnt , numcor
    real(wp) Desnor , foldis , cosimp , cornor , quacor , refdis
    real(wp) co0 , co1 , co2 , nor
    real(wp) cosco2 , cosco1
    real(wp) maxdis , norprv
-! ----------------------------------------------------------------------
+
    integer(ip) con , var , cos , act , ind , len , inc
    integer(ip) nnn , typ , des , prv , met
    real(wp) val , max , det , ccc , dis
    real(wp) fac , del , exc , eps , imp
    real(wp) bet , tht
-   CHARACTER str*256 , nam*256
-! ======================================================================
+   CHARACTER(len=256) :: str , nam
+
    real(wp) , DIMENSION(:) , ALLOCATABLE :: cosact
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varwrk
@@ -2346,6 +2264,7 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval,Calder)
    real(wp) , DIMENSION(:) , ALLOCATABLE :: conqua
    integer(ip) , DIMENSION(:) , ALLOCATABLE :: concor
    INTEGER :: spag_nextblock_1
+
    spag_nextblock_1 = 1
    SPAG_DispatchLoop_1: DO
       SELECT CASE (spag_nextblock_1)
@@ -3068,65 +2987,50 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval,Calder)
 END SUBROUTINE ogopti
 
 SUBROUTINE ogplog(Luplog,Bosver)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE WRITING IN PYGMO LOG FORMAT
-! ======================================================================
-! INP | LUPLOG           | I*4 | LOGICAL UNIT FOR WRITING PYGMO LOG
-! ----------------------------------------------------------------------
-! INP | BOSVER           | I*4 | VERBOSITY LEVEL
-!     |                  |     | -> 0=NO OUTPUT
-!     |                  |     | -> 1 OUTPUT EVERY ITERATION
-!     |                  |     | -> 2 OUTPUT EVERY 2ND ITERATION
-!     |                  |     | -> N OUTPUT EVERY NTH ITERATION
-! ======================================================================
-! 2023/01/25 | W. MARTENS | NEW
-! ======================================================================
+
+   !! DEFINE WRITING IN PYGMO LOG FORMAT
+   !!
+   !! 2023/01/25 | W. MARTENS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-! Yes, we stay true to the original vintage F77 style with our
-! variable names just to confuse future developers :P
-   integer(ip) Luplog
-   integer(ip) Bosver
-! ======================================================================
+
+   integer(ip),intent(in) :: Luplog !! LOGICAL UNIT FOR WRITING PYGMO LOG
+   integer(ip),intent(in) :: Bosver !! VERBOSITY LEVEL:
+                                    !!  * 0=NO OUTPUT
+                                    !!  * 1 OUTPUT EVERY ITERATION
+                                    !!  * 2 OUTPUT EVERY 2ND ITERATION
+                                    !!  * N OUTPUT EVERY NTH ITERATION
+
    Loglup = Luplog
    Verbos = Bosver
-   Fevals = 0    ! initialize number of cost fun evaluations
+   Fevals = 0     ! initialize number of cost fun evaluations
    Pygfla = 0     ! pygmo output status flag: 0: continue iterating, 1: final output
-! ======================================================================
+
 END SUBROUTINE ogplog
 
 SUBROUTINE ogpwri(Objval,Numvio,Convio)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! WRITE OPTIMIZATION LOG IN PYGMO FORMAT
-! ======================================================================
-! INP | OBJVAL           | R*8 | OBJECTIVE VALUE
-! ----------------------------------------------------------------------
-! INP | NUMVIO           | I*4 | NUMBER OF VIOLATED CONSTRAINTS
-! ----------------------------------------------------------------------
-! INP | CONVIO           | R*8 | TOTAL CONSTRAINT VIOLATION
-! ======================================================================
-! 2023/01/25 | W. MARTENS | NEW
-! ======================================================================
+
+   !! WRITE OPTIMIZATION LOG IN PYGMO FORMAT
+   !!
+   !! 2023/01/25 | W. MARTENS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   CHARACTER feas*2 , fmt*24
-   real(wp) Objval , Convio
-   integer(ip) Numvio
-! ======================================================================
+
+   real(wp),intent(in) :: Objval !! OBJECTIVE VALUE
+   integer(ip),intent(in) :: Numvio !! NUMBER OF VIOLATED CONSTRAINTS
+   real(wp),intent(in) :: Convio !! TOTAL CONSTRAINT VIOLATION
+
+   CHARACTER(len=2) :: feas
+   CHARACTER(len=24) :: fmt
+
    IF ( Verbos==0 ) RETURN
-! Print header
+   ! Print header
    IF ( Fevals==0 ) CALL ogpwri_start()
-! Increase counter for cost function evaluations
+   ! Increase counter for cost function evaluations
    Fevals = Fevals + 1
-! Every 50 lines print the column names.
-   IF ( mod(real(Fevals-1D0)/real(Verbos),50D0)==0D0 ) WRITE (Loglup,'(A10,A15,A15,A15,A2)') "objevals:" , "objval:" ,             &
-      & "violated:" , "viol. norm:"
+   ! Every 50 lines print the column names.
+   IF ( mod(real(Fevals-1D0)/real(Verbos),50D0)==0D0 ) &
+      WRITE (Loglup,'(A10,A15,A15,A15,A2)') "objevals:" , "objval:" , "violated:" , "viol. norm:"
    IF ( Verbos/=0 .AND. mod(Fevals,Verbos)==0D0 ) THEN
       IF ( Convio>0D0 ) THEN
          feas = " i"
@@ -3134,7 +3038,7 @@ SUBROUTINE ogpwri(Objval,Numvio,Convio)
          feas = "  "
       ENDIF
 
-! Write the log line (different format depending on violation size)
+      ! Write the log line (different format depending on violation size)
       IF ( Convio==0D0 ) THEN
          fmt = '(I10,F15.4,I15,I15,A2)'
          WRITE (Loglup,fmt) Fevals , Objval , Numvio , int(Convio) , feas
@@ -3147,34 +3051,25 @@ SUBROUTINE ogpwri(Objval,Numvio,Convio)
       ENDIF
    ENDIF
 
-! Write final summary
+   ! Write final summary
    IF ( Pygfla/=0 ) CALL ogpwri_end(Objval,Numvio,Convio)
-! ======================================================================
+
 END SUBROUTINE ogpwri
 
-
 SUBROUTINE ogpwri_end(Objval,Numvio,Convio)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! WRITE OPTIMIZATION END RESULT IN PYGMO FORMAT
-! ======================================================================
-! INP | OBJVAL           | R*8 | OBJECTIVE VALUE
-! ----------------------------------------------------------------------
-! INP | NUMVIO           | I*4 | NUMBER OF VIOLATED CONSTRAINTS
-! ----------------------------------------------------------------------
-! INP | CONVIO           | R*8 | TOTAL CONSTRAINT VIOLATION
-! ======================================================================
-! 2023/01/25 | W. MARTENS | NEW
-! ======================================================================
+
+   !! WRITE OPTIMIZATION END RESULT IN PYGMO FORMAT
+   !!
+   !! 2023/01/25 | W. MARTENS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp) Objval , Convio
-   integer(ip) Numvio
-! ======================================================================
+
+   real(wp),intent(in) :: Objval !! OBJECTIVE VALUE
+   real(wp),intent(in) :: Convio !! TOTAL CONSTRAINT VIOLATION
+   integer(ip),intent(in) :: Numvio !! NUMBER OF VIOLATED CONSTRAINTS
+
    IF ( Pygfla==0 ) RETURN
-! Write termination message
+   ! Write termination message
    WRITE (Loglup,'("")')
    WRITE (Loglup,'("Final values after iteration        ", I10:)') Numite
    WRITE (Loglup,'("Final objective value:              ", F10.4)') Objval
@@ -3191,28 +3086,22 @@ SUBROUTINE ogpwri_end(Objval,Numvio,Convio)
    ENDIF
    WRITE (Loglup,'("")')
 
-! ======================================================================
 END SUBROUTINE ogpwri_end
 
-
 SUBROUTINE ogpwri_start()
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! WRITE OPTIMIZATION LOG IN PYGMO FORMAT
-! ======================================================================
-! INP | VARDER           | I*4 | DERIVATIVES COMPUTATION MODE
-!     |                  |     | -> 0: VALUES ONLY
-!     |                  |     | -> 1: USER DEFINED
-!     |                  |     | -> 2: NUMERIC WITH DOUBLE DIFFERENCING
-!     |                  |     | -> 3: NUMERIC WITH SINGLE DIFFERENCING
-! ======================================================================
-! 2023/01/25 | W. MARTENS | NEW
-! ======================================================================
+
+   !! WRITE OPTIMIZATION LOG IN PYGMO FORMAT
+   !!
+   !! 2023/01/25 | W. MARTENS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-! ======================================================================
+
+   ! VARDER is the DERIVATIVES COMPUTATION MODE
+   !   -> 0: VALUES ONLY
+   !   -> 1: USER DEFINED
+   !   -> 2: NUMERIC WITH DOUBLE DIFFERENCING
+   !   -> 3: NUMERIC WITH SINGLE DIFFERENCING
+
    WRITE (Loglup,'("OPTGRA plugin for pagmo/pygmo:")')
    IF ( Varder==0 ) THEN
       WRITE (Loglup,'("")')
@@ -3236,33 +3125,23 @@ SUBROUTINE ogpwri_start()
 
    WRITE (Loglup,'("")')
 
-! ======================================================================
 END SUBROUTINE ogpwri_start
 
-
 SUBROUTINE ogrigt(Actinp,Actout)
-! ======================================================================
-! RIGHT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
-! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS
-! ======================================================================
-! INP | ACTINP(NUMCON)   | R*8 | VECTOR INITAL
-! ----------------------------------------------------------------------
-! OUT | ACTOUT(NUMCON)   | R*8 | VECTOR FINAL (MAY BE SAME AS ACTINP)
-! ======================================================================
-! SUBROUTINES CALLED: NONE
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! RIGHT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
+   !! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp) Actinp(Numcon)
-   real(wp) Actout(Numcon)
-! ======================================================================
+
+   real(wp),intent(in) :: Actinp(Numcon) !! VECTOR INITAL
+   real(wp),intent(out) :: Actout(Numcon) !! VECTOR FINAL (MAY BE SAME AS ACTINP)
+
    integer(ip) row , col , act
    real(wp) val
-! =====================================================================
+
    DO col = Numact , 1 , -1
       val = Actinp(col)
       DO act = Numact , col + 1 , -1
@@ -3272,49 +3151,35 @@ SUBROUTINE ogrigt(Actinp,Actout)
       row = Actcon(col)
       Actout(col) = val/Conred(row,col)
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogrigt
 
 SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
-! ======================================================================
-! OUT | CONSTA(NUMCON)   | I*4 | CONSTRAINT STATUS (0=PAS 1=ACT)
-! OUT | CONCON(NUMCON+1, | R*8 | SENSITIVITY OF CONTRAINTS+MERIT W.R.T.
-!     |        NUMCON)   |     |                ACTIVE CONSTRAINTS
-! OUT | CONVAR(NUMCON+1, | R*8 | SENSITIVITY OF CONTRAINTS+MERIT W.R.T.
-!     |        NUMVAR)   |     |                PARAMETERS
-! OUT | VARCON(NUMVAR  , | R*8 | SENSITIVITY OF VARIABLES W.R.T.
-!     |        NUMCON)   |     |                ACTIVE CONSTRAINTS
-! OUT | VARVAR(NUMVAR  , | R*8 | SENSITIVITY OF VARIABLES W.R.T.
-!     |        NUMVAR)   |     |                PARAMETERS
-!     |                  |     | -> NOT SCALED
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Consta(Numcon)
-   real(wp) Concon(Numcon+1,Numcon)
-   real(wp) Convar(Numcon+1,Numvar)
-   real(wp) Varcon(Numvar,Numcon)
-   real(wp) Varvar(Numvar,Numvar)
-! ======================================================================
+
+   integer(ip),intent(out) :: Consta(Numcon) !! CONSTRAINT STATUS (0=PAS 1=ACT)
+   real(wp),intent(out) :: Concon(Numcon+1,Numcon) !! SENSITIVITY OF CONTRAINTS+MERIT W.R.T. ACTIVE CONSTRAINTS
+   real(wp),intent(out) :: Convar(Numcon+1,Numvar) !! SENSITIVITY OF CONTRAINTS+MERIT W.R.T. PARAMETERS
+   real(wp),intent(out) :: Varcon(Numvar,Numcon) !! SENSITIVITY OF VARIABLES W.R.T. ACTIVE CONSTRAINTS
+   real(wp),intent(out) :: Varvar(Numvar,Numvar) !! SENSITIVITY OF VARIABLES W.R.T. PARAMETERS
+                                                 !! -> NOT SCALED
+
    real(wp) val , sca
    integer(ip) var , con , act , par , ind , typ
-! ======================================================================
-! CONVERGED
-! ----------------------------------------------------------------------
+
+   ! CONVERGED
    Consta = 0
    DO act = 1 , Numact
       con = Actcon(act)
       Consta(con) = 1
    ENDDO
-! ======================================================================
-! SENSITIVITY OF CONTRAINTS W.R.T. ACTIVE CONSTRAINTS
-! ----------------------------------------------------------------------
+
+   ! SENSITIVITY OF CONTRAINTS W.R.T. ACTIVE CONSTRAINTS
    Concon = 0D0
    DO con = 1 , Numcon + 1
       IF ( Conact(con)>0 ) Concon(con,con) = 1D0
@@ -3326,9 +3191,8 @@ SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
          Concon(con,ind) = -Conref(act)
       ENDDO
    ENDDO
-! ======================================================================
-! SENSITIVITY OF CONSTRAINTS W.R.T. PARAMETERS
-! ----------------------------------------------------------------------
+
+   ! SENSITIVITY OF CONSTRAINTS W.R.T. PARAMETERS
    Convar = 0D0
    DO con = 1 , Numcon + 1
       IF ( Conact(con)>0 ) CYCLE
@@ -3342,9 +3206,8 @@ SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
          Convar(con,var) = val
       ENDDO
    ENDDO
-! ======================================================================
-! SENSITIVITY OF VARIABLES W.R.T. ACTIVE CONSTRAINTS
-! ----------------------------------------------------------------------
+
+   ! SENSITIVITY OF VARIABLES W.R.T. ACTIVE CONSTRAINTS
    Varcon = 0D0
    DO var = 1 , Numvar
       IF ( Vartyp(var)/=0 ) CYCLE
@@ -3359,9 +3222,8 @@ SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
          Varcon(var,con) = -Conref(act)
       ENDDO
    ENDDO
-! ======================================================================
-! SENSITIVITY OF VARIABLES W.R.T. PARAMETERS
-! ----------------------------------------------------------------------
+
+   ! SENSITIVITY OF VARIABLES W.R.T. PARAMETERS
    Varvar = 0D0
    DO par = 1 , Numvar
       Varvar(par,par) = 1D0
@@ -3376,9 +3238,8 @@ SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
          Varvar(var,par) = val
       ENDDO
    ENDDO
-! ======================================================================
-! DESCALE SENSITIVITY
-! ----------------------------------------------------------------------
+
+   ! DESCALE SENSITIVITY
    DO con = 1 , Numcon + 1
       typ = Contyp(con)
       sca = Consca(con)
@@ -3389,7 +3250,7 @@ SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
       Varcon(1:Numvar,con) = Varcon(1:Numvar,con)/sca
       Concon(1:Numcon+1,con) = Concon(1:Numcon+1,con)/sca
    ENDDO
-! ----------------------------------------------------------------------
+
    DO var = 1 , Numvar
       sca = Varsca(var)
       Varcon(var,1:Numcon) = Varcon(var,1:Numcon)*sca
@@ -3397,75 +3258,55 @@ SUBROUTINE ogsens(Consta,Concon,Convar,Varcon,Varvar)
       Convar(1:Numcon+1,var) = Convar(1:Numcon+1,var)/sca
       Varvar(1:Numvar,var) = Varvar(1:Numvar,var)/sca
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogsens
 
 SUBROUTINE ogsopt(Optsen)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! LINEAR OPTIMISATION MODE
-! ======================================================================
-! INP | OPTSEN           | I*4 | SENSITIVITY OPTIMISATION MODE
-!     |                  |     | ->  0: NO
-!     |                  |     | -> -1: INITIALISATION
-!     |                  |     | -> +1: WITH CONSTRAINT CALCULATION
-!     |                  |     | -> +2: WITH CONSTRAINT BIAS
-!     |                  |     | -> +3: WITH CONSTRAINT CALC / NO OPTIM
-!     |                  |     | -> +4: WITH CONSTRAINT BIAS / NO OPTIM
-! ======================================================================
-! 2021/03/30 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! LINEAR OPTIMISATION MODE
+   !!
+   !! 2021/03/30 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Optsen
-! ======================================================================
+
+   integer(ip),intent(in) :: Optsen !! SENSITIVITY OPTIMISATION MODE
+                                    !!
+                                    !!  *  0: NO
+                                    !!  * -1: INITIALISATION
+                                    !!  * +1: WITH CONSTRAINT CALCULATION
+                                    !!  * +2: WITH CONSTRAINT BIAS
+                                    !!  * +3: WITH CONSTRAINT CALC / NO OPTIM
+                                    !!  * +4: WITH CONSTRAINT BIAS / NO OPTIM
+
    Senopt = Optsen
-! ======================================================================
+
 END SUBROUTINE ogsopt
 
 SUBROUTINE ogssst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
-! Function to get sensitivity state data, necessary for serialization.
-! Do not use this directly except in serialization routines
-! ======================================================================
-! INP | VARSEN(NUMVAR)   | I*4 | STORED VARIABLES VALUE
-! INP | QUASEN(NUMCON+1) | R*8 | STORED CONSTRAINTS CORRECTION VECTOR
-! INP | CONSEN(NUMCON+1) | R*8 | STORED CONSTRAINTS VALUE
-! INP | ACTSEN(NUMCON+1) | R*8 | STORED CONSTRAINTS ACTIVE
-! INP | DERSEN(NUMCON+1, | R*8 | STORED DERIVATIVE
-!                NUMVAR) |     |
-! INP | ACTSAV(NUMCON+1) | I*4 | STORED ACTIVE CONSTRAINTS
-! INP | CONSAV(NUMCON+4) | I*4 | STORED ACTIVE CONSTRAINTS
-! INP | REDSAV(NUMCON+3, | R*8 | STORED DERIVATIVE
-!                NUMVAR) |     |
-! INP | DERSAV(NUMCON+3, | R*8 | STORED DERIVATIVE
-!                NUMVAR) |     |
-! INP | ACTNUM           | I*4 | NUMBER OF ACTIVE CONSTRAINTS
-! ======================================================================
-! 2021/07/19 | M. von Looz | NEW
-! ======================================================================
+
+   !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
+   !!
+   !! Function to get sensitivity state data, necessary for serialization.
+   !! Do not use this directly except in serialization routines
+   !!
+   !! 2021/07/19 | M. von Looz | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp) Varsen(Numvar)
-   real(wp) Quasen(Numcon+1)
-   real(wp) Consen(Numcon+1)
-   integer(ip) Actsen(Numcon+1)
-   real(wp) Dersen(Numcon+1,Numvar)
-   integer(ip) Actsav(Numcon+1)
-   integer(ip) Consav(Numcon+4)
-   real(wp) Redsav(Numcon+3,Numvar)
-   real(wp) Dersav(Numcon+3,Numvar)
-! ======================================================================
+
+   real(wp),intent(in)    :: Varsen(Numvar) !! STORED VARIABLES VALUE
+   real(wp),intent(in)    :: Quasen(Numcon+1) !! STORED CONSTRAINTS CORRECTION VECTOR
+   real(wp),intent(in)    :: Consen(Numcon+1) !! STORED CONSTRAINTS VALUE
+   integer(ip),intent(in) :: Actsen(Numcon+1) !! STORED CONSTRAINTS ACTIVE
+   real(wp),intent(in)    :: Dersen(Numcon+1,Numvar) !! STORED DERIVATIVE
+   integer(ip),intent(in) :: Actsav(Numcon+1) !! STORED ACTIVE CONSTRAINTS
+   integer(ip),intent(in) :: Consav(Numcon+4) !! STORED ACTIVE CONSTRAINTS
+   real(wp),intent(in)    :: Redsav(Numcon+3,Numvar) !! STORED DERIVATIVE
+   real(wp),intent(in)    :: Dersav(Numcon+3,Numvar) !! STORED DERIVATIVE
+
    integer(ip) Actnum
    integer(ip) var , con
-! ======================================================================
-! Variable values saved for sensitivity
-! ----------------------------------------------------------------------
+
+   ! Variable values saved for sensitivity
    Numact = Actnum
 
    DO var = 1 , Numvar
@@ -3480,9 +3321,8 @@ SUBROUTINE ogssst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav
          Sender(con,var) = Dersen(con,var)
       ENDDO
    ENDDO
-! ======================================================================
-! Temporary status saved of which constraints are active
-! ----------------------------------------------------------------------
+
+   ! Temporary status saved of which constraints are active
    DO con = 1 , Numcon + 1
       Actcon(con) = Actsav(con)
    ENDDO
@@ -3502,188 +3342,153 @@ SUBROUTINE ogssst(Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav
          Conder(con,var) = Dersav(con,var)
       ENDDO
    ENDDO
-! ======================================================================
 END SUBROUTINE ogssst
 
 SUBROUTINE ogvsca(Scavar)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE VARIABLE SCALE FACTOR
-! ======================================================================
-! INP | SCAVAR(NUMVAR)   | R*8 | VARIABLES SCALE FACTOR
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE VARIABLE SCALE FACTOR
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   real(wp) Scavar(Numvar)
-! ======================================================================
+
+   real(wp),intent(in) :: Scavar(Numvar) !! VARIABLES SCALE FACTOR
+
    integer(ip) var
-! ======================================================================
+
    DO var = 1 , Numvar
       Varsca(var) = Scavar(var)
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogvsca
 
 SUBROUTINE ogvstr(Strvar,Lenvar)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE VARIABLE STRING
-! ======================================================================
-! INP | STRVAR(NUMVAR)   | C80 | VARIABLES NAME STRING
-! ----------------------------------------------------------------------
-! INP | LENVAR(NUMVAR)   | I*4 | VARIABLES NAME LENGTH
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE VARIABLE STRING
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   CHARACTER*80 Strvar(Numvar)
-   integer(ip) Lenvar(Numvar)
-! ======================================================================
+
+   character(len=maxstr),intent(in) :: Strvar(Numvar) !! VARIABLES NAME STRING
+   integer(ip),intent(in) :: Lenvar(Numvar) !! VARIABLES NAME LENGTH
+
    integer(ip) var , len
-! ======================================================================
+
    DO var = 1 , Numvar
-      len = min(Lenvar(var),80)
+      len = min(Lenvar(var),maxstr)
       Varstr(var) = Strvar(var)
       Varlen(var) = len
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogvstr
 
 SUBROUTINE ogvtyp(Typvar)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE VARIABLE TYPE
-! ======================================================================
-! INP | TYPVAR(NUMVAR)   | I*4 | VARIABLES TYPE
-!     |                  |     | -> 0=FREE VARIABLE
-!     |                  |     | -> 1=PARAMETER FOR SENSITIVITY
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE VARIABLE TYPE
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Typvar(Numvar)
-! ======================================================================
+
+   integer(ip),intent(in) :: Typvar(Numvar) !! VARIABLES TYPE
+                                            !!  *  0=FREE VARIABLE
+                                            !!  *  1=PARAMETER FOR SENSITIVITY
+
    integer(ip) var
-! ======================================================================
+
    DO var = 1 , Numvar
       Vartyp(var) = Typvar(var)
    ENDDO
-! ======================================================================
+
 END SUBROUTINE ogvtyp
 
 SUBROUTINE ogwlog(Lunlog,Levlog)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE WRITING IN LOG FILE
-! ======================================================================
-! INP | LUNLOG           | I*4 | LOGICAL UNIT FOR WRITING LOG
-! ----------------------------------------------------------------------
-! INP | LEVLOG           | I*4 | LEVEL OF LOG
-!     |                  |     | -> 0=NO OUTPUT
-!     |                  |     | -> 1<ALL
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE WRITING IN LOG FILE
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Lunlog
-   integer(ip) Levlog
-! ======================================================================
+
+   integer(ip),intent(in) :: Lunlog !! LOGICAL UNIT FOR WRITING LOG
+   integer(ip),intent(in) :: Levlog !! LEVEL OF LOG
+                                    !!  * 0=NO OUTPUT
+                                    !!  * 1<ALL
+
    Loglun = Lunlog
    Loglev = Levlog
-! ======================================================================
+
 END SUBROUTINE ogwlog
 
 SUBROUTINE ogwmat(Levmat)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE WRITING IN MATLAB CONSOLE
-! ======================================================================
-! INP | LEVMAT           | I*4 | LEVEL OF LOG
-!     |                  |     | -> 0=NO OUTPUT
-!     |                  |     | -> 1<ALL
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE WRITING IN MATLAB CONSOLE
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Levmat
-! ======================================================================
+
+   integer(ip),intent(in) :: Levmat !! LEVEL OF LOG
+                                    !!  * 0=NO OUTPUT
+                                    !!  * 1<ALL
+
    Matlev = Levmat
-! ======================================================================
+
 END SUBROUTINE ogwmat
 
 SUBROUTINE ogwrit(Lev,Str)
-! ======================================================================
-! 2014/07/29 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! Write a meessage to the log.
+   !!
+   !! 2014/07/29 | J. SCHOENMAEKERS | NEW
+   !! 2025/02/09 | J. Williams | added trim()
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   CHARACTER*(*) Str
-   integer(ip) Lev
-! ======================================================================
+
+   CHARACTER(len=*),intent(in) :: Str !! string to print
+   integer(ip),intent(in) :: Lev !! only print if `Loglev` is >= this
+
    IF ( Lev<=Loglev ) THEN
-      WRITE (Loglun,'(A)') Str
+      WRITE (Loglun,'(A)') trim(Str)
       FLUSH (Loglun)
    ENDIF
-! ======================================================================
+
 END SUBROUTINE ogwrit
 
 SUBROUTINE ogwtab(Luntab,Levtab)
-! ======================================================================
-! NEAR-LINEAR OPTIMISATION TOOL TAILORED FOR S/C TRAJECTORY DESIGN:
-! DEFINE WRITING IN TABLE FILE
-! ======================================================================
-! INP | LUNTAB           | I*4 | LOGICAL UNIT FOR WRITING TABLE
-! ----------------------------------------------------------------------
-! INP | LEVTAB           | I*4 | LEVEL OF TAB
-!     |                  |     | -> 0=NO OUTPUT
-!     |                  |     | -> 1<ALL
-! ======================================================================
-! 2008/01/16 | J. SCHOENMAEKERS | NEW
-! ======================================================================
+
+   !! DEFINE WRITING IN TABLE FILE
+   !!
+   !! 2008/01/16 | J. SCHOENMAEKERS | NEW
+
    IMPLICIT NONE
-! ======================================================================
-   INCLUDE "ogdata.inc"
-! ======================================================================
-   integer(ip) Luntab
-   integer(ip) Levtab
-! ======================================================================
+
+   integer(ip),intent(in) :: Luntab !! LOGICAL UNIT FOR WRITING TABLE
+   integer(ip),intent(in) :: Levtab !! LEVEL OF TAB
+                                    !!
+                                    !!  * 0=NO OUTPUT
+                                    !!  * 1<ALL
+
    Tablun = Luntab
    Tablev = Levtab
-! ======================================================================
+
 END SUBROUTINE ogwtab
 
 SUBROUTINE sum2v(V1,V2,V,K)
-! ======================================================================
-! V(1:K) = V1(1:K) + V2(1:K)
-! ======================================================================
+   !! Vector addition.
+   !!
+   !! `V(1:K) = V1(1:K) + V2(1:K)`
    IMPLICIT NONE
-   integer(ip) i , K
-   real(wp) V , V1 , V2
-! ======================================================================
-   DIMENSION V1(*) , V2(*) , V(*)
-! ======================================================================
+   integer(ip) :: i
+   real(wp),intent(in) :: V1(*) , V2(*)
+   real(wp),intent(out) :: V(*)
+   integer(ip),intent(in) :: K
    DO i = 1 , K
       V(i) = V1(i) + V2(i)
    ENDDO
-! ======================================================================
 END SUBROUTINE sum2v
 
-end module optgra_module
+!****************************************************************************************************
+   end module optgra_module
+!****************************************************************************************************
