@@ -2,6 +2,15 @@
 !>
 !  Near-linear optimisation tool tailored for s/c trajectory design.
 
+!TODO:
+! * all these SET functions should be eliminated and all vars set in the init function
+! * remove the STOP statement in one subroutine.
+! * add an optgra class. move all methods into this class.
+! * replace global module variables with class variables.
+! * see about removing the SPAG DISPATCH loop thing which I don't like (study original code).
+! * make real kind changable via compiler directive (real32, real64, real128)
+! * get example working.
+
 module optgra_module
 
    use iso_fortran_env, only: wp => real64, ip => int32
@@ -1250,10 +1259,6 @@ SUBROUTINE ogeval(Valvar,Valcon,Dervar,Dercon,calval,calder)
       IF ( err>fac ) fac = err
       nam = Constr(con)
       len = Conlen(con)
-      ! write(*,*) 'con = ', con
-      ! write(*,*) 'val = ', val
-      ! write(*,*) 'Valcon = ', Valcon
-      ! write(*,*) 'sca = ', sca
       WRITE (str,'("CON/VAL/SCA/TYP/STA/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A3,1X,A)') con , val*sca , sca , typ , sta , nam(1:len)
       CALL ogwrit(3,str)
    ENDDO
@@ -1608,13 +1613,7 @@ SUBROUTINE ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
 ! GET VALUES AND GRADIENTS
 ! ======================================================================
             IF ( Senopt<=0 ) THEN
-               write(*,*) 'about to call obeval'
-               write(*,*) 'Varval=',Varval
-               write(*,*) 'Varder=',Varder
                CALL ogeval(Varval,Conval,Varder,Conder(1:Numcon+1,:),Calval,Calder)
-               write(*,*) 'Conval=',Conval
-               write(*,*) 'Conder=',Conder(1:Numcon+1,:)
-               write(*,*) 'done calling obeval'
             ELSEIF ( Senopt==+1 .OR. Senopt==+3 ) THEN
                Varval = Senvar
                CALL ogeval(Varval,Conval,0,Conder(1:Numcon+1,:),Calval,Calder)
@@ -2218,8 +2217,8 @@ SUBROUTINE ogomet(Metopt)
 
    integer(ip),intent(in) :: Metopt !! OPTIMISATION METHOD:
                                     !!  * 3: CONJUGATE GRADIENT METHOD
-                                    !!  * 2: SPETRAL CONJUGATE GRADIENT METHOD
-                                    !!  * 1: MODIFIED SPETRAL CONJUGATE GRADIENT METHOD
+                                    !!  * 2: SPECTRAL CONJUGATE GRADIENT METHOD
+                                    !!  * 1: MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
                                     !!  * 0: STEEPEST DESCENT METHOD
 
    Optmet = Metopt
@@ -2577,8 +2576,8 @@ SUBROUTINE ogopti(Varacc,Numequ,Finish,Desnor,Calval,Calder)
 !      CALL OGWRIT (2,STR)
 ! ----------------------------------------------------------------------
 ! MET = 3: CONJUGATE GRADIENT METHOD
-! MET = 2: SPETRAL CONJUGATE GRADIENT METHOD
-! MET = 1: MODIFIED SPETRAL CONJUGATE GRADIENT METHOD
+! MET = 2: SPECTRAL CONJUGATE GRADIENT METHOD
+! MET = 1: MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
 ! MET = 0: STEEPEST DESCENT METHOD
 ! ----------------------------------------------------------------------
             met = Optmet

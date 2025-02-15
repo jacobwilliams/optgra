@@ -40,8 +40,8 @@ program optgra_test
     integer, parameter :: Metopt = 2 !! OPTIMISATION METHOD
                                      !!
                                      !!  * 3: CONJUGATE GRADIENT METHOD
-                                     !!  * 2: SPETRAL CONJUGATE GRADIENT METHOD
-                                     !!  * 1: MODIFIED SPETRAL CONJUGATE GRADIENT METHOD
+                                     !!  * 2: SPECTRAL CONJUGATE GRADIENT METHOD
+                                     !!  * 1: MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
                                      !!  * 0: STEEPEST DESCENT METHOD
     integer, parameter :: Bosver = 1 !! VERBOSITY LEVEL FOR WRITING PYGMO LOG
                                      !!
@@ -143,9 +143,11 @@ program optgra_test
 
     subroutine calval(varvec,Valcon,i)
 
-        use ieee_arithmetic, only: ieee_is_finite, ieee_is_nan
         !! FUNCTION FOR VALUES
         !! INPUT AND OUTPUT NOT SCALED
+
+        ! use ieee_arithmetic, only: ieee_is_finite, ieee_is_nan
+
         real(wp), dimension(:), intent(in) :: varvec !! size is Numvar
         real(wp), dimension(:), intent(out) :: Valcon !! size is Numcon+1
         integer, intent(in) :: i !! JW: THIS IS NOT DOCUMENTED ?
@@ -155,7 +157,7 @@ program optgra_test
         ! write(*,*) 'calval : varvec = ', varvec, 'i=',i
 
         x = varvec(1)
-        f = sin(x)
+        f = 10000.0_wp * sin(x)
         j = x
 
         Valcon = [f,j]
@@ -175,7 +177,7 @@ program optgra_test
 
         x = varvec(1)
         call calval(varvec,convec,0)
-        Dercon(1,1) = cos(x)    ! df/dx
+        Dercon(1,1) = 10000.0_wp * cos(x)    ! df/dx
         Dercon(2,1) = 1.0_wp    ! dj/dx
 
     end subroutine Calder
