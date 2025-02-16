@@ -1,6 +1,11 @@
 !****************************************************************************************************
 !>
 !  Near-linear optimisation tool tailored for s/c trajectory design.
+!
+!  This is a modernization of the original Fortran 77 code from: [pyoptgra](https://github.com/esa/pyoptgra)
+!
+!### History
+!  * Jacob Williams, Feb 2025 : created.
 
 !TODO:
 ! * remove the STOP statement in one subroutine.
