@@ -858,7 +858,7 @@ SUBROUTINE ogcorr(me,Varacc,Finish,Toterr,Norerr)
             ELSE
                concor(con) = 0
             ENDIF
-!          IF (ACT .NE. CONACT(CON) .OR. COR .NE. CONCOR(CON)) THEN
+!          IF (ACT /= CONACT(CON) .OR. COR /= CONCOR(CON)) THEN
 !              NAM = CONSTR(CON)
 !              LEN = CONLEN(CON)
 !              WRITE (STR,'(5X,5X,I4,23X,D10.3,1X,A,4I4)')
@@ -1720,9 +1720,7 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
 
 ! Final Pygmo output
 ! TODO: can this final fitness call be avoided (just for output)?
-               me%Pygfla = 3
-                      ! pygmo flag in COMMON: no covergence
-
+               me%Pygfla = 3 ! pygmo flag in COMMON: no covergence
                CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
                spag_nextblock_1 = 3
                CYCLE SPAG_DispatchLoop_1
@@ -1734,14 +1732,11 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
                CALL me%ogwrit(1,"")
                WRITE (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
                CALL me%ogwrit(1,str)
-               !CALL me%ogpwri_end(Numite,-Valcon(Numcon+1),numvio,convio,1) ! JW : another argument missmatch
-               CALL me%ogpwri_end(-Valcon(me%Numcon+1),numvio,convio) ! JW : replaced with this
+               CALL me%ogpwri_end(-Valcon(me%Numcon+1),numvio,convio)
 
 ! Final Pygmo output
 ! TODO: can this final fitness call be avoided (just for output)?
-               me%Pygfla = 2
-                      ! pygmo flag in COMMON: constraints matched
-
+               me%Pygfla = 2 ! pygmo flag in COMMON: constraints matched
                CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
                spag_nextblock_1 = 3
                CYCLE SPAG_DispatchLoop_1
@@ -1836,7 +1831,8 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
 ! ----------------------------------------------------------------------
             CALL me%ogcorr(varacc,finish,conerr,norerr)
 ! ----------------------------------------------------------------------
-            IF ( me%Tablev>=1 ) WRITE (me%Tablun,'(I4,1X,"COR",1X,*(1X,D10.3))') me%Numite , (me%Varval(var),var=1,me%Numvar) , (me%Conval(con),con=1,me%Numcon)
+            IF ( me%Tablev>=1 ) WRITE (me%Tablun,'(I4,1X,"COR",1X,*(1X,D10.3))') &
+                    me%Numite , (me%Varval(var),var=1,me%Numvar) , (me%Conval(con),con=1,me%Numcon)
 ! ----------------------------------------------------------------------
             IF ( me%Senopt/=0 ) THEN
                IF ( finish/=0 ) EXIT SPAG_Loop_1_1
@@ -1866,9 +1862,7 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
 
 ! Final Pygmo output
 ! TODO: can this final fitness call be avoided (just for output)?
-               me%Pygfla = 4
-                      ! pygmo flag in COMMON: infeasible
-
+               me%Pygfla = 4 ! pygmo flag in COMMON: infeasible
                CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
                spag_nextblock_1 = 3
                CYCLE SPAG_DispatchLoop_1
@@ -1899,9 +1893,7 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
 
 ! Final Pygmo output
 ! TODO: can this final fitness call be avoided (just for output)?
-               me%Pygfla = 2
-                      ! pygmo flag in COMMON: matched
-
+               me%Pygfla = 2 ! pygmo flag in COMMON: matched
                CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
                spag_nextblock_1 = 3
                CYCLE SPAG_DispatchLoop_1
@@ -1955,8 +1947,7 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
 
 ! Final Pygmo output
 ! TODO: can this final fitness call be avoided (just for output)?
-         me%Pygfla = 1
-                  ! covergence
+         me%Pygfla = 1 ! covergence
          CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
          spag_nextblock_1 = 3
       CASE (3)
@@ -1972,7 +1963,7 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
          DO var = 1 , me%Numvar
             Valvar(var) = me%Varval(var)*me%Varsca(var)
          ENDDO
-!      IF (SENOPT .NE. 0) THEN
+!      IF (SENOPT /= 0) THEN
 !          CALL me%ogeval (VARVAL, VALCON, 0, CONDER)
 !      ENDIF
 ! ======================================================================
@@ -2276,7 +2267,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
 !          LEN = CONLEN(CON)
 !          WRITE (STR,'("ACT = ",I4,5X,1X,A)') CON, NAM(1:LEN)
 !          CALL me%ogwrit (3,STR)
-!          CALL OGINCL (CON)
+!          CALL me%OGINCL (CON)
 !      ENDDO
 ! ======================================================================
 ! ======================================================================
@@ -2488,8 +2479,8 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
                bet = 0.0_wp
                nam = me%Constr(con)
                len = me%Conlen(con)
-               WRITE (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,11X,1(1X,D10.3),1X,D16.9,22X,1X,I4,1X,A)') dis , imp , &
-                    me%Conval(cos) + cosimp , con , nam(1:len)
+               WRITE (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,11X,1(1X,D10.3),1X,D16.9,22X,1X,I4,1X,A)') &
+                    dis , imp , me%Conval(cos) + cosimp , con , nam(1:len)
                CALL me%ogwrit(2,str)
                Varacc = Varacc + dis
                me%Varval = me%Varval + dis*me%Vardes/Desnor
@@ -2543,23 +2534,18 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
             nor = sqrt(sum(me%Vardir**2))
             WRITE (str,'("NOR=",D13.6)') nor
 !      CALL me%ogwrit (2,STR)
-! ----------------------------------------------------------------------
-! MET = 3: CONJUGATE GRADIENT METHOD
-! MET = 2: SPECTRAL CONJUGATE GRADIENT METHOD
-! MET = 1: MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
-! MET = 0: STEEPEST DESCENT METHOD
-! ----------------------------------------------------------------------
             met = me%Optmet
             tht = 1.0_wp
             bet = 0.0_wp
-            IF ( met==0 ) THEN
-            ELSEIF ( met==1 ) THEN
+            select case (met)
+            case ( 0 ) ! STEEPEST DESCENT METHOD
+            case ( 1 ) ! MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
                varvec = desprv - varprv
                IF ( norprv**2>1.0e-12_wp ) THEN
                   tht = -dot_product(me%Vardir,varvec)/norprv**2
                   bet = Desnor**2/norprv**2
                ENDIF
-            ELSEIF ( met==2 ) THEN
+            case ( 2 ) ! SPECTRAL CONJUGATE GRADIENT METHOD
                varvec = desprv - varprv
                varwrk = me%Varref - me%Vargrd
                val = dot_product(varwrk,varvec)
@@ -2569,12 +2555,12 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
                   varwrk = -varvec*tht - varwrk
                   bet = dot_product(varwrk,desprv)/fac
                ENDIF
-            ELSEIF ( met==3 ) THEN
+            case ( 3 ) ! CONJUGATE GRADIENT METHOD
                IF ( norprv/=0.0_wp ) THEN
                   tht = 1.0_wp
                   bet = Desnor**2/norprv**2
                ENDIF
-            ENDIF
+            end select
 !      WRITE (STR,'("THT=",D13.6)') THT
 !      CALL me%ogwrit (3,STR)
 !      WRITE (STR,'("BET=",D13.6)') BET
@@ -2724,35 +2710,33 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
             quacor = cornor*foldis*foldis
             cosimp = foldis*(cosco1+foldis*cosco2)
             CALL me%ogwrit(3,"")
-            WRITE (str,'(    "STEEPEST ASCENT FOLLOW",'//'  5X,"DISTANCE",'//'  1X,"CORRECTION",'//'  2X,"MERIT_DEL",'// &
-                  &'  6X,"MERIT_VALUE")')
+            WRITE (str,'(    "STEEPEST ASCENT FOLLOW",'//'  5X,"DISTANCE",'//'  1X,"CORRECTION",'//'  2X,"MERIT_DEL",'//'  6X,"MERIT_VALUE")')
             CALL me%ogwrit(3,str)
-            WRITE (str,'("INITIAL.............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp ,me%Conval(cos) &
-                 & + cosimp
+            WRITE (str,'("INITIAL.............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp ,me%Conval(cos) + cosimp
             CALL me%ogwrit(3,str)
 ! ======================================================================
             IF ( cosco2<0.0_wp ) THEN
                foldis = -0.5_wp*cosco1/cosco2
                quacor = cornor*foldis*foldis
                cosimp = foldis*(cosco1+foldis*cosco2)
-               WRITE (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp , me%Conval(cos)    &
-                    & + cosimp
+               WRITE (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                    foldis , quacor , cosimp , me%Conval(cos) + cosimp
                CALL me%ogwrit(3,str)
                staflg = 1
             ELSEIF ( cosco2>0.0_wp ) THEN
                foldis = me%Varmax
                quacor = cornor*foldis*foldis
                cosimp = foldis*(cosco1+foldis*cosco2)
-               WRITE (str,'("MERIT CONVEX........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp , me%Conval(cos)    &
-                    & + cosimp
+               WRITE (str,'("MERIT CONVEX........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                    foldis , quacor , cosimp , me%Conval(cos) + cosimp
                CALL me%ogwrit(3,str)
                staflg = 2
             ELSE
                foldis = me%Varmax
                quacor = cornor*foldis*foldis
                cosimp = foldis*(cosco1+foldis*cosco2)
-               WRITE (str,'("MERIT LINEAR........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp , me%Conval(cos)    &
-                    & + cosimp
+               WRITE (str,'("MERIT LINEAR........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                    foldis , quacor , cosimp , me%Conval(cos) + cosimp
                CALL me%ogwrit(3,str)
                staflg = 2
             ENDIF
@@ -2763,8 +2747,8 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
                foldis = me%Varmax
                quacor = cornor*foldis*foldis
                cosimp = foldis*(cosco1+foldis*cosco2)
-               WRITE (str,'("MAXIMUM DISTANCE....:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp , me%Conval(cos)    &
-                    & + cosimp
+               WRITE (str,'("MAXIMUM DISTANCE....:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                    foldis , quacor , cosimp , me%Conval(cos) + cosimp
                CALL me%ogwrit(3,str)
                staflg = 2
             ENDIF
@@ -2772,8 +2756,8 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
 ! IF CONVERGENCE
 ! ----------------------------------------------------------------------
             IF ( abs(cosimp)<=1.0_wp ) THEN
-               WRITE (str,'("FINAL...............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9,2D11.3)') foldis , quacor , cosimp , &
-                    & me%Conval(cos) + cosimp , tht , bet
+               WRITE (str,'("FINAL...............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9,2D11.3)') &
+                    foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
                CALL me%ogwrit(2,str)
                IF ( tht/=1.0_wp .OR. bet/=0.0_wp ) THEN
                   tht = 1.0_wp
@@ -2792,8 +2776,8 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
                foldis = maxdis
                quacor = cornor*foldis*foldis
                cosimp = foldis*(cosco1+foldis*cosco2)
-               WRITE (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp , me%Conval(cos)    &
-                    & + cosimp
+               WRITE (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                    foldis , quacor , cosimp , me%Conval(cos) + cosimp
                CALL me%ogwrit(3,str)
                staflg = 2
             ENDIF
@@ -2845,6 +2829,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
             refdis = foldis
             EXIT SPAG_Loop_1_3
          ENDDO SPAG_Loop_1_3
+
          SPAG_Loop_1_4: DO
             WRITE (str,'("FINAL...............:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
                 foldis , quacor , cosimp , me%Conval(cos) + cosimp
@@ -3015,15 +3000,13 @@ SUBROUTINE ogpwri_end(me,Objval,Numvio,Convio)
    WRITE (me%Loglup,'("Final objective value:              ", F10.4)') Objval
    WRITE (me%Loglup,'("Final constraint violation:         ", F10.4)') Convio
    WRITE (me%Loglup,'("Final num. of violated constraints: ",I10)') Numvio
-   IF ( me%Pygfla==1 ) THEN
-      WRITE (me%Loglup,'("Successful termination: Optimal solution found.")')
-   ELSEIF ( me%Pygfla==2 ) THEN
-      WRITE (me%Loglup,'("Successful termination: Constraints matched.")')
-   ELSEIF ( me%Pygfla==3 ) THEN
-      WRITE (me%Loglup,'("Not converged.")')
-   ELSEIF ( me%Pygfla==4 ) THEN
-      WRITE (me%Loglup,'("Problem appears infeasible.")')
-   ENDIF
+
+   select case (me%Pygfla)
+       case ( 1 ); WRITE (me%Loglup,'("Successful termination: Optimal solution found.")')
+       case ( 2 ); WRITE (me%Loglup,'("Successful termination: Constraints matched.")')
+       case ( 3 ); WRITE (me%Loglup,'("Not converged.")')
+       case ( 4 ); WRITE (me%Loglup,'("Problem appears infeasible.")')
+   end select
    WRITE (me%Loglup,'("")')
 
 END SUBROUTINE ogpwri_end
@@ -3036,32 +3019,20 @@ SUBROUTINE ogpwri_start(me)
 
     class(optgra),intent(inout) :: me
 
-   ! VARDER is the DERIVATIVES COMPUTATION MODE
-   !   -> 0: VALUES ONLY
-   !   -> 1: USER DEFINED
-   !   -> 2: NUMERIC WITH DOUBLE DIFFERENCING
-   !   -> 3: NUMERIC WITH SINGLE DIFFERENCING
-
    WRITE (me%Loglup,'("OPTGRA plugin for pagmo/pygmo:")')
-   IF ( me%Varder==0 ) THEN
-      WRITE (me%Loglup,'("")')
-   ELSEIF ( me%Varder==1 .OR. me%Varder==-1 ) THEN
-      WRITE (me%Loglup,'("    User-defined gradients")')
-   ELSEIF ( me%Varder==2 ) THEN
-      WRITE (me%Loglup,'("    Numerical gradients by double differencing")')
-   ELSEIF ( me%Varder==3 ) THEN
-      WRITE (me%Loglup,'("    Numerical gradients by single differencing")')
-   ENDIF
+   select case (me%Varder) ! DERIVATIVES COMPUTATION MODE
+       case ( 0 );      WRITE (me%Loglup,'("")') ! VALUES ONLY
+       case ( 1, -1 );  WRITE (me%Loglup,'("    User-defined gradients")')
+       case ( 2 );      WRITE (me%Loglup,'("    Numerical gradients by double differencing")')
+       case ( 3 );      WRITE (me%Loglup,'("    Numerical gradients by single differencing")')
+   end select
 
-   IF ( me%Optmet==3 ) THEN
-      WRITE (me%Loglup,'("    Conjugate gradient method")')
-   ELSEIF ( me%Optmet==2 ) THEN
-      WRITE (me%Loglup,'("    Spectral conjugate gradient method")')
-   ELSEIF ( me%Optmet==1 ) THEN
-      WRITE (me%Loglup,'("    Modified spectral conjugate gradient method")')
-   ELSEIF ( me%Optmet==0 ) THEN
-      WRITE (me%Loglup,'("    Steepest descent method")')
-   ENDIF
+   select case (me%Optmet)
+       case ( 0 ); WRITE (me%Loglup,'("    Steepest descent method")')
+       case ( 1 ); WRITE (me%Loglup,'("    Modified spectral conjugate gradient method")')
+       case ( 2 ); WRITE (me%Loglup,'("    Spectral conjugate gradient method")')
+       case ( 3 ); WRITE (me%Loglup,'("    Conjugate gradient method")')
+   end select
 
    WRITE (me%Loglup,'("")')
 
