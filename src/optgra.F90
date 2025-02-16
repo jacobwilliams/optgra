@@ -9,19 +9,20 @@
 
 module optgra_module
 
-   use iso_fortran_env, only: wp => real64, ip => int32
+   use iso_fortran_env, only: wp => real64, ip => int32, output_unit
 
    implicit none
 
    private
 
-   integer(ip), PARAMETER :: MAXSTR = 80
+   integer(ip), PARAMETER :: MAXSTR = 80 !! max string length for var names
 
    type,public :: optgra
+      !! Main class.
 
       private
 
-      integer(ip)                            :: NUMVAR = 0
+      integer(ip) :: NUMVAR = 0
       real(wp),      DIMENSION(:  ), allocatable :: VARVAL
       integer(ip),   DIMENSION(:  ), allocatable :: VARTYP
       real(wp),      DIMENSION(:  ), allocatable :: VARSCA
@@ -34,7 +35,7 @@ module optgra_module
       real(wp),      DIMENSION(:  ), allocatable :: FUNVAR
       real(wp),      DIMENSION(:  ), allocatable :: SENVAR
 
-      integer(ip)                            :: NUMCON = 0
+      integer(ip) :: NUMCON = 0
       real(wp),      DIMENSION(:  ), allocatable :: CONVAL
       integer(ip),   DIMENSION(:  ), allocatable :: CONTYP
       integer(ip),   DIMENSION(:  ), allocatable :: CONPRI
@@ -47,44 +48,44 @@ module optgra_module
       real(wp),      DIMENSION(:  ), allocatable :: SENDEL
       integer(ip),   DIMENSION(:  ), allocatable :: SENACT
 
-      integer(ip)                            :: OPTMET = 0
-      integer(ip)                            :: MAXITE = 0
-      integer(ip)                            :: CORITE = 0
-      integer(ip)                            :: OPTITE = 0
-      integer(ip)                            :: DIVITE = 0
-      integer(ip)                            :: CNVITE = 0
-      real(wp)                               :: Varmax = 0
-      real(wp)                               :: VARSND = 0
-      real(wp)                               :: VARSTP = 0
+      integer(ip)  :: OPTMET = 2
+      integer(ip)  :: MAXITE = 10
+      integer(ip)  :: CORITE = 10
+      integer(ip)  :: OPTITE = 10
+      integer(ip)  :: DIVITE = 10
+      integer(ip)  :: CNVITE = 10
+      real(wp)     :: Varmax = 10.0_wp
+      real(wp)     :: VARSND = 1.0_wp
+      real(wp)     :: VARSTP = 1.0_wp
 
-      integer(ip)                            :: VARDER = 0
+      integer(ip) :: VARDER = 1
       real(wp),      DIMENSION(:  ), allocatable :: VARPER
 
-      integer(ip)                            :: LOGLUN = 0  ! log file unit
-      integer(ip)                            :: LOGLEV = 0  ! log level
+      integer(ip) :: LOGLUN = output_unit  ! log file unit
+      integer(ip) :: LOGLEV = 1  ! log level
 
-      integer(ip)                            :: LOGLUP = 0  ! pygmo log file unit
-      integer(ip)                            :: VERBOS = 0  ! pygmo verbosity
-      integer(ip)                            :: FEVALS = 0  ! pygmo: number of const fun evals
-      integer(ip)                            :: PYGFLA = 0  ! pygmo: flag indicating status of optimisation
-      integer(ip)                            :: NUMITE = 0  ! number of iterations
+      integer(ip) :: LOGLUP = output_unit  ! pygmo log file unit
+      integer(ip) :: VERBOS = 0  ! pygmo verbosity
+      integer(ip) :: FEVALS = 0  ! pygmo: number of const fun evals
+      integer(ip) :: PYGFLA = 0  ! pygmo: flag indicating status of optimisation
+      integer(ip) :: NUMITE = 0  ! number of iterations
 
-      integer(ip)                            :: MATLEV = 0
+      integer(ip) :: MATLEV = 0
 
-      integer(ip)                            :: TABLUN = 0
-      integer(ip)                            :: TABLEV = 0
+      integer(ip) :: TABLUN = output_unit
+      integer(ip) :: TABLEV = 0
 
-      integer(ip)                            :: SENOPT = 0
+      integer(ip) :: SENOPT = 0
 
-      integer(ip)                            :: NUMACT = 0
+      integer(ip) :: NUMACT = 0
       integer(ip),   DIMENSION(:  ), allocatable :: ACTCON
       integer(ip),   DIMENSION(:  ), allocatable :: CONFIX
       integer(ip),   DIMENSION(:  ), allocatable :: CONACT
       real(wp),      DIMENSION(:,:), allocatable :: CONDER
       real(wp),      DIMENSION(:,:), allocatable :: CONRED
       real(wp),      DIMENSION(:,:), allocatable :: SENDER
-      integer(ip)                            :: CONVER = 0
-      integer(ip),   DIMENSION(:  ), allocatable :: CONOPT
+      !integer(ip) :: CONVER = 0   ! not used ?
+      !integer(ip),   DIMENSION(:  ), allocatable :: CONOPT  ! not used ?
 
       procedure(calval_f),pointer :: calval => null() !! function for values
       procedure(calder_f),pointer :: calder => null() !! function for derivatives
@@ -203,28 +204,30 @@ SUBROUTINE mulvs(X,A,Z,Kd)
 END SUBROUTINE mulvs
 
 SUBROUTINE sum2v(V1,V2,V,K)
-   !! Vector addition.
-   !!
-   !! `V(1:K) = V1(1:K) + V2(1:K)`
+    !! Vector addition.
+    !!
+    !! `V(1:K) = V1(1:K) + V2(1:K)`
 
-   integer(ip) :: i
-   real(wp),intent(in) :: V1(*) , V2(*)
-   real(wp),intent(out) :: V(*)
-   integer(ip),intent(in) :: K
+    real(wp),intent(in) :: V1(*) , V2(*)
+    real(wp),intent(out) :: V(*)
+    integer(ip),intent(in) :: K
+    integer(ip) :: i
 
-   DO i = 1 , K
-      V(i) = V1(i) + V2(i)
-   ENDDO
+    DO i = 1 , K
+        V(i) = V1(i) + V2(i)
+    ENDDO
 END SUBROUTINE sum2v
 
-subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Pricon,Scacon,Strcon,Lencon,&
-                        Typcon,Dervar,Varper,Varmax,Varsnd,&
+subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Conpri,Consca,Constr,Conlen,&
+                        Contyp,Varder,Varper,Varmax,Varsnd,&
                         Maxite,Itecor,Iteopt,Itediv,Itecnv,&
                         Loglup,Verbos,Senopt,Varsca,&
                         Varstr,Varlen,Vartyp,Loglun,Loglev,Matlev,&
                         Tablun,Tablev,Optmet)
 
-    class(optgra),intent(inout) :: me
+    !! Initialize the class. This should be the first routine called.
+
+    class(optgra),intent(out) :: me
     integer(ip),intent(in) :: Numvar !! NUMBER OF VARIABLES
     integer(ip),intent(in) :: Numcon !! NUMBER OF CONSTRAINTS
     procedure(Calval_f) :: Calval !! FUNCTION FOR VALUES
@@ -233,13 +236,13 @@ subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Pricon,Scacon,Strcon
                                   !! -> INPUT AND OUTPUT NOT SCALED
     real(wp),intent(in) :: Delcon(Numcon+1)  !! CONSTRAINTS DELTAS
                                              !! (CONSTRAINT + MERIT CONVERGENCE THRESHOLDS)
-    integer(ip),intent(in) :: Pricon(Numcon+1)   !! CONSTRAINTS PRIORITY (1:NUMCON)
+    integer(ip),intent(in) :: Conpri(Numcon+1)   !! CONSTRAINTS PRIORITY (1:NUMCON)
                                                  !! -> 1-N
-    real(wp),intent(in) :: Scacon(Numcon+1)  !! CONSTRAINTS CONVER THRESHOLD (1:NUMCON)
+    real(wp),intent(in) :: Consca(Numcon+1)  !! CONSTRAINTS CONVER THRESHOLD (1:NUMCON)
                                              !! MERIT       CONVER THRESHOLD (1+NUMCON)
-    character(len=maxstr),intent(in) :: Strcon(Numcon+1) !! CONIABLES NAME STRING
-    integer(ip),intent(in) :: Lencon(Numcon+1) !! CONIABLES NAME LENGTH
-    integer(ip),intent(in) :: Typcon(Numcon+1)      !! CONSTRAINTS TYPE (1:NUMCON)
+    character(len=maxstr),intent(in) :: Constr(Numcon+1) !! CONIABLES NAME STRING
+    integer(ip),intent(in) :: Conlen(Numcon+1) !! CONIABLES NAME LENGTH
+    integer(ip),intent(in) :: Contyp(Numcon+1)      !! CONSTRAINTS TYPE (1:NUMCON)
                                                     !!
                                                     !!  *  1=GTE
                                                     !!  * -1=LTE
@@ -250,7 +253,7 @@ subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Pricon,Scacon,Strcon
                                                     !!
                                                     !!  * 1=MAX
                                                     !!  * -1=MIN
-    integer(ip),intent(in) :: Dervar    !! DERIVATIVES COMPUTATION MODE
+    integer(ip),intent(in) :: Varder    !! DERIVATIVES COMPUTATION MODE
                                         !!
                                         !!  * 1: USER DEFINED
                                         !!  * 2: NUMERIC WITH DOUBLE DIFFERENCING
@@ -310,8 +313,11 @@ subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Pricon,Scacon,Strcon
                                         !!  * 1: MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
                                         !!  * 0: STEEPEST DESCENT METHOD
 
-    integer(ip) :: con,var
+    integer(ip) :: con, var !! counter
 
+    call me%destroy()
+
+    ! set the functions:
     me%Calval => Calval
     me%Calder => Calder
 
@@ -390,23 +396,15 @@ subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Pricon,Scacon,Strcon
         me%Varper(var) = 1.0e-03_wp
     ENDDO
 
-    ! LOG FILE
-    me%Loglun = 6
+    me%Loglun = output_unit     ! LOG FILE
     me%Loglev = 1
-
-    ! PYGMO LOG FILE
-    me%Loglup = 7
+    me%Loglup = output_unit     ! PYGMO LOG FILE
     me%Loglev = 0
-
-    ! MATLAB CONSOLE
-    me%Matlev = 0
-
-    ! TABLE FILE
-    me%Tablun = 6
+    me%Matlev = 0               ! MATLAB CONSOLE
+    me%Tablun = output_unit     ! TABLE FILE
     me%Tablev = 0
 
-    ! LINEAR OPTIMISATION MODE
-    me%Senopt = 0
+    me%Senopt = 0    ! LINEAR OPTIMISATION MODE
 
     ! WORKING VECTORS
     ALLOCATE (me%Actcon(me%Numcon+1))
@@ -415,14 +413,14 @@ subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Pricon,Scacon,Strcon
     ALLOCATE (me%Conder(me%Numcon+3,me%Numvar))
     ALLOCATE (me%Conred(me%Numcon+3,me%Numvar))
     ALLOCATE (me%Sender(me%Numcon+3,me%Numvar))
-    ALLOCATE (me%Conopt(me%Numcon+1))
+   ! ALLOCATE (me%Conopt(me%Numcon+1))
     me%Numact = 0
     me%Actcon = 0
     me%Conact = 0
     me%Confix = 0
     me%Conder = 0.0_wp
     me%Conred = 0.0_wp
-    me%Conopt = 0
+    !me%Conopt = 0
 
     ! NOTE: should the last element also be set? (not done in original)  ?????
     DO con = 1 , me%Numcon
@@ -430,14 +428,14 @@ subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Pricon,Scacon,Strcon
     ENDDO
 
     DO con = 1 , me%Numcon + 1
-        me%Conpri(con) = Pricon(con)
-        me%Consca(con) = Scacon(con)
-        me%Constr(con) = Strcon(con)
-        me%Conlen(con) = min(Lencon(con),maxstr)
-        me%Contyp(con) = Typcon(con)
+        me%Conpri(con) = Conpri(con)
+        me%Consca(con) = Consca(con)
+        me%Constr(con) = Constr(con)
+        me%Conlen(con) = min(Conlen(con),maxstr)
+        me%Contyp(con) = Contyp(con)
     ENDDO
 
-    me%Varder = Dervar
+    me%Varder = Varder
 
     DO var = 1 , me%Numvar
         me%Varper(var) = Varper(var)
@@ -520,7 +518,7 @@ SUBROUTINE ogclos(me)
    if (allocated(me%Conder)) DEALLOCATE (me%Conder)
    if (allocated(me%Conred)) DEALLOCATE (me%Conred)
    if (allocated(me%Sender)) DEALLOCATE (me%Sender)
-   if (allocated(me%Conopt)) DEALLOCATE (me%Conopt)
+   !if (allocated(me%Conopt)) DEALLOCATE (me%Conopt)
 
 END SUBROUTINE ogclos
 
@@ -1004,7 +1002,7 @@ SUBROUTINE ogcorr(me,Varacc,Finish,Toterr,Norerr)
             fac = varvec(var)
             IF ( fac==0.0_wp ) CYCLE
             dif = me%Varval(var) - me%Varref(var)
-            sca = me%Varmax*1D-0
+            sca = me%Varmax*1.0e-0_wp   ! JW : why is this multiplied by 1 ?
             val = (dif+sca)/fac
             fac = (dif-sca)/fac
             IF ( fac>val ) val = fac
@@ -1233,7 +1231,7 @@ SUBROUTINE ogcorr(me,Varacc,Finish,Toterr,Norerr)
 ! ======================================================================
 END SUBROUTINE ogcorr
 
-SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
+SUBROUTINE ogeval(me,Valvar,Valcon,Varder,Dercon)
 
    !! COMPUTES SCALED CONTRAINTS+MERIT AND DERIVATIVES
    !! FROM     SCALED VARIABLES
@@ -1243,45 +1241,42 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
    class(optgra),intent(inout) :: me
    real(wp),intent(in) :: Valvar(me%Numvar)
    real(wp),intent(out) :: Valcon(me%Numcon+1)
-   integer(ip),intent(in) :: Dervar !! DERIVATIVES COMPUTATION MODE
+   integer(ip),intent(in) :: Varder !! DERIVATIVES COMPUTATION MODE
+                                    !!
                                     !!  * 0: VALUES ONLY
                                     !!  * 1: USER DEFINED
                                     !!  * 2: NUMERIC WITH DOUBLE DIFFERENCING
                                     !!  * 3: NUMERIC WITH SINGLE DIFFERENCING
    real(wp),intent(out) :: Dercon(me%Numcon+1,me%Numvar)
 
-   integer(ip) var , con , cod , len , ind , numvio
-   real(wp) val , sca , fac , per , sav , der , err , conerr , convio
+   integer(ip) :: var , con , cod , len , ind , numvio
+   real(wp) :: val , sca , fac , per , sav , der , err , conerr , convio
    character(len=3) :: typ
    character(len=3) :: sta
    character(len=maxstr) :: nam
    character(len=256) :: str
 
-   real(wp) ggg(4,4) , bbb(4) , vvv(4) , objval
-! ======================================================================
+   !real(wp) :: ggg(4,4) , bbb(4) , vvv(4)  ! JW : not sure what this was for
+   real(wp) :: objval
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
    real(wp) , DIMENSION(:) , ALLOCATABLE :: convec
-! ----------------------------------------------------------------------
+
    ALLOCATE (varvec(me%Numvar))
    ALLOCATE (convec(me%Numcon+1))
+
 ! ======================================================================
 ! GENERAL
 ! ----------------------------------------------------------------------
    WRITE (str,'()')
    CALL me%ogwrit(3,str)
-   IF ( Dervar==0 ) THEN
-      WRITE (str,'("COMPUTE RESULTS")')
-      CALL me%ogwrit(3,str)
-   ELSEIF ( Dervar==1 .OR. Dervar==-1 ) THEN
-      WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES USER DEFINED")')
-      CALL me%ogwrit(3,str)
-   ELSEIF ( Dervar==2 ) THEN
-      WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES BY DOUBLE DIFFERENCING")')
-      CALL me%ogwrit(3,str)
-   ELSEIF ( Dervar==3 ) THEN
-      WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES BY SINGLE DIFFERENCING")')
-      CALL me%ogwrit(3,str)
-   ENDIF
+   select case (Varder)
+    case ( 0 );    WRITE (str,'("COMPUTE RESULTS")')
+    case ( 1, -1); WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES USER DEFINED")')
+    case ( 2 );    WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES BY DOUBLE DIFFERENCING")')
+    case ( 3 );    WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES BY SINGLE DIFFERENCING")')
+   end select
+   CALL me%ogwrit(3,str)
+
 ! ======================================================================
 ! WRITE VARIABLES
 ! ----------------------------------------------------------------------
@@ -1295,65 +1290,69 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
       val = Valvar(var)
       sca = me%Varsca(var)
       cod = me%Vartyp(var)
-      IF ( cod==0 ) typ = "FRE"
-      IF ( cod==1 ) typ = "PAR"
+      select case (cod)
+        case ( 0 ); typ = "FRE"
+        case ( 1 ); typ = "PAR"
+      end select
       nam = me%Varstr(var)
       len = me%Varlen(var)
-      WRITE (str,'("VAR/VAL/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') var , val*sca , sca , typ , nam(1:len)
+      WRITE (str,'("VAR/VAL/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') &
+                var , val*sca , sca , typ , nam(1:len)
       CALL me%ogwrit(3,str)
    ENDDO
+
 ! ======================================================================
 ! DE-SCALE VARIABLES
 ! ----------------------------------------------------------------------
    DO var = 1 , me%Numvar
       varvec(var) = Valvar(var)*me%Varsca(var)
    ENDDO
+
 ! ======================================================================
 ! GET RESULTS
 ! GET DERIVATIVES IF USER DEFINED
 ! ----------------------------------------------------------------------
-   IF ( Dervar==0 ) THEN
-      CALL me%calval(varvec,Valcon,0)
-   ELSEIF ( Dervar==1 .OR. Dervar==-1 ) THEN
-      CALL me%calval(varvec,Valcon,1)
-   ELSEIF ( Dervar==2 ) THEN
-      CALL me%calval(varvec,Valcon,1)
-   ELSEIF ( Dervar==3 ) THEN
-      CALL me%calval(varvec,Valcon,1)
-   ENDIF
+   select case (Varder)
+    case ( 0 );     CALL me%calval(varvec,Valcon,0)
+    case ( 1, -1 ); CALL me%calval(varvec,Valcon,1)
+    case ( 2 );     CALL me%calval(varvec,Valcon,1)
+    case ( 3 );     CALL me%calval(varvec,Valcon,1)
+   end select
+
 ! ======================================================================
-   IF ( 1==2 ) THEN
-      ggg(1,1) = +1D+01
-      ggg(2,1) = +1D+00
-      ggg(3,1) = +2D+00
-      ggg(4,1) = +3D+00
-      ggg(1,2) = ggg(2,1)
-      ggg(2,2) = +1D+01
-      ggg(3,2) = +4D+00
-      ggg(4,2) = +5D+00
-      ggg(1,3) = ggg(3,1)
-      ggg(2,3) = ggg(3,2)
-      ggg(3,3) = +1D+01
-      ggg(4,3) = +6D+00
-      ggg(1,4) = ggg(4,1)
-      ggg(2,4) = ggg(4,2)
-      ggg(3,4) = ggg(4,3)
-      ggg(4,4) = +1D+01
-! ----------------------------------------------------------------------
-      bbb(1) = +1D+01
-      bbb(2) = +1D+01
-      bbb(3) = +1D+01
-      bbb(4) = +1D+01
-! ----------------------------------------------------------------------
-      CALL mul2m(ggg,4,1,1,4,Valvar,4,1,1,4,vvv,4,1,1,1)
-      CALL mul2m(Valvar,1,1,1,1,vvv,4,1,1,4,Valcon,1,1,1,1)
-      CALL mul2m(bbb,1,1,1,1,Valvar,4,1,1,4,vvv,1,1,1,1)
-      CALL mulvs(Valcon,0.5_wp,Valcon,1)
-      CALL sum2v(Valcon,vvv,Valcon,1)
-      CALL mulvs(Valcon,-1.0_wp,Valcon,1)
-      WRITE (str,*) "VALCON=" , (Valcon(ind),ind=1,1)
-      CALL me%ogwrit(3,str)
-   ENDIF
+!    IF ( 1==2 ) THEN
+!       ggg(1,1) = +1D+01
+!       ggg(2,1) = +1D+00
+!       ggg(3,1) = +2D+00
+!       ggg(4,1) = +3D+00
+!       ggg(1,2) = ggg(2,1)
+!       ggg(2,2) = +1D+01
+!       ggg(3,2) = +4D+00
+!       ggg(4,2) = +5D+00
+!       ggg(1,3) = ggg(3,1)
+!       ggg(2,3) = ggg(3,2)
+!       ggg(3,3) = +1D+01
+!       ggg(4,3) = +6D+00
+!       ggg(1,4) = ggg(4,1)
+!       ggg(2,4) = ggg(4,2)
+!       ggg(3,4) = ggg(4,3)
+!       ggg(4,4) = +1D+01
+!       ! ----------------------------------------------------------------------
+!       bbb(1) = +1D+01
+!       bbb(2) = +1D+01
+!       bbb(3) = +1D+01
+!       bbb(4) = +1D+01
+!       ! ----------------------------------------------------------------------
+!       CALL mul2m(ggg,4,1,1,4,Valvar,4,1,1,4,vvv,4,1,1,1)
+!       CALL mul2m(Valvar,1,1,1,1,vvv,4,1,1,4,Valcon,1,1,1,1)
+!       CALL mul2m(bbb,1,1,1,1,Valvar,4,1,1,4,vvv,1,1,1,1)
+!       CALL mulvs(Valcon,0.5_wp,Valcon,1)
+!       CALL sum2v(Valcon,vvv,Valcon,1)
+!       CALL mulvs(Valcon,-1.0_wp,Valcon,1)
+!       WRITE (str,*) "VALCON=" , (Valcon(ind),ind=1,1)
+!       CALL me%ogwrit(3,str)
+!    ENDIF
+
 ! ----------------------------------------------------------------------
 ! SCALE RESULTS
 ! ----------------------------------------------------------------------
@@ -1364,6 +1363,7 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
       IF ( cod==-1 ) sca = -sca
       Valcon(con) = Valcon(con)/sca
    ENDDO
+
 ! ======================================================================
 ! WRITE RESULTS
 ! ----------------------------------------------------------------------
@@ -1407,7 +1407,8 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
       IF ( err>fac ) fac = err
       nam = me%Constr(con)
       len = me%Conlen(con)
-      WRITE (str,'("CON/VAL/SCA/TYP/STA/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A3,1X,A)') con , val*sca , sca , typ , sta , nam(1:len)
+      WRITE (str,'("CON/VAL/SCA/TYP/STA/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A3,1X,A)') &
+                con , val*sca , sca , typ , sta , nam(1:len)
       CALL me%ogwrit(3,str)
    ENDDO
    WRITE (str,'()')
@@ -1416,27 +1417,29 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
    CALL me%ogwrit(3,str)
    WRITE (str,'()')
    CALL me%ogwrit(3,str)
-! write pygmo-style log output
+  ! write pygmo-style log output
    objval = -Valcon(me%Numcon+1)
    convio = sqrt(convio)
-   ! CALL me%ogpwri(objval,numvio,convio,Dervar)  ! JW : this routine doesn't have a Dervar dummy arg
-   CALL me%ogpwri(objval,numvio,convio) ! JW : replaced with this
+   CALL me%ogpwri(objval,numvio,convio)
+
 ! ======================================================================
 ! NO DERIVATIVES
 ! ----------------------------------------------------------------------
-   IF ( Dervar==0 ) THEN
+   IF ( Varder==0 ) THEN
       RETURN
-   ELSEIF ( Dervar==1 .OR. Dervar==-1 ) THEN
+   ELSEIF ( Varder==1 .OR. Varder==-1 ) THEN
       CALL me%calder(varvec,convec,Dercon)
    ENDIF
+
 ! ----------------------------------------------------------------------
-   IF ( 1==2 ) THEN
-      CALL mul2m(Valvar,1,1,1,1,ggg,4,1,1,4,Dercon,1,1,1,4)
-      CALL sum2v(Dercon,bbb,Dercon,4)
-      CALL mulvs(Dercon,-1.0_wp,Dercon,4)
-      WRITE (str,*) "DERCON=" , (Dercon(1,ind),ind=1,4)
-      CALL me%ogwrit(3,str)
-   ENDIF
+!    IF ( 1==2 ) THEN
+!       CALL mul2m(Valvar,1,1,1,1,ggg,4,1,1,4,Dercon,1,1,1,4)
+!       CALL sum2v(Dercon,bbb,Dercon,4)
+!       CALL mulvs(Dercon,-1.0_wp,Dercon,4)
+!       WRITE (str,*) "DERCON=" , (Dercon(1,ind),ind=1,4)
+!       CALL me%ogwrit(3,str)
+!    ENDIF
+
 ! ======================================================================
 ! WRITE DERIVATIVES
 ! ----------------------------------------------------------------------
@@ -1446,11 +1449,12 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
    CALL me%ogwrit(3,str)
    WRITE (str,'()')
    CALL me%ogwrit(3,str)
-! ----------------------------------------------------------------------
+
    DO var = 1 , me%Numvar
-! ----------------------------------------------------------------------
-! WRITE VARIABLE
-! ----------------------------------------------------------------------
+
+      ! ----------------------------------------------------------------------
+      ! WRITE VARIABLE
+      ! ----------------------------------------------------------------------
       val = Valvar(var)
       sca = me%Varsca(var)
       cod = me%Vartyp(var)
@@ -1462,11 +1466,9 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
       CALL me%ogwrit(4,str)
       WRITE (str,'()')
       CALL me%ogwrit(4,str)
-! ----------------------------------------------------------------------
-! DERIVATIVES BY DOUBLE DIFFERENCING
-! ----------------------------------------------------------------------
-      IF ( Dervar==2 ) THEN
-! ----------------------------------------------------------------------
+
+      select case (Varder)
+      case ( 2 )  ! DERIVATIVES BY DOUBLE DIFFERENCING
          per = me%Varper(var)
          sav = varvec(var)
          varvec(var) = sav + per
@@ -1478,13 +1480,7 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
             Dercon(con,var) = (Dercon(con,var)-convec(con))*fac
          ENDDO
          varvec(var) = sav
-! ----------------------------------------------------------------------
-      ENDIF
-! ----------------------------------------------------------------------
-! DERIVATIVES BY SINGLE DIFFERENCING
-! ----------------------------------------------------------------------
-      IF ( Dervar==3 ) THEN
-! ----------------------------------------------------------------------
+      case ( 3 )  ! DERIVATIVES BY SINGLE DIFFERENCING
          per = me%Varper(var)
          sav = varvec(var)
          varvec(var) = sav + per
@@ -1494,19 +1490,20 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
             Dercon(con,var) = (Dercon(con,var)-convec(con))*fac
          ENDDO
          varvec(var) = sav
-! ----------------------------------------------------------------------
-      ENDIF
-! ----------------------------------------------------------------------
-! SCALE DERIVATIVES
-! ----------------------------------------------------------------------
+      end select
+
+    ! ----------------------------------------------------------------------
+    ! SCALE DERIVATIVES
+    ! ----------------------------------------------------------------------
       DO con = 1 , me%Numcon + 1
          fac = me%Varsca(var)/me%Consca(con)
          IF ( me%Contyp(con)==-1 ) fac = -fac
          Dercon(con,var) = Dercon(con,var)*fac
       ENDDO
-! ----------------------------------------------------------------------
-! WRITE DERIVATIVES
-! ======================================================================
+
+    ! ----------------------------------------------------------------------
+    ! WRITE DERIVATIVES
+    ! ======================================================================
       DO con = 1 , me%Numcon + 1
          der = Dercon(con,var)
          IF ( der/=0.0_wp ) THEN
@@ -1528,12 +1525,12 @@ SUBROUTINE ogeval(me,Valvar,Valcon,Dervar,Dercon)
       ENDDO
       WRITE (str,'()')
       CALL me%ogwrit(4,str)
-! ----------------------------------------------------------------------
-   ENDDO
-! ======================================================================
-   DEALLOCATE (varvec)
-   DEALLOCATE (convec)
-! ======================================================================
+
+    ENDDO
+
+    DEALLOCATE (varvec)
+    DEALLOCATE (convec)
+
 END SUBROUTINE ogeval
 
 SUBROUTINE ogexcl(me,Exc)
@@ -1546,8 +1543,8 @@ SUBROUTINE ogexcl(me,Exc)
    integer(ip),intent(in) :: Exc !! CONSTRAINT TO BE REMOVED
                                  !! SEQUENCE NUMBER IN ACTIVE LIST
 
-   real(wp) val , bet , gam
-   integer(ip) row , col , act , con
+   real(wp) :: val , bet , gam
+   integer(ip) :: row , col , act , con
    CHARACTER(len=256) :: str
 
 ! ======================================================================
@@ -1572,7 +1569,7 @@ SUBROUTINE ogexcl(me,Exc)
       ENDDO
       val = sqrt(val)
       IF ( me%Conred(con,act)>0.0_wp ) val = -val
-      IF ( abs(val)<1D-15 ) THEN
+      IF ( abs(val)<1.0e-15_wp ) THEN
          WRITE (me%Loglun,*) "OGEXCL-ERROR: CONSTRAINTS SINGULAR"
          CALL me%ogwrit(2,str)
          WRITE (me%Loglun,*) "VAL=" , val
@@ -1627,9 +1624,9 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
    real(wp) :: val , sca , red , der , fac , old , convio
    CHARACTER(len=256) :: str , nam
 
-   integer(ip) numequ , itediv , itecnv
-   real(wp) varacc , cosnew , cosold , varsav , meamer
-   real(wp) conerr , desnor , norerr , meaerr
+   integer(ip) :: numequ , itediv , itecnv
+   real(wp) :: varacc , cosnew , cosold , varsav , meamer
+   real(wp) :: conerr , desnor , norerr , meaerr
 
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varsum
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varcor
@@ -1658,7 +1655,7 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
          meamer = 0.0_wp
          itediv = 0
          itecnv = 0
-         me%Conopt = 0
+         !me%Conopt = 0
          concor = 0.0_wp
          varcor = 0.0_wp
          desnor = 0.0_wp
@@ -1782,14 +1779,14 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
                      fac = 1.0_wp
                      der = me%Conder(con,var)*fac
                      red = me%Conred(con,var)*fac
-                     IF ( abs(der)<1D-6 .AND. abs(red)<1D-6 ) CYCLE
-                     IF ( abs(der-red)<1D-2 ) CYCLE
+                     IF ( abs(der)<1.0e-6_wp .AND. abs(red)<1.0e-6_wp ) CYCLE
+                     IF ( abs(der-red)<1.0e-2_wp ) CYCLE
                      IF ( der/=0.0_wp ) THEN
                         fac = red/der
                      ELSE
                         fac = 0.0_wp
                      ENDIF
-                     IF ( abs(fac-1.0_wp)<1D-2 ) CYCLE
+                     IF ( abs(fac-1.0_wp)<1.0e-2_wp ) CYCLE
                      WRITE (str,'("VAR/CON/ANA/NUM/A2N=",2I4,3(1X,D13.6))') var , con , red , der , fac
                      CALL me%ogwrit(1,str)
                      nam = me%Varstr(var)
@@ -1912,7 +1909,7 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
 ! ----------------------------------------------------------------------
          IF ( me%Senopt<+3 ) THEN
             varsav = me%Varmax
-            me%Varmax = me%Varmax*10D-1
+            me%Varmax = me%Varmax*10.0e-1_wp
             CALL me%ogopti(varacc,numequ,finish,desnor)
             me%Varmax = varsav
          ENDIF
@@ -2083,8 +2080,8 @@ SUBROUTINE ogincl(me,Inc)
    class(optgra),intent(inout) :: me
    integer(ip),intent(in) :: Inc !! CONSTRAINT TO BE INCLUDED
 
-   real(wp) val , fac , gam , sav , max
-   integer(ip) row , col , ind , lst
+   real(wp) :: val , fac , gam , sav , max
+   integer(ip) :: row , col , ind , lst
    CHARACTER(len=256) :: str
 
    ! GENERAL
@@ -2133,7 +2130,7 @@ SUBROUTINE ogincl(me,Inc)
    me%Conact(Inc) = me%Numact
 
    ! REDUCE FOR NEW ACTIVE CONSTRAINT
-   IF ( abs(me%Conred(Inc,me%Numact))<1D-12 ) THEN
+   IF ( abs(me%Conred(Inc,me%Numact))<1.0e-12_wp ) THEN
       WRITE (str,*) "OGINCL-WARNING: CONSTRAINT SINGULAR"
       CALL me%ogwrit(2,str)
       WRITE (str,*) "INC=" , Inc
@@ -2336,7 +2333,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
 ! CONSTRAINT REMOVAL
 ! ----------------------------------------------------------------------
             ind = 0
-            exc = -1D-12
+            exc = -1.0e-12_wp
             max = exc
             DO act = 1 , me%Numact
                con = me%Actcon(act)
@@ -2436,7 +2433,8 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
             IF ( abs(cosimp)<=1.0_wp ) THEN
                foldis = 0.0_wp
                Finish = 1
-               WRITE (str,'("FINAL...............:",1X,D13.6,'//'11X,1(1X,D10.3),1X,D16.9)') foldis , cosimp , me%Conval(cos) + cosimp
+               WRITE (str,'("FINAL...............:",1X,D13.6,'//'11X,1(1X,D10.3),1X,D16.9)') &
+                        foldis , cosimp , me%Conval(cos) + cosimp
                CALL me%ogwrit(2,str)
                spag_nextblock_1 = 3
                CYCLE SPAG_DispatchLoop_1
@@ -2454,7 +2452,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
             ENDDO
 ! ----------------------------------------------------------------------
             ind = 0
-            dis = 1D10
+            dis = 1.0e10_wp
             DO con = 1 , me%Numcon
                IF ( me%Contyp(con)==-2 ) CYCLE
                IF ( me%Conact(con)/=-1 ) CYCLE
@@ -2474,7 +2472,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
 ! ----------------------------------------------------------------------
             IF ( ind/=0 ) THEN
                IF ( me%Confix(ind)<=0 ) THEN
-                  IF ( val>me%Varmax*1D-1 ) ind = 0
+                  IF ( val>me%Varmax*1.0e-1_wp ) ind = 0
                ENDIF
             ENDIF
 ! ----------------------------------------------------------------------
@@ -2552,7 +2550,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
             IF ( met==0 ) THEN
             ELSEIF ( met==1 ) THEN
                varvec = desprv - varprv
-               IF ( norprv**2>1D-12 ) THEN
+               IF ( norprv**2>1.0e-12_wp ) THEN
                   tht = -dot_product(me%Vardir,varvec)/norprv**2
                   bet = Desnor**2/norprv**2
                ENDIF
@@ -2561,7 +2559,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
                varwrk = me%Varref - me%Vargrd
                val = dot_product(varwrk,varvec)
                fac = dot_product(me%Vardir,varvec)
-               IF ( abs(val)>1D-12 .AND. abs(fac)>1D-12 ) THEN
+               IF ( abs(val)>1.0e-12_wp .AND. abs(fac)>1.0e-12_wp ) THEN
                   tht = -dot_product(varwrk,varwrk)/val
                   varwrk = -varvec*tht - varwrk
                   bet = dot_product(varwrk,desprv)/fac
@@ -2577,7 +2575,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
 !      WRITE (STR,'("BET=",D13.6)') BET
 !      CALL me%ogwrit (3,STR)
 ! ----------------------------------------------------------------------
-            eps = 1D-03
+            eps = 1.0e-03_wp
 !      WRITE (STR,*) "THT/BET=",THT,BET
 !      CALL me%ogwrit (2,STR)
             me%Vardes = tht*desprv + bet*me%Vardir
@@ -2808,7 +2806,7 @@ SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
                   det = co1**2 - co2*co0
                   IF ( det<0.0_wp ) CYCLE
                   det = sqrt(det)
-                  val = 1D10
+                  val = 1.0e10_wp
                   fac = (-co1+det)/co2
                   IF ( fac>0.0_wp .AND. fac<val ) val = fac
                   fac = (-co1-det)/co2
@@ -2962,7 +2960,6 @@ SUBROUTINE ogpwri(me,Objval,Numvio,Convio)
    real(wp),intent(in) :: Convio !! TOTAL CONSTRAINT VIOLATION
 
    CHARACTER(len=2) :: feas
-   CHARACTER(len=24) :: fmt
 
    IF ( me%Verbos==0 ) RETURN
    ! Print header
@@ -2981,14 +2978,11 @@ SUBROUTINE ogpwri(me,Objval,Numvio,Convio)
 
       ! Write the log line (different format depending on violation size)
       IF ( Convio==0.0_wp ) THEN
-         fmt = '(I10,F15.4,I15,I15,A2)'
-         WRITE (me%Loglup,fmt) me%Fevals , Objval , Numvio , int(Convio) , feas
-      ELSEIF ( Convio>1D-3 ) THEN
-         fmt = '(I10,F15.4,I15,F15.6,A2)'
-         WRITE (me%Loglup,fmt) me%Fevals , Objval , Numvio , Convio , feas
+         WRITE (me%Loglup,'(I10,F15.4,I15,I15,A2)') me%Fevals , Objval , Numvio , int(Convio) , feas
+      ELSEIF ( Convio>1.0e-3_wp ) THEN
+         WRITE (me%Loglup,'(I10,F15.4,I15,F15.6,A2)') me%Fevals , Objval , Numvio , Convio , feas
       ELSE
-         fmt = '(I10,F15.4,I15,E15.6,A2)'
-         WRITE (me%Loglup,fmt) me%Fevals , Objval , Numvio , Convio , feas
+         WRITE (me%Loglup,'(I10,F15.4,I15,E15.6,A2)') me%Fevals , Objval , Numvio , Convio , feas
       ENDIF
    ENDIF
 
