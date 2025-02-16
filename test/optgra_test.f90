@@ -10,6 +10,8 @@ program optgra_test
     integer,parameter :: varnum = 1     !! number of variables
     integer,parameter :: connum = 1     !! number of constraints
 
+    type(optgra) :: solver
+
     ! JW : some of these I don't know what to set to ...
 
     REAL(wp), dimension(connum+1), parameter :: Delcon = [0.0001_wp,0.0001_wp]    !! CONSTRAINTS DELTAS
@@ -99,31 +101,37 @@ program optgra_test
 
     ! setup:
     write(*,*) 'initialize'
-    call oginit(Varnum,Connum)  ! i think this may also set defaults so some of below may be optional?
+    call solver%initialize(Varnum,Connum,Calval,Calder,Delcon,Pricon,Scacon,Strcon,Lencon,&
+                            Typcon,Dervar,Pervar,Maxvar,Sndvar,&
+                            Itemax,Itecor,Iteopt,Itediv,Itecnv,&
+                            Luplog,Bosver,Optsen,Scavar,&
+                            Strvar,Lenvar,Typvar,Lunlog,Levlog,Levmat,&
+                            Luntab,Levtab,Metopt)
+    ! call oginit(Varnum,Connum)  ! i think this may also set defaults so some of below may be optional?
 
     write(*,*) 'set other params'
-    call ogcdel(Delcon)
-    call ogcpri(Pricon)
-    call ogcsca(Scacon)
-    call ogcstr(Strcon,Lencon)
-    call ogctyp(Typcon)
-    call ogderi(Dervar,Pervar)
-    call ogdist(Maxvar,Sndvar)
-    call ogiter(Itemax,Itecor,Iteopt,Itediv,Itecnv)
-    call ogomet(Metopt)
-    call ogplog(Luplog,Bosver)
-    call ogsopt(Optsen)
-    call ogvsca(Scavar)
-    call ogvstr(Strvar,Lenvar)
-    call ogvtyp(Typvar)
-    call ogwlog(Lunlog,Levlog)
-    call ogwmat(Levmat)
-    call ogwtab(Luntab,Levtab)
+    ! call ogcdel(Delcon)
+    ! call ogcpri(Pricon)
+    ! call ogcsca(Scacon)
+    ! call ogcstr(Strcon,Lencon)
+    ! call ogctyp(Typcon)
+    ! call ogderi(Dervar,Pervar)
+    ! call ogdist(Maxvar,Sndvar)
+    ! call ogiter(Itemax,Itecor,Iteopt,Itediv,Itecnv)
+    ! call ogomet(Metopt)
+    ! call ogplog(Luplog,Bosver)
+    ! call ogsopt(Optsen)
+    ! call ogvsca(Scavar)
+    ! call ogvstr(Strvar,Lenvar)
+    ! call ogvtyp(Typvar)
+    ! call ogwlog(Lunlog,Levlog)
+    ! call ogwmat(Levmat)
+    ! call ogwtab(Luntab,Levtab)
 
     ! execute:
     write(*,*) 'execute'
     Valvar = [0.1_wp]
-    call ogexec(Valvar,Valcon,Finopt,Finite,Calval,Calder)
+    call solver%solve(Valvar,Valcon,Finopt,Finite)
 
     write(*,*) ''
     write(*,*) 'solution:'
@@ -134,20 +142,21 @@ program optgra_test
     ! finish
     write(*,*) ''
     write(*,*) 'cleanup'
-    call ogclos()
+    call solver%destroy()
     close(lunlog)
     close(Luntab)
     close(Luplog)
 
     contains
 
-    subroutine calval(varvec,Valcon,i)
+    subroutine calval(me,varvec,Valcon,i)
 
         !! FUNCTION FOR VALUES
         !! INPUT AND OUTPUT NOT SCALED
 
         ! use ieee_arithmetic, only: ieee_is_finite, ieee_is_nan
 
+        class(optgra),intent(inout) :: me
         real(wp), dimension(:), intent(in) :: varvec !! size is Numvar
         real(wp), dimension(:), intent(out) :: Valcon !! size is Numcon+1
         integer, intent(in) :: i !! JW: THIS IS NOT DOCUMENTED ?
@@ -166,9 +175,10 @@ program optgra_test
 
     end subroutine calval
 
-    subroutine Calder(varvec,convec,Dercon)
+    subroutine Calder(me,varvec,convec,Dercon)
         !! FUNCTION FOR VALUES AND DERIVATIVES
         !! INPUT AND OUTPUT NOT SCALED
+        class(optgra),intent(inout) :: me
         real(wp), dimension(:), intent(in) :: varvec !! size is Numvar
         real(wp), dimension(:), intent(out) :: convec !! size is Numcon+1
         real(wp), dimension(:,:), intent(out) :: Dercon !! size is Numcon+1,Numvar
@@ -176,7 +186,7 @@ program optgra_test
         real(wp) :: x
 
         x = varvec(1)
-        call calval(varvec,convec,0)
+        call calval(me,varvec,convec,0)
         Dercon(1,1) = 10000.0_wp * cos(x)    ! df/dx
         Dercon(2,1) = 1.0_wp    ! dj/dx
 
