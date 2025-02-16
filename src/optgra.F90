@@ -110,11 +110,11 @@ module optgra_module
 
       private
 
-      procedure,public :: initialize
-      procedure,public :: destroy => ogclos
-      procedure,public :: solve => ogexec
+      procedure,public :: initialize !! set up the problem
+      procedure,public :: solve => ogexec !! solve the problem
+      procedure,public :: destroy => ogclos !! free memory when finished
+
       procedure :: ogrigt
-      procedure :: ogwrit
       procedure :: ogincl
       procedure :: ogexcl
       procedure :: ogeval
@@ -122,6 +122,7 @@ module optgra_module
       procedure :: ogopti
       procedure :: ogleft
       procedure :: ogpwri
+      procedure :: ogwrit
       procedure :: ogpwri_start
       procedure :: ogpwri_end
 
@@ -151,12 +152,10 @@ module optgra_module
 
    end interface
 
-
-
 contains
 !****************************************************************************************************
 
-   SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
+   pure SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
 
       !! Matrix multiply.
       !!
@@ -203,7 +202,7 @@ contains
 
    END SUBROUTINE mul2m
 
-   SUBROUTINE mulvs(X,A,Z,Kd)
+   pure SUBROUTINE mulvs(X,A,Z,Kd)
       !! Scalar Vector multiply.
       !!
       !! `Z (1:KD) = X (1:KD) * A`
@@ -219,7 +218,7 @@ contains
       ENDDO
    END SUBROUTINE mulvs
 
-   SUBROUTINE sum2v(V1,V2,V,K)
+   pure SUBROUTINE sum2v(V1,V2,V,K)
       !! Vector addition.
       !!
       !! `V(1:K) = V1(1:K) + V2(1:K)`
