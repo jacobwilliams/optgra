@@ -1,8 +1,6 @@
 program optgra_test
 
-    use optgra_module
-
-    use iso_fortran_env, only: wp => real64
+    use optgra_module, wp => optgra_wp
 
     implicit none
 

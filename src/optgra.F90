@@ -10,15 +10,26 @@
 !TODO:
 ! * remove the STOP statement in one subroutine.
 ! * see about removing the SPAG DISPATCH loop thing which I don't like (study original code).
-! * make real kind changable via compiler directive (real32, real64, real128)
 
 module optgra_module
 
-   use iso_fortran_env, only: wp => real64, ip => int32, output_unit
+   use iso_fortran_env, ip => int32
 
    implicit none
 
    private
+
+#ifdef REAL32
+   integer,parameter :: wp = real32   !! Real working precision [4 bytes]
+#elif REAL64
+   integer,parameter :: wp = real64   !! Real working precision [8 bytes]
+#elif REAL128
+   integer,parameter :: wp = real128  !! Real working precision [16 bytes]
+#else
+   integer,parameter :: wp = real64   !! Real working precision if not specified [8 bytes]
+#endif
+
+   integer,parameter,public :: optgra_wp = wp   !! Working precision
 
    integer(ip), PARAMETER :: MAXSTR = 80 !! max string length for var names
 
@@ -909,7 +920,7 @@ contains
                   val = cosact(act)
                   IF ( val<=exc ) CYCLE
                   IF ( val<upr ) CYCLE
-!         IF (VAL >= UPR .AND. UPR > 0.0_wp) CYCLE
+!                 IF (VAL >= UPR .AND. UPR > 0.0_wp) CYCLE
                   upr = val
                   ind = act
                ENDDO
