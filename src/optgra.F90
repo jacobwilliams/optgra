@@ -534,22 +534,21 @@ SUBROUTINE ogcorr(me,Varacc,Finish,Toterr,Norerr)
    !! 2008/01/16 | J. SCHOENMAEKERS | NEW
 
    class(optgra),intent(inout) :: me
-   real(wp) Varacc
-   integer(ip) Finish
+   real(wp) :: Varacc
+   integer(ip) :: Finish
+   real(wp) :: Toterr
+   real(wp) :: Norerr
 
-   integer(ip) coritr , numfff , minpri , maxpri , curpri
-   real(wp) cornor , foldis , cstval
-   real(wp) conerr , Toterr , Norerr
-   real(wp) corinv , varvio , conmax , normax
-   integer(ip) conind , norind , inelop , maxitr
-! ----------------------------------------------------------------------
-   integer(ip) con , var , act , ind , len , cos , stp
-   integer(ip) typ , cor , pri , vio , fff
-   real(wp) val , fac , upr , del , co2 , co1 , co0 , de2 , dis
-   real(wp) eps , err , dlt , sca , dif
-   real(wp) exc
+   integer(ip) :: coritr , numfff , minpri , maxpri , curpri
+   real(wp) :: cornor , foldis , cstval , conerr
+   real(wp) :: corinv , varvio , conmax , normax
+   integer(ip) :: conind , norind , inelop , maxitr
+   integer(ip) :: con , var , act , ind , len , cos , stp
+   integer(ip) :: typ , cor , pri , vio , fff
+   real(wp) :: val , fac , upr , del , co2 , co1 , co0 , de2 , dis
+   real(wp) :: eps , err , dlt , sca , dif
+   real(wp) :: exc
    CHARACTER(len=256) :: str , nam
-! ======================================================================
    real(wp) , DIMENSION(:) , ALLOCATABLE :: cosact
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
    real(wp) , DIMENSION(:) , ALLOCATABLE :: varsav
@@ -563,6 +562,7 @@ SUBROUTINE ogcorr(me,Varacc,Finish,Toterr,Norerr)
    integer(ip) , DIMENSION(:) , ALLOCATABLE :: fffcon
    integer(ip) , DIMENSION(:) , ALLOCATABLE :: prisav
    INTEGER :: spag_nextblock_1
+
    spag_nextblock_1 = 1
    SPAG_DispatchLoop_1: DO
       SELECT CASE (spag_nextblock_1)
@@ -909,7 +909,7 @@ SUBROUTINE ogcorr(me,Varacc,Finish,Toterr,Norerr)
                val = cosact(act)
                IF ( val<=exc ) CYCLE
                IF ( val<upr ) CYCLE
-!         IF (VAL .GE. UPR .AND. UPR .GT. 0.0_wp) CYCLE
+!         IF (VAL >= UPR .AND. UPR > 0.0_wp) CYCLE
                upr = val
                ind = act
             ENDDO
@@ -1706,8 +1706,8 @@ SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
       CASE (2)
          SPAG_Loop_1_1: DO
 ! ======================================================================
-!      IF (NUMITE .GE. 52) MATLEV = 3
-!      IF (NUMITE .GE. 55) MATLEV = 2
+!      IF (NUMITE >= 52) MATLEV = 3
+!      IF (NUMITE >= 55) MATLEV = 2
 ! ======================================================================
 ! NEW ITERATION
 ! ----------------------------------------------------------------------
