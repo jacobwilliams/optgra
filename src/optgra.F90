@@ -31,75 +31,75 @@ module optgra_module
 
    integer,parameter,public :: optgra_wp = wp   !! Working precision
 
-   integer(ip), PARAMETER :: MAXSTR = 80 !! max string length for var names
+   integer(ip), parameter :: maxstr = 80 !! max string length for var names
 
    type,public :: optgra
       !! Main class.
 
       private
 
-      integer(ip) :: NUMVAR = 0
-      real(wp),      DIMENSION(:  ), allocatable :: VARVAL
-      integer(ip),   DIMENSION(:  ), allocatable :: VARTYP
-      real(wp),      DIMENSION(:  ), allocatable :: VARSCA
-      CHARACTER(len=maxstr),    DIMENSION(:  ), allocatable :: VARSTR
-      integer(ip),   DIMENSION(:  ), allocatable :: VARLEN
-      real(wp),      DIMENSION(:  ), allocatable :: VARREF
-      real(wp),      DIMENSION(:  ), allocatable :: VARDES
-      real(wp),      DIMENSION(:  ), allocatable :: VARGRD
-      real(wp),      DIMENSION(:  ), allocatable :: VARDIR
-      real(wp),      DIMENSION(:  ), allocatable :: FUNVAR
-      real(wp),      DIMENSION(:  ), allocatable :: SENVAR
+      integer(ip) :: numvar = 0
+      real(wp),      dimension(:  ), allocatable :: varval
+      integer(ip),   dimension(:  ), allocatable :: vartyp
+      real(wp),      dimension(:  ), allocatable :: varsca
+      character(len=maxstr),    dimension(:  ), allocatable :: varstr
+      integer(ip),   dimension(:  ), allocatable :: varlen
+      real(wp),      dimension(:  ), allocatable :: varref
+      real(wp),      dimension(:  ), allocatable :: vardes
+      real(wp),      dimension(:  ), allocatable :: vargrd
+      real(wp),      dimension(:  ), allocatable :: vardir
+      real(wp),      dimension(:  ), allocatable :: funvar
+      real(wp),      dimension(:  ), allocatable :: senvar
 
-      integer(ip) :: NUMCON = 0
-      real(wp),      DIMENSION(:  ), allocatable :: CONVAL
-      integer(ip),   DIMENSION(:  ), allocatable :: CONTYP
-      integer(ip),   DIMENSION(:  ), allocatable :: CONPRI
-      real(wp),      DIMENSION(:  ), allocatable :: CONSCA
-      CHARACTER(len=maxstr),    DIMENSION(:  ), allocatable :: CONSTR
-      integer(ip),   DIMENSION(:  ), allocatable :: CONLEN
-      real(wp),      DIMENSION(:  ), allocatable :: CONREF
-      real(wp),      DIMENSION(:  ), allocatable :: SENQUA
-      real(wp),      DIMENSION(:  ), allocatable :: SENCON
-      real(wp),      DIMENSION(:  ), allocatable :: SENDEL
-      integer(ip),   DIMENSION(:  ), allocatable :: SENACT
+      integer(ip) :: numcon = 0
+      real(wp),      dimension(:  ), allocatable :: conval
+      integer(ip),   dimension(:  ), allocatable :: contyp
+      integer(ip),   dimension(:  ), allocatable :: conpri
+      real(wp),      dimension(:  ), allocatable :: consca
+      character(len=maxstr),    dimension(:  ), allocatable :: constr
+      integer(ip),   dimension(:  ), allocatable :: conlen
+      real(wp),      dimension(:  ), allocatable :: conref
+      real(wp),      dimension(:  ), allocatable :: senqua
+      real(wp),      dimension(:  ), allocatable :: sencon
+      real(wp),      dimension(:  ), allocatable :: sendel
+      integer(ip),   dimension(:  ), allocatable :: senact
 
-      integer(ip)  :: OPTMET = 2
-      integer(ip)  :: MAXITE = 10
-      integer(ip)  :: CORITE = 10
-      integer(ip)  :: OPTITE = 10
-      integer(ip)  :: DIVITE = 10
-      integer(ip)  :: CNVITE = 10
+      integer(ip)  :: optmet = 2
+      integer(ip)  :: maxite = 10
+      integer(ip)  :: corite = 10
+      integer(ip)  :: optite = 10
+      integer(ip)  :: divite = 10
+      integer(ip)  :: cnvite = 10
       real(wp)     :: Varmax = 10.0_wp
-      real(wp)     :: VARSND = 1.0_wp
-      real(wp)     :: VARSTP = 1.0_wp
+      real(wp)     :: varsnd = 1.0_wp
+      real(wp)     :: varstp = 1.0_wp
 
-      integer(ip) :: VARDER = 1
-      real(wp),      DIMENSION(:  ), allocatable :: VARPER
+      integer(ip) :: varder = 1
+      real(wp),      dimension(:  ), allocatable :: varper
 
-      integer(ip) :: LOGLUN = output_unit  !! log file unit
-      integer(ip) :: LOGLEV = 1  !! log level
+      integer(ip) :: loglun = output_unit  !! log file unit
+      integer(ip) :: loglev = 1  !! log level
 
-      integer(ip) :: LOGLUP = output_unit  !! pygmo log file unit
-      integer(ip) :: VERBOS = 0  !! pygmo verbosity
-      integer(ip) :: FEVALS = 0  !! pygmo: number of const fun evals
-      integer(ip) :: PYGFLA = 0  !! pygmo: flag indicating status of optimisation
-      integer(ip) :: NUMITE = 0  !! number of iterations
+      integer(ip) :: loglup = output_unit  !! pygmo log file unit
+      integer(ip) :: verbos = 0  !! pygmo verbosity
+      integer(ip) :: fevals = 0  !! pygmo: number of const fun evals
+      integer(ip) :: pygfla = 0  !! pygmo: flag indicating status of optimisation
+      integer(ip) :: numite = 0  !! number of iterations
 
-      integer(ip) :: MATLEV = 0
+      integer(ip) :: matlev = 0
 
-      integer(ip) :: TABLUN = output_unit
-      integer(ip) :: TABLEV = 0
+      integer(ip) :: tablun = output_unit
+      integer(ip) :: tablev = 0
 
-      integer(ip) :: SENOPT = 0
+      integer(ip) :: senopt = 0
 
-      integer(ip) :: NUMACT = 0
-      integer(ip),   DIMENSION(:  ), allocatable :: ACTCON
-      integer(ip),   DIMENSION(:  ), allocatable :: CONFIX
-      integer(ip),   DIMENSION(:  ), allocatable :: CONACT
-      real(wp),      DIMENSION(:,:), allocatable :: CONDER
-      real(wp),      DIMENSION(:,:), allocatable :: CONRED
-      real(wp),      DIMENSION(:,:), allocatable :: SENDER
+      integer(ip) :: numact = 0
+      integer(ip),   dimension(:  ), allocatable :: actcon
+      integer(ip),   dimension(:  ), allocatable :: confix
+      integer(ip),   dimension(:  ), allocatable :: conact
+      real(wp),      dimension(:,:), allocatable :: conder
+      real(wp),      dimension(:,:), allocatable :: conred
+      real(wp),      dimension(:,:), allocatable :: sender
       !integer(ip) :: CONVER = 0   ! not used ?
       !integer(ip),   DIMENSION(:  ), allocatable :: CONOPT  ! not used ?
 
@@ -155,83 +155,83 @@ module optgra_module
 contains
 !****************************************************************************************************
 
-   pure SUBROUTINE mul2m(A1,M1,K1,L1,N1,A2,M2,K2,L2,N2,A,M,K,L,N)
+   pure subroutine mul2m(a1,m1,k1,l1,n1,a2,m2,k2,l2,n2,a,m,k,l,n)
 
       !! Matrix multiply.
       !!
       !! `A(K:K+N1,L:L+N) = A1(K1:K1+N1,L1:L1+N2) * A2(K2:K2+N2,L2:L2+N3)`
 
       integer,intent(in) :: m1, m2, m, k, k1, k2, l, l1 , l2 , n , n1 , n2
-      real(wp),intent(out) :: A(M,*)
-      real(wp),intent(in) :: A1(M1,*)
-      real(wp),intent(in) :: A2(M2,*)
+      real(wp),intent(out) :: a(m,*)
+      real(wp),intent(in) :: a1(m1,*)
+      real(wp),intent(in) :: a2(m2,*)
 
       real(wp) :: f1 , f2
       integer(ip) :: i , i1 , i2 , ic , ir
 
-      DO i1 = K , K + N1 - 1
-         DO i = L , L + N - 1
-            A(i1,i) = 0.0_wp
-         ENDDO
-      ENDDO
+      do i1 = k , k + n1 - 1
+         do i = l , l + n - 1
+            a(i1,i) = 0.0_wp
+         enddo
+      enddo
 
-      DO i1 = 0 , N1 - 1
-         DO i2 = 0 , N2 - 1
-            IF ( K1>=0 ) THEN
-               f1 = A1(i1+K1,i2+L1)
-            ELSE
-               f1 = A1(i2-K1,i1+L1)
-            ENDIF
-            IF ( f1/=0.0_wp ) THEN
-               DO i = 0 , N - 1
-                  IF ( K2>=0 ) THEN
-                     f2 = A2(i2+K2,i+L2)
-                  ELSE
-                     f2 = A2(i-K2,i2+L2)
-                  ENDIF
-                  IF ( f2/=0.0_wp ) THEN
+      do i1 = 0 , n1 - 1
+         do i2 = 0 , n2 - 1
+            if ( k1>=0 ) then
+               f1 = a1(i1+k1,i2+l1)
+            else
+               f1 = a1(i2-k1,i1+l1)
+            endif
+            if ( f1/=0.0_wp ) then
+               do i = 0 , n - 1
+                  if ( k2>=0 ) then
+                     f2 = a2(i2+k2,i+l2)
+                  else
+                     f2 = a2(i-k2,i2+l2)
+                  endif
+                  if ( f2/=0.0_wp ) then
                      f2 = f2*f1
-                     ic = i1 + K
-                     ir = i + L
-                     A(ic,ir) = A(ic,ir) + f2
-                  ENDIF
-               ENDDO
-            ENDIF
-         ENDDO
-      ENDDO
+                     ic = i1 + k
+                     ir = i + l
+                     a(ic,ir) = a(ic,ir) + f2
+                  endif
+               enddo
+            endif
+         enddo
+      enddo
 
-   END SUBROUTINE mul2m
+   end subroutine mul2m
 
-   pure SUBROUTINE mulvs(X,A,Z,Kd)
+   pure subroutine mulvs(x,a,z,Kd)
       !! Scalar Vector multiply.
       !!
       !! `Z (1:KD) = X (1:KD) * A`
 
-      real(wp),intent(in) :: A !! SCALAR
-      real(wp),intent(in) :: X(*) !! VECTOR
-      real(wp),intent(out) :: Z(*) !! VECTOR
+      real(wp),intent(in) :: a !! SCALAR
+      real(wp),intent(in) :: x(*) !! VECTOR
+      real(wp),intent(out) :: z(*) !! VECTOR
       integer(ip),intent(in) :: Kd !! NUMBER OF ELEMENTS TO BE USED
       integer(ip) :: i
 
-      DO i = 1 , Kd
-         Z(i) = X(i)*A
-      ENDDO
-   END SUBROUTINE mulvs
+      do i = 1 , Kd
+         z(i) = x(i)*a
+      enddo
+   end subroutine mulvs
 
-   pure SUBROUTINE sum2v(V1,V2,V,K)
+   pure subroutine sum2v(v1,v2,v,k)
       !! Vector addition.
       !!
       !! `V(1:K) = V1(1:K) + V2(1:K)`
 
-      real(wp),intent(in) :: V1(*) , V2(*)
-      real(wp),intent(out) :: V(*)
-      integer(ip),intent(in) :: K
+      real(wp),intent(in) :: v1(*) , v2(*)
+      real(wp),intent(out) :: v(*)
+      integer(ip),intent(in) :: k
       integer(ip) :: i
 
-      DO i = 1 , K
-         V(i) = V1(i) + V2(i)
-      ENDDO
-   END SUBROUTINE sum2v
+      do i = 1 , k
+         v(i) = v1(i) + v2(i)
+      enddo
+   end subroutine sum2v
 
    subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Conpri,Consca,Constr,Conlen,&
       Contyp,Varder,Varper,Varmax,Varsnd,&
@@ -339,19 +339,19 @@ contains
       ! VARIABLES
       me%Numvar = Numvar
 
-      ALLOCATE (me%Varval(me%Numvar))
-      ALLOCATE (me%Vartyp(me%Numvar))
-      ALLOCATE (me%Varsca(me%Numvar))
-      ALLOCATE (me%Varstr(me%Numvar))
-      ALLOCATE (me%Varlen(me%Numvar))
-      ALLOCATE (me%Varref(me%Numvar))
-      ALLOCATE (me%Vardes(me%Numvar))
-      ALLOCATE (me%Vargrd(me%Numvar))
-      ALLOCATE (me%Vardir(me%Numvar))
-      ALLOCATE (me%Funvar(me%Numvar))
-      ALLOCATE (me%Senvar(me%Numvar))
+      allocate (me%Varval(me%Numvar))
+      allocate (me%Vartyp(me%Numvar))
+      allocate (me%Varsca(me%Numvar))
+      allocate (me%Varstr(me%Numvar))
+      allocate (me%Varlen(me%Numvar))
+      allocate (me%Varref(me%Numvar))
+      allocate (me%Vardes(me%Numvar))
+      allocate (me%Vargrd(me%Numvar))
+      allocate (me%Vardir(me%Numvar))
+      allocate (me%Funvar(me%Numvar))
+      allocate (me%Senvar(me%Numvar))
 
-      DO var = 1 , me%Numvar
+      do var = 1 , me%Numvar
          me%Varval(var) = 0.0_wp
          me%Vartyp(var) = 0
          me%Varsca(var) = 1.0_wp
@@ -363,24 +363,24 @@ contains
          me%Vardir(var) = 0.0_wp
          me%Funvar(var) = 0.0_wp
          me%Senvar(var) = 0.0_wp
-      ENDDO
+      enddo
 
       ! CONSTRAINTS
       me%Numcon = Numcon
 
-      ALLOCATE (me%Conval(me%Numcon+1))
-      ALLOCATE (me%Contyp(me%Numcon+1))
-      ALLOCATE (me%Conpri(me%Numcon+1))
-      ALLOCATE (me%Consca(me%Numcon+1))
-      ALLOCATE (me%Constr(me%Numcon+1))
-      ALLOCATE (me%Conlen(me%Numcon+1))
-      ALLOCATE (me%Conref(me%Numcon+1))
-      ALLOCATE (me%Senqua(me%Numcon+1))
-      ALLOCATE (me%Sencon(me%Numcon+1))
-      ALLOCATE (me%Sendel(me%Numcon+1))
-      ALLOCATE (me%Senact(me%Numcon+1))
+      allocate (me%Conval(me%Numcon+1))
+      allocate (me%Contyp(me%Numcon+1))
+      allocate (me%Conpri(me%Numcon+1))
+      allocate (me%Consca(me%Numcon+1))
+      allocate (me%Constr(me%Numcon+1))
+      allocate (me%Conlen(me%Numcon+1))
+      allocate (me%Conref(me%Numcon+1))
+      allocate (me%Senqua(me%Numcon+1))
+      allocate (me%Sencon(me%Numcon+1))
+      allocate (me%Sendel(me%Numcon+1))
+      allocate (me%Senact(me%Numcon+1))
 
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          me%Conval(con) = 0.0_wp
          me%Contyp(con) = 0
          me%Conpri(con) = 1
@@ -392,7 +392,7 @@ contains
          me%Sencon(con) = 0.0_wp
          me%Sendel(con) = 0.0_wp
          me%Senact(con) = 0
-      ENDDO
+      enddo
 
       ! CONTROL
       me%Optmet = 2
@@ -406,10 +406,10 @@ contains
 
       ! DERIVATIVES
       me%Varder = 1
-      ALLOCATE (me%Varper(me%Numvar))
-      DO var = 1 , me%Numvar
+      allocate (me%Varper(me%Numvar))
+      do var = 1 , me%Numvar
          me%Varper(var) = 1.0e-03_wp
-      ENDDO
+      enddo
 
       me%Loglun = output_unit     ! LOG FILE
       me%Loglev = 1
@@ -422,12 +422,12 @@ contains
       me%Senopt = 0    ! LINEAR OPTIMISATION MODE
 
       ! WORKING VECTORS
-      ALLOCATE (me%Actcon(me%Numcon+1))
-      ALLOCATE (me%Confix(me%Numcon))
-      ALLOCATE (me%Conact(me%Numcon+4))
-      ALLOCATE (me%Conder(me%Numcon+3,me%Numvar))
-      ALLOCATE (me%Conred(me%Numcon+3,me%Numvar))
-      ALLOCATE (me%Sender(me%Numcon+3,me%Numvar))
+      allocate (me%Actcon(me%Numcon+1))
+      allocate (me%Confix(me%Numcon))
+      allocate (me%Conact(me%Numcon+4))
+      allocate (me%Conder(me%Numcon+3,me%Numvar))
+      allocate (me%Conred(me%Numcon+3,me%Numvar))
+      allocate (me%Sender(me%Numcon+3,me%Numvar))
       ! ALLOCATE (me%Conopt(me%Numcon+1))
       me%Numact = 0
       me%Actcon = 0
@@ -438,27 +438,27 @@ contains
       !me%Conopt = 0
 
       ! NOTE: should the last element also be set? (not done in original)  ?????
-      DO con = 1 , me%Numcon
+      do con = 1 , me%Numcon
          me%Sendel(con) = Delcon(con)
-      ENDDO
+      enddo
 
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          me%Conpri(con) = Conpri(con)
          me%Consca(con) = Consca(con)
          me%Constr(con) = Constr(con)
          me%Conlen(con) = min(Conlen(con),maxstr)
          me%Contyp(con) = Contyp(con)
-      ENDDO
+      enddo
 
       me%Varder = Varder
 
-      DO var = 1 , me%Numvar
+      do var = 1 , me%Numvar
          me%Varper(var) = Varper(var)
          me%Varsca(var) = Varsca(var)
          me%Varstr(var) = Varstr(var)
          me%Varlen(var) = min(Varlen(var),maxstr)
          me%Vartyp(var) = Vartyp(var)
-      ENDDO
+      enddo
 
       me%Varmax = Varmax
       me%Varsnd = Varsnd
@@ -468,10 +468,10 @@ contains
       me%Optite = Iteopt
       me%Divite = Itediv
       me%Cnvite = Itecnv
-      IF ( me%Corite>me%Maxite ) me%Corite = me%Maxite
-      IF ( me%Optite>me%Maxite ) me%Optite = me%Maxite
-      IF ( me%Divite>me%Corite ) me%Divite = me%Corite
-      IF ( me%Cnvite>me%Optite ) me%Cnvite = me%Optite
+      if ( me%Corite>me%Maxite ) me%Corite = me%Maxite
+      if ( me%Optite>me%Maxite ) me%Optite = me%Maxite
+      if ( me%Divite>me%Corite ) me%Divite = me%Corite
+      if ( me%Cnvite>me%Optite ) me%Cnvite = me%Optite
 
       me%Loglup = Loglup
       me%Verbos = Verbos
@@ -490,7 +490,7 @@ contains
 
    end subroutine initialize
 
-   SUBROUTINE ogclos(me)
+   subroutine ogclos(me)
       !! DEALLOCATION OF ARRAYS
       !!
       !! 2008/01/16 | J. SCHOENMAEKERS | NEW
@@ -498,46 +498,46 @@ contains
       class(optgra),intent(inout) :: me
 
       ! VARIABLES
-      if (allocated(me%Varval)) DEALLOCATE (me%Varval)
-      if (allocated(me%Vartyp)) DEALLOCATE (me%Vartyp)
-      if (allocated(me%Varsca)) DEALLOCATE (me%Varsca)
-      if (allocated(me%Varstr)) DEALLOCATE (me%Varstr)
-      if (allocated(me%Varlen)) DEALLOCATE (me%Varlen)
-      if (allocated(me%Varref)) DEALLOCATE (me%Varref)
-      if (allocated(me%Vardes)) DEALLOCATE (me%Vardes)
-      if (allocated(me%Vargrd)) DEALLOCATE (me%Vargrd)
-      if (allocated(me%Vardir)) DEALLOCATE (me%Vardir)
-      if (allocated(me%Funvar)) DEALLOCATE (me%Funvar)
-      if (allocated(me%Senvar)) DEALLOCATE (me%Senvar)
+      if (allocated(me%Varval)) deallocate (me%Varval)
+      if (allocated(me%Vartyp)) deallocate (me%Vartyp)
+      if (allocated(me%Varsca)) deallocate (me%Varsca)
+      if (allocated(me%Varstr)) deallocate (me%Varstr)
+      if (allocated(me%Varlen)) deallocate (me%Varlen)
+      if (allocated(me%Varref)) deallocate (me%Varref)
+      if (allocated(me%Vardes)) deallocate (me%Vardes)
+      if (allocated(me%Vargrd)) deallocate (me%Vargrd)
+      if (allocated(me%Vardir)) deallocate (me%Vardir)
+      if (allocated(me%Funvar)) deallocate (me%Funvar)
+      if (allocated(me%Senvar)) deallocate (me%Senvar)
 
       ! CONSTRAINTS
-      if (allocated(me%Conval)) DEALLOCATE (me%Conval)
-      if (allocated(me%Contyp)) DEALLOCATE (me%Contyp)
-      if (allocated(me%Conpri)) DEALLOCATE (me%Conpri)
-      if (allocated(me%Consca)) DEALLOCATE (me%Consca)
-      if (allocated(me%Constr)) DEALLOCATE (me%Constr)
-      if (allocated(me%Conlen)) DEALLOCATE (me%Conlen)
-      if (allocated(me%Conref)) DEALLOCATE (me%Conref)
-      if (allocated(me%Senqua)) DEALLOCATE (me%Senqua)
-      if (allocated(me%Sencon)) DEALLOCATE (me%Sencon)
-      if (allocated(me%Sendel)) DEALLOCATE (me%Sendel)
-      if (allocated(me%Senact)) DEALLOCATE (me%Senact)
+      if (allocated(me%Conval)) deallocate (me%Conval)
+      if (allocated(me%Contyp)) deallocate (me%Contyp)
+      if (allocated(me%Conpri)) deallocate (me%Conpri)
+      if (allocated(me%Consca)) deallocate (me%Consca)
+      if (allocated(me%Constr)) deallocate (me%Constr)
+      if (allocated(me%Conlen)) deallocate (me%Conlen)
+      if (allocated(me%Conref)) deallocate (me%Conref)
+      if (allocated(me%Senqua)) deallocate (me%Senqua)
+      if (allocated(me%Sencon)) deallocate (me%Sencon)
+      if (allocated(me%Sendel)) deallocate (me%Sendel)
+      if (allocated(me%Senact)) deallocate (me%Senact)
 
       ! DERIVATIVES
-      if (allocated(me%Varper)) DEALLOCATE (me%Varper)
+      if (allocated(me%Varper)) deallocate (me%Varper)
 
       ! WORKING VECTORS
-      if (allocated(me%Actcon)) DEALLOCATE (me%Actcon)
-      if (allocated(me%Confix)) DEALLOCATE (me%Confix)
-      if (allocated(me%Conact)) DEALLOCATE (me%Conact)
-      if (allocated(me%Conder)) DEALLOCATE (me%Conder)
-      if (allocated(me%Conred)) DEALLOCATE (me%Conred)
-      if (allocated(me%Sender)) DEALLOCATE (me%Sender)
+      if (allocated(me%Actcon)) deallocate (me%Actcon)
+      if (allocated(me%Confix)) deallocate (me%Confix)
+      if (allocated(me%Conact)) deallocate (me%Conact)
+      if (allocated(me%Conder)) deallocate (me%Conder)
+      if (allocated(me%Conred)) deallocate (me%Conred)
+      if (allocated(me%Sender)) deallocate (me%Sender)
       !if (allocated(me%Conopt)) DEALLOCATE (me%Conopt)
 
-   END SUBROUTINE ogclos
+   end subroutine ogclos
 
-   SUBROUTINE ogcorr(me,Varacc,Finish,Toterr,Norerr)
+   subroutine ogcorr(me,Varacc,Finish,Toterr,Norerr)
 
       !! CORRECTION PART
       !!
@@ -558,44 +558,44 @@ contains
       real(wp) :: val , fac , upr , del , co2 , co1 , co0 , de2 , dis
       real(wp) :: eps , err , dlt , sca , dif
       real(wp) :: exc
-      CHARACTER(len=256) :: str , nam
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: cosact
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varsav
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varcor
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: corvec
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: consav
-      integer(ip) , DIMENSION(:) , ALLOCATABLE :: conttt
-      integer(ip) , DIMENSION(:) , ALLOCATABLE :: concor
-      integer(ip) , DIMENSION(:) , ALLOCATABLE :: coninc
-      integer(ip) , DIMENSION(:) , ALLOCATABLE :: conhit
-      integer(ip) , DIMENSION(:) , ALLOCATABLE :: fffcon
-      integer(ip) , DIMENSION(:) , ALLOCATABLE :: prisav
-      INTEGER :: spag_nextblock_1
+      character(len=256) :: str , nam
+      real(wp) , dimension(:) , allocatable :: cosact
+      real(wp) , dimension(:) , allocatable :: varvec
+      real(wp) , dimension(:) , allocatable :: varsav
+      real(wp) , dimension(:) , allocatable :: varcor
+      real(wp) , dimension(:) , allocatable :: corvec
+      real(wp) , dimension(:) , allocatable :: consav
+      integer(ip) , dimension(:) , allocatable :: conttt
+      integer(ip) , dimension(:) , allocatable :: concor
+      integer(ip) , dimension(:) , allocatable :: coninc
+      integer(ip) , dimension(:) , allocatable :: conhit
+      integer(ip) , dimension(:) , allocatable :: fffcon
+      integer(ip) , dimension(:) , allocatable :: prisav
+      integer :: spag_nextblock_1
 
       spag_nextblock_1 = 1
-      SPAG_DispatchLoop_1: DO
-         SELECT CASE (spag_nextblock_1)
-          CASE (1)
+      SPAG_DispatchLoop_1: do
+         select case (spag_nextblock_1)
+          case (1)
             ! ----------------------------------------------------------------------
-            ALLOCATE (cosact(me%Numvar))
-            ALLOCATE (varvec(me%Numvar))
-            ALLOCATE (varsav(me%Numvar))
-            ALLOCATE (varcor(me%Numvar))
-            ALLOCATE (corvec(me%Numvar))
-            ALLOCATE (consav(me%Numcon+1))
-            ALLOCATE (conttt(me%Numcon+1))
-            ALLOCATE (concor(me%Numcon))
-            ALLOCATE (coninc(me%Numcon))
-            ALLOCATE (conhit(me%Numcon))
-            ALLOCATE (fffcon(me%Numcon))
-            ALLOCATE (prisav(me%Numcon))
+            allocate (cosact(me%Numvar))
+            allocate (varvec(me%Numvar))
+            allocate (varsav(me%Numvar))
+            allocate (varcor(me%Numvar))
+            allocate (corvec(me%Numvar))
+            allocate (consav(me%Numcon+1))
+            allocate (conttt(me%Numcon+1))
+            allocate (concor(me%Numcon))
+            allocate (coninc(me%Numcon))
+            allocate (conhit(me%Numcon))
+            allocate (fffcon(me%Numcon))
+            allocate (prisav(me%Numcon))
             ! ======================================================================
             ! CORRECTION PART
             ! ----------------------------------------------------------------------
             coritr = 0
             maxitr = 10
-            IF ( me%Senopt/=0 ) maxitr = 1
+            if ( me%Senopt/=0 ) maxitr = 1
             ! ======================================================================
             cos = me%Numcon + 1
             vio = me%Numcon + 2
@@ -612,91 +612,91 @@ contains
             ! ----------------------------------------------------------------------
             minpri = 1000
             maxpri = -1000
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
                minpri = min(minpri,me%Conpri(con))
                maxpri = max(maxpri,me%Conpri(con))
-            ENDDO
+            enddo
             ind = 0
-            IF ( numfff>0 ) ind = 1
-            IF ( me%Senopt>0 ) ind = 1
+            if ( numfff>0 ) ind = 1
+            if ( me%Senopt>0 ) ind = 1
             minpri = minpri - ind
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3,"PRIORITISE CONSTRAINTS")
-            CALL me%ogwrit(3,"")
-            IF ( me%Senopt<=0 ) THEN
-               DO fff = 1 , numfff
+            call me%ogwrit(3,"")
+            call me%ogwrit(3,"PRIORITISE CONSTRAINTS")
+            call me%ogwrit(3,"")
+            if ( me%Senopt<=0 ) then
+               do fff = 1 , numfff
                   con = fffcon(fff)
                   nam = me%Constr(con)
                   len = me%Conlen(con)
                   typ = me%Contyp(con)
-                  WRITE (str,'("PRI",1X,I4,1X,I4,1X,A)') con , typ , nam(1:len)
-                  CALL me%ogwrit(3,str)
+                  write (str,'("PRI",1X,I4,1X,I4,1X,A)') con , typ , nam(1:len)
+                  call me%ogwrit(3,str)
                   me%Conpri(con) = minpri
-               ENDDO
-            ENDIF
-            IF ( me%Senopt>0 ) THEN
-               DO con = 1 , me%Numcon
-                  IF ( me%Contyp(con)==-2 ) CYCLE
-                  IF ( me%Senact(con)<=0 ) CYCLE
+               enddo
+            endif
+            if ( me%Senopt>0 ) then
+               do con = 1 , me%Numcon
+                  if ( me%Contyp(con)==-2 ) cycle
+                  if ( me%Senact(con)<=0 ) cycle
                   nam = me%Constr(con)
                   len = me%Conlen(con)
                   typ = me%Contyp(con)
-                  WRITE (str,'("PRI",1X,I4,1X,I4,1X,A)') con , typ , nam(1:len)
-                  CALL me%ogwrit(3,str)
+                  write (str,'("PRI",1X,I4,1X,I4,1X,A)') con , typ , nam(1:len)
+                  call me%ogwrit(3,str)
                   me%Conpri(con) = minpri
-               ENDDO
-            ENDIF
-            CALL me%ogwrit(3,"")
+               enddo
+            endif
+            call me%ogwrit(3,"")
             spag_nextblock_1 = 2
-          CASE (2)
+          case (2)
             ! ======================================================================
             ! Evaluation loop
             ! ----------------------------------------------------------------------
-            WRITE (str,'("CORITR=",I2,1X,I2)') coritr , maxitr
-            CALL me%ogwrit(3,str)
-            CALL me%ogwrit(3,"")
+            write (str,'("CORITR=",I2,1X,I2)') coritr , maxitr
+            call me%ogwrit(3,str)
+            call me%ogwrit(3,"")
             ! ======================================================================
             ! Inequality loop
             ! ----------------------------------------------------------------------
             inelop = 2
-            IF ( numfff>0 ) inelop = 1
-            IF ( me%Senopt>0 ) inelop = 1
+            if ( numfff>0 ) inelop = 1
+            if ( me%Senopt>0 ) inelop = 1
             varsav = me%Varval
             consav = me%Conval
             spag_nextblock_1 = 3
-          CASE (3)
+          case (3)
             ! ----------------------------------------------------------------------
-            WRITE (str,'("INELOP=",I2)') inelop
-            CALL me%ogwrit(3,str)
-            CALL me%ogwrit(3,"")
+            write (str,'("INELOP=",I2)') inelop
+            call me%ogwrit(3,str)
+            call me%ogwrit(3,"")
             ! ----------------------------------------------------------------------
             me%Varval = varsav
             me%Conval = consav
             me%Contyp = conttt
-            IF ( inelop==1 ) THEN
-               DO fff = 1 , numfff
+            if ( inelop==1 ) then
+               do fff = 1 , numfff
                   con = fffcon(fff)
                   nam = me%Constr(con)
                   len = me%Conlen(con)
                   typ = me%Contyp(con)
-                  WRITE (str,'("TYP",1X,I4,1X,I4,1X,A)') con , typ , nam(1:len)
-                  CALL me%ogwrit(3,str)
+                  write (str,'("TYP",1X,I4,1X,I4,1X,A)') con , typ , nam(1:len)
+                  call me%ogwrit(3,str)
                   me%Contyp(con) = 0
-               ENDDO
-            ENDIF
-            IF ( inelop==1 .AND.me%Senopt>0 ) THEN
-               DO con = 1 , me%Numcon
-                  IF ( me%Contyp(con)==-2 ) CYCLE
-                  IF ( me%Senact(con)<=0 ) CYCLE
+               enddo
+            endif
+            if ( inelop==1 .and.me%Senopt>0 ) then
+               do con = 1 , me%Numcon
+                  if ( me%Contyp(con)==-2 ) cycle
+                  if ( me%Senact(con)<=0 ) cycle
                   nam = me%Constr(con)
                   len = me%Conlen(con)
                   typ = me%Contyp(con)
-                  WRITE (str,'("FIX",1X,I4,1X,I4,1X,A)') con , typ , nam(1:len)
-                  CALL me%ogwrit(2,str)
+                  write (str,'("FIX",1X,I4,1X,I4,1X,A)') con , typ , nam(1:len)
+                  call me%ogwrit(2,str)
                   me%Contyp(con) = 0
-               ENDDO
-            ENDIF
+               enddo
+            endif
             me%Numact = 0
             me%Conact = 0
             me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:)
@@ -710,164 +710,164 @@ contains
             norind = 0
             conmax = 0.0_wp
             normax = 0.0_wp
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
                typ = me%Contyp(con)
                val = me%Conval(con)
-               IF ( val<-1.0_wp ) THEN
+               if ( val<-1.0_wp ) then
                   err = abs(val)
-               ELSEIF ( typ/=0 ) THEN
+               elseif ( typ/=0 ) then
                   err = 0.0_wp
-               ELSEIF ( val>1.0_wp ) THEN
+               elseif ( val>1.0_wp ) then
                   err = abs(val)
-               ELSE
+               else
                   err = 0.0_wp
-               ENDIF
+               endif
                conerr = conerr + err
-               IF ( err>conmax ) THEN
+               if ( err>conmax ) then
                   conind = con
                   conmax = err
-               ENDIF
+               endif
                fac = 0.0_wp
-               DO var = 1 , me%Numvar
-                  IF ( me%Vartyp(var)==1 ) CYCLE
+               do var = 1 , me%Numvar
+                  if ( me%Vartyp(var)==1 ) cycle
                   fac = fac + me%Conder(con,var)**2
-               ENDDO
+               enddo
                fac = sqrt(fac)
-               IF ( err==0.0_wp ) THEN
-               ELSEIF ( fac/=0.0_wp ) THEN
+               if ( err==0.0_wp ) then
+               elseif ( fac/=0.0_wp ) then
                   err = err/fac
-               ELSE
-                  CALL me%ogwrit(0,"")
-                  CALL me%ogwrit(0,"ERROR: CONSTRAINT CAN NOT BE SATISFIED")
-                  WRITE (str,'("CON/VAL= ",I5,1X,D13.6)') con , val
-                  CALL me%ogwrit(0,str)
+               else
+                  call me%ogwrit(0,"")
+                  call me%ogwrit(0,"ERROR: CONSTRAINT CAN NOT BE SATISFIED")
+                  write (str,'("CON/VAL= ",I5,1X,D13.6)') con , val
+                  call me%ogwrit(0,str)
                   Finish = 0
                   spag_nextblock_1 = 7
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                Norerr = Norerr + err
-               IF ( err>normax ) THEN
+               if ( err>normax ) then
                   norind = con
                   normax = err
-               ENDIF
-            ENDDO
+               endif
+            enddo
             ! ----------------------------------------------------------------------
             Toterr = conerr
-            CALL me%ogwrit(3,"")
-            WRITE (str,'("NUMFFF/TOTERR/NORERR/COSVAL=",I4,3(1X,D13.6))') numfff , Toterr , Norerr , me%Conval(me%Numcon+1)
-            CALL me%ogwrit(2,str)
-            CALL me%ogwrit(3,"")
-            WRITE (str,'("MAXIM TOTAL ERROR.: ",D13.6,I6)') conmax , conind
-            CALL me%ogwrit(3,str)
-            WRITE (str,'("MAXIM NORM  ERROR.: ",D13.6,I6)') normax , norind
-            CALL me%ogwrit(3,str)
+            call me%ogwrit(3,"")
+            write (str,'("NUMFFF/TOTERR/NORERR/COSVAL=",I4,3(1X,D13.6))') numfff , Toterr , Norerr , me%Conval(me%Numcon+1)
+            call me%ogwrit(2,str)
+            call me%ogwrit(3,"")
+            write (str,'("MAXIM TOTAL ERROR.: ",D13.6,I6)') conmax , conind
+            call me%ogwrit(3,str)
+            write (str,'("MAXIM NORM  ERROR.: ",D13.6,I6)') normax , norind
+            call me%ogwrit(3,str)
             ! ----------------------------------------------------------------------
-            IF ( me%Senopt>0 .AND. coritr==maxitr ) THEN
-               IF ( cstval==0.0_wp ) THEN
+            if ( me%Senopt>0 .and. coritr==maxitr ) then
+               if ( cstval==0.0_wp ) then
                   Finish = 1
-               ELSE
+               else
                   Finish = 0
-               ENDIF
+               endif
                spag_nextblock_1 = 6
-               CYCLE SPAG_DispatchLoop_1
-            ENDIF
-            IF ( coritr==0 .AND. conerr==0.0_wp ) THEN
+               cycle SPAG_DispatchLoop_1
+            endif
+            if ( coritr==0 .and. conerr==0.0_wp ) then
                me%Numact = numfff
                me%Actcon = fffcon
                Finish = 1
                spag_nextblock_1 = 6
-               CYCLE SPAG_DispatchLoop_1
-            ELSEIF ( coritr/=0 .AND. conerr==0.0_wp ) THEN
+               cycle SPAG_DispatchLoop_1
+            elseif ( coritr/=0 .and. conerr==0.0_wp ) then
                Finish = 1
                spag_nextblock_1 = 6
-               CYCLE SPAG_DispatchLoop_1
-            ELSEIF ( coritr==maxitr ) THEN
+               cycle SPAG_DispatchLoop_1
+            elseif ( coritr==maxitr ) then
                Finish = 0
-               CALL me%ogwrit(3,"")
-               WRITE (str,'("CORITR=",I2)') coritr
-               CALL me%ogwrit(3,str)
+               call me%ogwrit(3,"")
+               write (str,'("CORITR=",I2)') coritr
+               call me%ogwrit(3,str)
                spag_nextblock_1 = 6
-               CYCLE SPAG_DispatchLoop_1
-            ELSE
+               cycle SPAG_DispatchLoop_1
+            else
                Finish = 0
                coritr = coritr + 1
-            ENDIF
+            endif
 
             ! ======================================================================
             ! Priority loop
             ! ----------------------------------------------------------------------
             curpri = minpri
             spag_nextblock_1 = 4
-          CASE (4)
+          case (4)
             ! ----------------------------------------------------------------------
-            WRITE (str,'("CURPRI=",I2,1X,I2)') curpri , maxpri
-            CALL me%ogwrit(3,str)
-            CALL me%ogwrit(3,"")
+            write (str,'("CURPRI=",I2,1X,I2)') curpri , maxpri
+            call me%ogwrit(3,str)
+            call me%ogwrit(3,"")
             ! ======================================================================
             ! MINIMUM NORM CORRECTION
             ! ----------------------------------------------------------------------
-            CALL me%ogwrit(3,"")
-            WRITE (str,'("CORRECTION OF CONSTRAINTS")')
-            CALL me%ogwrit(3,str)
-            CALL me%ogwrit(3,"")
-            WRITE (str,*) "INELOP/CURPRI=" , inelop , curpri
-            CALL me%ogwrit(3,str)
+            call me%ogwrit(3,"")
+            write (str,'("CORRECTION OF CONSTRAINTS")')
+            call me%ogwrit(3,str)
+            call me%ogwrit(3,"")
+            write (str,*) "INELOP/CURPRI=" , inelop , curpri
+            call me%ogwrit(3,str)
             ! ----------------------------------------------------------------------
             conerr = 0.0_wp
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
                conhit(con) = 0
-               IF ( me%Conval(con)<-eps ) THEN
+               if ( me%Conval(con)<-eps ) then
                   conerr = conerr + abs(me%Conval(con))
-               ELSEIF ( me%Contyp(con)/=0 ) THEN
-               ELSEIF ( me%Conval(con)>+eps ) THEN
+               elseif ( me%Contyp(con)/=0 ) then
+               elseif ( me%Conval(con)>+eps ) then
                   conerr = conerr + abs(me%Conval(con))
-               ENDIF
-            ENDDO
+               endif
+            enddo
             ! ----------------------------------------------------------------------
-            CALL me%ogwrit(3,"")
-            WRITE (str,'("LINEAR ERROR.: ",D13.6)') conerr
-            CALL me%ogwrit(3,str)
+            call me%ogwrit(3,"")
+            write (str,'("LINEAR ERROR.: ",D13.6)') conerr
+            call me%ogwrit(3,str)
             ! ----------------------------------------------------------------------
-            CALL me%ogwrit(3,"")
-            WRITE (str,'(" ACT  PAS  MOV",'//' " COST___VAL COST___GRD",'//' " DIST___DEL CONSTRAINT")')
-            CALL me%ogwrit(3,str)
+            call me%ogwrit(3,"")
+            write (str,'(" ACT  PAS  MOV",'//' " COST___VAL COST___GRD",'//' " DIST___DEL CONSTRAINT")')
+            call me%ogwrit(3,str)
             spag_nextblock_1 = 5
-          CASE (5)
+          case (5)
             ! ======================================================================
             ! Move loop
             ! ----------------------------------------------------------------------
             ! ----------------------------------------------------------------------
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
                coninc(con) = 0
                pri = me%Conpri(con)
                val = me%Conval(con)
                typ = me%Contyp(con)
                act = me%Conact(con)
                cor = concor(con)
-               IF ( act>0 ) CYCLE
-               IF ( pri>curpri ) THEN
+               if ( act>0 ) cycle
+               if ( pri>curpri ) then
                   me%Conact(con) = -1
-               ELSEIF ( val<-dlt ) THEN
+               elseif ( val<-dlt ) then
                   me%Conact(con) = -1
-               ELSEIF ( val>+dlt ) THEN
+               elseif ( val>+dlt ) then
                   me%Conact(con) = -1
-               ELSE
+               else
                   me%Conact(con) = 0
-               ENDIF
-               IF ( pri>curpri ) THEN
+               endif
+               if ( pri>curpri ) then
                   concor(con) = 0
-               ELSEIF ( val<-dlt ) THEN
+               elseif ( val<-dlt ) then
                   concor(con) = -1
-               ELSEIF ( typ/=0 ) THEN
+               elseif ( typ/=0 ) then
                   concor(con) = 0
-               ELSEIF ( val>+dlt ) THEN
+               elseif ( val>+dlt ) then
                   concor(con) = +1
-               ELSE
+               else
                   concor(con) = 0
-               ENDIF
+               endif
 !          IF (ACT /= CONACT(CON) .OR. COR /= CONCOR(CON)) THEN
 !              NAM = CONSTR(CON)
 !              LEN = CONLEN(CON)
@@ -876,7 +876,7 @@ contains
 !     &        CONACT(CON),CONCOR(CON), ACT, COR
 !              CALL me%ogwrit (3,STR)
 !          ENDIF
-            ENDDO
+            enddo
             ! ======================================================================
             ! STEEPEST ASCENT VECTOR
             ! ======================================================================
@@ -886,16 +886,16 @@ contains
             varvec = 0.0_wp
             me%Conred(vio,:) = 0.0_wp
             ! ----------------------------------------------------------------------
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
-               IF ( me%Conpri(con)>curpri ) CYCLE
-               IF ( concor(con)==0 ) CYCLE
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
+               if ( me%Conpri(con)>curpri ) cycle
+               if ( concor(con)==0 ) cycle
                fac = concor(con)
                cstval = cstval - me%Conval(con)*fac
                me%Conred(vio,:) = me%Conred(vio,:) - me%Conred(con,:)*fac
                varvec = varvec - me%Conder(con,:)*fac
-            ENDDO
-            SPAG_Loop_1_1: DO
+            enddo
+            SPAG_Loop_1_1: do
                ! ----------------------------------------------------------------------
                ! ----------------------------------------------------------------------
                ! STEEPEST ASCENT VECTOR
@@ -906,48 +906,48 @@ contains
                ! ----------------------------------------------------------------------
                ! MERIT PARTIAL W.R.T. CONSTRAINTS
                ! ----------------------------------------------------------------------
-               CALL me%ogrigt(corvec,cosact)
+               call me%ogrigt(corvec,cosact)
                ! ----------------------------------------------------------------------
                ! CONSTRAINT REMOVAL
                ! ----------------------------------------------------------------------
                ind = 0
                exc = 1.0e-12_wp
                upr = exc
-               DO act = 1 , me%Numact
+               do act = 1 , me%Numact
                   con = me%Actcon(act)
-                  IF ( me%Contyp(con)==0 ) CYCLE
+                  if ( me%Contyp(con)==0 ) cycle
                   val = cosact(act)
-                  IF ( val<=exc ) CYCLE
-                  IF ( val<upr ) CYCLE
+                  if ( val<=exc ) cycle
+                  if ( val<upr ) cycle
 !                 IF (VAL >= UPR .AND. UPR > 0.0_wp) CYCLE
                   upr = val
                   ind = act
-               ENDDO
+               enddo
                ! ----------------------------------------------------------------------
-               IF ( ind/=0 ) THEN
+               if ( ind/=0 ) then
                   con = me%Actcon(ind)
                   nam = me%Constr(con)
                   len = me%Conlen(con)
-                  WRITE (str,'(5X,I4,5X,3(1X,D10.3),1X,A)') con , cstval , cornor , upr , nam(1:len)
-                  CALL me%ogwrit(3,str)
-                  CALL me%ogexcl(ind)
-                  IF ( coninc(con)>=5 ) THEN
-                     WRITE (str,'("OGCORR-WARNING: CONSTRAINT INCLUDED")')
-                     CALL me%ogwrit(1,str)
-                     WRITE (str,'("CON/INC/UPR=",2I4,1X,D10.3)') con , coninc(con) , upr
-                     CALL me%ogwrit(1,str)
-                  ENDIF
-                  IF ( coninc(con)>=20 ) THEN
+                  write (str,'(5X,I4,5X,3(1X,D10.3),1X,A)') con , cstval , cornor , upr , nam(1:len)
+                  call me%ogwrit(3,str)
+                  call me%ogexcl(ind)
+                  if ( coninc(con)>=5 ) then
+                     write (str,'("OGCORR-WARNING: CONSTRAINT INCLUDED")')
+                     call me%ogwrit(1,str)
+                     write (str,'("CON/INC/UPR=",2I4,1X,D10.3)') con , coninc(con) , upr
+                     call me%ogwrit(1,str)
+                  endif
+                  if ( coninc(con)>=20 ) then
                      Finish = 0
                      spag_nextblock_1 = 7
-                     CYCLE SPAG_DispatchLoop_1
-                  ENDIF
-                  CYCLE
-               ENDIF
+                     cycle SPAG_DispatchLoop_1
+                  endif
+                  cycle
+               endif
                ! ----------------------------------------------------------------------
                ! NORMALISE STEEPEST ASCEND VECTOR
                ! ----------------------------------------------------------------------
-               IF ( cstval<-cornor*varvio ) EXIT SPAG_Loop_1_1
+               if ( cstval<-cornor*varvio ) exit SPAG_Loop_1_1
                ! ----------------------------------------------------------------------
                corinv = 1.0_wp/cornor
                corvec(me%Numact+1:me%Numvar) = corvec(me%Numact+1:me%Numvar)*corinv
@@ -957,160 +957,160 @@ contains
                ind = 0
                upr = 0.0_wp
                ! ----------------------------------------------------------------------
-               DO con = 1 , me%Numcon
-                  IF ( me%Contyp(con)==-2 ) CYCLE
-                  IF ( me%Conpri(con)>curpri ) CYCLE
-                  IF ( me%Conact(con)/=0 ) CYCLE
+               do con = 1 , me%Numcon
+                  if ( me%Contyp(con)==-2 ) cycle
+                  if ( me%Conpri(con)>curpri ) cycle
+                  if ( me%Conact(con)/=0 ) cycle
                   del = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(vio,me%Numact+1:me%Numvar))
                   val = abs(del)*me%Varmax/cornor
-                  IF ( val<eps ) CYCLE
+                  if ( val<eps ) cycle
                   fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
                   del = del/sqrt(fac)
-                  IF ( del<upr ) THEN
+                  if ( del<upr ) then
                      upr = del
                      ind = con
-                  ENDIF
-                  IF ( me%Contyp(con)/=0 ) CYCLE
-                  IF ( concor(con)/=0 ) CYCLE
+                  endif
+                  if ( me%Contyp(con)/=0 ) cycle
+                  if ( concor(con)/=0 ) cycle
                   del = -del
-                  IF ( del<upr ) THEN
+                  if ( del<upr ) then
                      upr = del
                      ind = con
-                  ENDIF
-               ENDDO
+                  endif
+               enddo
                ! ----------------------------------------------------------------------
-               IF ( ind/=0 ) THEN
+               if ( ind/=0 ) then
                   con = ind
                   nam = me%Constr(con)
                   len = me%Conlen(con)
-                  WRITE (str,'(I4,5X,5X,3(1X,D10.3),1X,A)') con , cstval , cornor , upr , nam(1:len)
-                  CALL me%ogwrit(3,str)
-                  CALL me%ogincl(ind)
+                  write (str,'(I4,5X,5X,3(1X,D10.3),1X,A)') con , cstval , cornor , upr , nam(1:len)
+                  call me%ogwrit(3,str)
+                  call me%ogincl(ind)
                   coninc(con) = coninc(con) + 1
-                  CYCLE
-               ENDIF
-               EXIT SPAG_Loop_1_1
-            ENDDO SPAG_Loop_1_1
+                  cycle
+               endif
+               exit SPAG_Loop_1_1
+            enddo SPAG_Loop_1_1
             ! ----------------------------------------------------------------------
             ! ----------------------------------------------------------------------
-            DO var = 1 , me%Numvar
+            do var = 1 , me%Numvar
                val = varvec(var)
-               DO act = 1 , me%Numact
+               do act = 1 , me%Numact
                   con = me%Actcon(act)
                   val = val - me%Conder(con,var)*cosact(act)
-               ENDDO
+               enddo
                varvec(var) = val*corinv
-            ENDDO
+            enddo
             ! ----------------------------------------------------------------------
             varcor = me%Varval - me%Varref
             co2 = dot_product(varvec,varvec)
             co1 = dot_product(varvec,varcor)*0.5_wp
             co0 = dot_product(varcor,varcor) - me%Varmax**2
             de2 = co1**2 - co2*co0
-            IF ( de2>=0.0_wp .AND. co2/=0.0_wp ) THEN
+            if ( de2>=0.0_wp .and. co2/=0.0_wp ) then
                dis = (sqrt(de2)-co1)/co2
-            ELSE
+            else
                dis = 0.0_wp
-            ENDIF
+            endif
             ! ----------------------------------------------------------------------
-            DO var = 1 , me%Numvar
+            do var = 1 , me%Numvar
                fac = varvec(var)
-               IF ( fac==0.0_wp ) CYCLE
+               if ( fac==0.0_wp ) cycle
                dif = me%Varval(var) - me%Varref(var)
                sca = me%Varmax*1.0e-0_wp   ! JW : why is this multiplied by 1 ?
                val = (dif+sca)/fac
                fac = (dif-sca)/fac
-               IF ( fac>val ) val = fac
-               IF ( val<dis ) dis = val
-            ENDDO
-            IF ( dis<0.0_wp ) dis = 0.0_wp
+               if ( fac>val ) val = fac
+               if ( val<dis ) dis = val
+            enddo
+            if ( dis<0.0_wp ) dis = 0.0_wp
             ! ----------------------------------------------------------------------
             foldis = dis
             ! ======================================================================
             ! OPTIMISE DIRETION OF STEPPEST ASCENT
             ! ======================================================================
-            IF ( cstval==0.0_wp ) THEN
+            if ( cstval==0.0_wp ) then
                ! ----------------------------------------------------------------------
 !              WRITE (STR,'("CNV=",3(1X,D10.3))') CSTVAL/CORNOR/VARVIO
 !              CALL me%ogwrit (3,STR)
-               WRITE (str,'(4X,5X,5X,3(1X,D10.3))') cstval , cornor , foldis
-               CALL me%ogwrit(3,str)
-               CALL me%ogwrit(3,"")
-               IF ( curpri>=maxpri ) THEN
-                  WRITE (str,'("MAXPRI=",I3)') maxpri
-                  CALL me%ogwrit(3,str)
+               write (str,'(4X,5X,5X,3(1X,D10.3))') cstval , cornor , foldis
+               call me%ogwrit(3,str)
+               call me%ogwrit(3,"")
+               if ( curpri>=maxpri ) then
+                  write (str,'("MAXPRI=",I3)') maxpri
+                  call me%ogwrit(3,str)
                   ! ======================================================================
                   ! ======================================================================
                   ! MATCHED INEQUALITY CONSTRAINTS + MINIMUM CORRECTION NORM
                   ! ----------------------------------------------------------------------
-                  CALL me%ogwrit(3,"")
-                  CALL me%ogwrit(3,"STATUS OF CONSTRAINTS:")
-                  CALL me%ogwrit(3,"")
-                  CALL me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
-                  DO con = 1 , me%Numcon
-                     IF ( me%Contyp(con)==-2 ) CYCLE
+                  call me%ogwrit(3,"")
+                  call me%ogwrit(3,"STATUS OF CONSTRAINTS:")
+                  call me%ogwrit(3,"")
+                  call me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
+                  do con = 1 , me%Numcon
+                     if ( me%Contyp(con)==-2 ) cycle
                      nam = me%Constr(con)
                      len = me%Conlen(con)
                      val = me%Conval(con)
-                     IF ( me%Conact(con)>0 ) THEN
-                        WRITE (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
-                        CALL me%ogwrit(3,str)
-                     ELSEIF ( me%Conact(con)==0 ) THEN
-                        WRITE (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
-                        CALL me%ogwrit(3,str)
-                     ELSEIF ( me%Conact(con)<0 ) THEN
-                        WRITE (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
-                        CALL me%ogwrit(3,str)
-                     ENDIF
-                  ENDDO
+                     if ( me%Conact(con)>0 ) then
+                        write (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
+                        call me%ogwrit(3,str)
+                     elseif ( me%Conact(con)==0 ) then
+                        write (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
+                        call me%ogwrit(3,str)
+                     elseif ( me%Conact(con)<0 ) then
+                        write (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
+                        call me%ogwrit(3,str)
+                     endif
+                  enddo
                   ! ======================================================================
                   ! ======================================================================
-                  IF ( me%Senopt<=0 ) CALL me%ogeval(me%Varval,me%Conval,0,me%Conder)
+                  if ( me%Senopt<=0 ) call me%ogeval(me%Varval,me%Conval,0,me%Conder)
                   spag_nextblock_1 = 2
-                  CYCLE SPAG_DispatchLoop_1
-               ELSE
-                  WRITE (str,'("CURPRI=",I3)') curpri
-                  CALL me%ogwrit(3,str)
+                  cycle SPAG_DispatchLoop_1
+               else
+                  write (str,'("CURPRI=",I3)') curpri
+                  call me%ogwrit(3,str)
                   curpri = curpri + 1
                   spag_nextblock_1 = 4
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                ! ----------------------------------------------------------------------
-            ELSEIF ( cstval<-cornor*varvio ) THEN
+            elseif ( cstval<-cornor*varvio ) then
                ! ----------------------------------------------------------------------
-               WRITE (str,'("CNV=",3(1X,D10.3))') cstval/cornor/varvio
-               CALL me%ogwrit(2,str)
-               CALL me%ogwrit(3,"")
-               WRITE (str,'("CSTVAL=",3D10.3)') cstval , cornor , varvio
-               CALL me%ogwrit(3,str)
-               IF ( inelop==1 ) THEN
-                  WRITE (str,'("INELOP=",I3)') inelop
-                  CALL me%ogwrit(3,str)
+               write (str,'("CNV=",3(1X,D10.3))') cstval/cornor/varvio
+               call me%ogwrit(2,str)
+               call me%ogwrit(3,"")
+               write (str,'("CSTVAL=",3D10.3)') cstval , cornor , varvio
+               call me%ogwrit(3,str)
+               if ( inelop==1 ) then
+                  write (str,'("INELOP=",I3)') inelop
+                  call me%ogwrit(3,str)
                   inelop = inelop + 1
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ELSE
+                  cycle SPAG_DispatchLoop_1
+               else
                   Finish = 0
                   spag_nextblock_1 = 6
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                ! ----------------------------------------------------------------------
-            ENDIF
+            endif
             ! ======================================================================
             ! IF CONSTRAINT IS HIT
             ! ----------------------------------------------------------------------
             ind = 0
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
-               IF ( me%Conact(con)/=-1 ) CYCLE
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
+               if ( me%Conact(con)/=-1 ) cycle
                val = dot_product(me%Conred(con,me%Numact+1:me%Numvar),corvec(me%Numact+1:me%Numvar))
-               IF ( val==0.0_wp ) CYCLE
+               if ( val==0.0_wp ) cycle
                val = -me%Conval(con)/val
-               IF ( val<=0.0_wp ) CYCLE
-               IF ( val>=foldis ) CYCLE
+               if ( val<=0.0_wp ) cycle
+               if ( val>=foldis ) cycle
                foldis = val
                ind = con
-            ENDDO
+            enddo
             ! ======================================================================
             ! UPDATE VARIABLES, CONSTRAINTS AND COST FUNCTION
             ! ----------------------------------------------------------------------
@@ -1119,32 +1119,32 @@ contains
             Varacc = Varacc + foldis
             me%Varval = me%Varval + varvec
             ! ----------------------------------------------------------------------
-            DO con = 1 , me%Numcon + 1
+            do con = 1 , me%Numcon + 1
                val = dot_product(corvec(me%Numact+1:me%Numvar),me%Conred(con,me%Numact+1:me%Numvar))
                me%Conval(con) = me%Conval(con) + val*foldis
-            ENDDO
+            enddo
             ! ----------------------------------------------------------------------
             cstval = cstval + foldis*cornor
             ! ======================================================================
             ! MAXIMUM TRAVEL DISTANCE REACHED: NEXT ITERATION
             ! ----------------------------------------------------------------------
-            IF ( ind==0 ) THEN
-               WRITE (str,'("CNV=",3(1X,D10.3))') cstval/cornor/varvio
-               CALL me%ogwrit(3,str)
-               WRITE (str,'(4X,5X,5X,3(1X,D10.3))') cstval , cornor , foldis
-               CALL me%ogwrit(3,str)
-               IF ( inelop==1 ) THEN
-                  WRITE (str,'("INELOP=",I3)') inelop
-                  CALL me%ogwrit(3,str)
+            if ( ind==0 ) then
+               write (str,'("CNV=",3(1X,D10.3))') cstval/cornor/varvio
+               call me%ogwrit(3,str)
+               write (str,'(4X,5X,5X,3(1X,D10.3))') cstval , cornor , foldis
+               call me%ogwrit(3,str)
+               if ( inelop==1 ) then
+                  write (str,'("INELOP=",I3)') inelop
+                  call me%ogwrit(3,str)
                   inelop = inelop + 1
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ELSE
+                  cycle SPAG_DispatchLoop_1
+               else
                   me%Numact = 0
                   spag_nextblock_1 = 6
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
-            ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
+            endif
             ! ======================================================================
             ! CONSTRAINT HIT: UPDATE CONSTRAINTS + CORRECT
             ! ----------------------------------------------------------------------
@@ -1152,101 +1152,101 @@ contains
             nam = me%Constr(con)
             len = me%Conlen(con)
             val = me%Conval(con)
-            WRITE (str,'(5X,5X,I4,3(1X,D10.3),1X,A)') con , cstval , cornor , foldis , nam(1:len)
-            CALL me%ogwrit(3,str)
-            IF ( conhit(con)>=20 ) THEN
-               WRITE (str,'("OGCORR-WARNING: CONSTRAINT HIT")')
-               CALL me%ogwrit(1,str)
-               WRITE (str,'("CON/HIT=",2I4)') con , conhit(con)
-               CALL me%ogwrit(1,str)
+            write (str,'(5X,5X,I4,3(1X,D10.3),1X,A)') con , cstval , cornor , foldis , nam(1:len)
+            call me%ogwrit(3,str)
+            if ( conhit(con)>=20 ) then
+               write (str,'("OGCORR-WARNING: CONSTRAINT HIT")')
+               call me%ogwrit(1,str)
+               write (str,'("CON/HIT=",2I4)') con , conhit(con)
+               call me%ogwrit(1,str)
                Finish = 0
                spag_nextblock_1 = 7
-               CYCLE SPAG_DispatchLoop_1
-            ENDIF
+               cycle SPAG_DispatchLoop_1
+            endif
             ! ----------------------------------------------------------------------
             conhit(con) = conhit(con) + 1
             spag_nextblock_1 = 5
-            CYCLE SPAG_DispatchLoop_1
-          CASE (6)
+            cycle SPAG_DispatchLoop_1
+          case (6)
             ! ======================================================================
             ! ======================================================================
             ! MATCHED INEQUALITY CONSTRAINTS + MINIMUM CORRECTION NORM
             ! ----------------------------------------------------------------------
-            CALL me%ogwrit(3,"")
-            WRITE (str,'("CSTVAL:",D13.6)') cstval
-            CALL me%ogwrit(3,str)
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3,"STATUS OF CONSTRAINTS:")
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
+            call me%ogwrit(3,"")
+            write (str,'("CSTVAL:",D13.6)') cstval
+            call me%ogwrit(3,str)
+            call me%ogwrit(3,"")
+            call me%ogwrit(3,"STATUS OF CONSTRAINTS:")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
                nam = me%Constr(con)
                len = me%Conlen(con)
                val = me%Conval(con)
-               IF ( me%Conact(con)>0 ) THEN
-                  WRITE (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
-                  CALL me%ogwrit(3,str)
-               ELSEIF ( me%Conact(con)==0 ) THEN
-                  WRITE (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
-                  CALL me%ogwrit(3,str)
-               ELSEIF ( me%Conact(con)<0 ) THEN
-                  WRITE (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
-                  CALL me%ogwrit(3,str)
-               ENDIF
-            ENDDO
+               if ( me%Conact(con)>0 ) then
+                  write (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
+                  call me%ogwrit(3,str)
+               elseif ( me%Conact(con)==0 ) then
+                  write (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
+                  call me%ogwrit(3,str)
+               elseif ( me%Conact(con)<0 ) then
+                  write (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
+                  call me%ogwrit(3,str)
+               endif
+            enddo
             ! ----------------------------------------------------------------------
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3,"STATUS OF VIOLATED CONSTRAINTS:")
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3," CON COST___VAL CONSTRAINT")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3,"STATUS OF VIOLATED CONSTRAINTS:")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3," CON COST___VAL CONSTRAINT")
             conerr = 0.0_wp
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
                nam = me%Constr(con)
                len = me%Conlen(con)
                val = me%Conval(con)
-               IF ( val<-dlt ) THEN
+               if ( val<-dlt ) then
                   conerr = conerr + abs(val)
-                  WRITE (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
-                  CALL me%ogwrit(3,str)
-               ELSEIF ( me%Contyp(con)/=0 ) THEN
-               ELSEIF ( val>dlt ) THEN
+                  write (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
+                  call me%ogwrit(3,str)
+               elseif ( me%Contyp(con)/=0 ) then
+               elseif ( val>dlt ) then
                   conerr = conerr + abs(val)
-                  WRITE (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
-                  CALL me%ogwrit(3,str)
-               ENDIF
-            ENDDO
+                  write (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
+                  call me%ogwrit(3,str)
+               endif
+            enddo
             ! ----------------------------------------------------------------------
-            CALL me%ogwrit(3,"")
-            WRITE (str,'("LINEAR ERROR.: ",D13.6)') conerr
-            CALL me%ogwrit(3,str)
+            call me%ogwrit(3,"")
+            write (str,'("LINEAR ERROR.: ",D13.6)') conerr
+            call me%ogwrit(3,str)
             spag_nextblock_1 = 7
-          CASE (7)
+          case (7)
             ! ----------------------------------------------------------------------
             ! ----------------------------------------------------------------------
             me%Contyp = conttt
             me%Conpri = prisav
             ! ----------------------------------------------------------------------
-            DEALLOCATE (cosact)
-            DEALLOCATE (varvec)
-            DEALLOCATE (varsav)
-            DEALLOCATE (varcor)
-            DEALLOCATE (corvec)
-            DEALLOCATE (consav)
-            DEALLOCATE (conttt)
-            DEALLOCATE (concor)
-            DEALLOCATE (coninc)
-            DEALLOCATE (conhit)
-            DEALLOCATE (fffcon)
-            DEALLOCATE (prisav)
-            EXIT SPAG_DispatchLoop_1
-         END SELECT
-      ENDDO SPAG_DispatchLoop_1
+            deallocate (cosact)
+            deallocate (varvec)
+            deallocate (varsav)
+            deallocate (varcor)
+            deallocate (corvec)
+            deallocate (consav)
+            deallocate (conttt)
+            deallocate (concor)
+            deallocate (coninc)
+            deallocate (conhit)
+            deallocate (fffcon)
+            deallocate (prisav)
+            exit SPAG_DispatchLoop_1
+         end select
+      enddo SPAG_DispatchLoop_1
    ! ======================================================================
-   END SUBROUTINE ogcorr
+   end subroutine ogcorr
 
-   SUBROUTINE ogeval(me,Valvar,Valcon,Varder,Dercon)
+   subroutine ogeval(me,Valvar,Valcon,Varder,Dercon)
 
       !! COMPUTES SCALED CONTRAINTS+MERIT AND DERIVATIVES
       !! FROM     SCALED VARIABLES
@@ -1273,35 +1273,35 @@ contains
 
       !real(wp) :: ggg(4,4) , bbb(4) , vvv(4)  ! JW : not sure what this was for
       real(wp) :: objval
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: convec
+      real(wp) , dimension(:) , allocatable :: varvec
+      real(wp) , dimension(:) , allocatable :: convec
 
-      ALLOCATE (varvec(me%Numvar))
-      ALLOCATE (convec(me%Numcon+1))
+      allocate (varvec(me%Numvar))
+      allocate (convec(me%Numcon+1))
 
       ! ======================================================================
       ! GENERAL
       ! ----------------------------------------------------------------------
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
+      write (str,'()')
+      call me%ogwrit(3,str)
       select case (Varder)
-       case ( 0 );    WRITE (str,'("COMPUTE RESULTS")')
-       case ( 1, -1); WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES USER DEFINED")')
-       case ( 2 );    WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES BY DOUBLE DIFFERENCING")')
-       case ( 3 );    WRITE (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES BY SINGLE DIFFERENCING")')
+       case ( 0 );    write (str,'("COMPUTE RESULTS")')
+       case ( 1, -1); write (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES USER DEFINED")')
+       case ( 2 );    write (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES BY DOUBLE DIFFERENCING")')
+       case ( 3 );    write (str,'("COMPUTE RESULTS",'//'   " AND DERIVATIVES BY SINGLE DIFFERENCING")')
       end select
-      CALL me%ogwrit(3,str)
+      call me%ogwrit(3,str)
 
       ! ======================================================================
       ! WRITE VARIABLES
       ! ----------------------------------------------------------------------
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
-      WRITE (str,'("VARIABLES NOT SCALED:")')
-      CALL me%ogwrit(3,str)
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
-      DO var = 1 , me%Numvar
+      write (str,'()')
+      call me%ogwrit(3,str)
+      write (str,'("VARIABLES NOT SCALED:")')
+      call me%ogwrit(3,str)
+      write (str,'()')
+      call me%ogwrit(3,str)
+      do var = 1 , me%Numvar
          val = Valvar(var)
          sca = me%Varsca(var)
          cod = me%Vartyp(var)
@@ -1311,27 +1311,27 @@ contains
          end select
          nam = me%Varstr(var)
          len = me%Varlen(var)
-         WRITE (str,'("VAR/VAL/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') &
+         write (str,'("VAR/VAL/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') &
             var , val*sca , sca , typ , nam(1:len)
-         CALL me%ogwrit(3,str)
-      ENDDO
+         call me%ogwrit(3,str)
+      enddo
 
       ! ======================================================================
       ! DE-SCALE VARIABLES
       ! ----------------------------------------------------------------------
-      DO var = 1 , me%Numvar
+      do var = 1 , me%Numvar
          varvec(var) = Valvar(var)*me%Varsca(var)
-      ENDDO
+      enddo
 
       ! ======================================================================
       ! GET RESULTS
       ! GET DERIVATIVES IF USER DEFINED
       ! ----------------------------------------------------------------------
       select case (Varder)
-       case ( 0 );     CALL me%calval(varvec,Valcon,0)
-       case ( 1, -1 ); CALL me%calval(varvec,Valcon,1)
-       case ( 2 );     CALL me%calval(varvec,Valcon,1)
-       case ( 3 );     CALL me%calval(varvec,Valcon,1)
+       case ( 0 );     call me%calval(varvec,Valcon,0)
+       case ( 1, -1 ); call me%calval(varvec,Valcon,1)
+       case ( 2 );     call me%calval(varvec,Valcon,1)
+       case ( 3 );     call me%calval(varvec,Valcon,1)
       end select
 
 ! ======================================================================
@@ -1371,80 +1371,80 @@ contains
       ! ----------------------------------------------------------------------
       ! SCALE RESULTS
       ! ----------------------------------------------------------------------
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          convec(con) = Valcon(con)
          sca = me%Consca(con)
          cod = me%Contyp(con)
-         IF ( cod==-1 ) sca = -sca
+         if ( cod==-1 ) sca = -sca
          Valcon(con) = Valcon(con)/sca
-      ENDDO
+      enddo
 
       ! ======================================================================
       ! WRITE RESULTS
       ! ----------------------------------------------------------------------
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
-      WRITE (str,'("RESULTS NOT SCALED:")')
-      CALL me%ogwrit(3,str)
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
+      write (str,'()')
+      call me%ogwrit(3,str)
+      write (str,'("RESULTS NOT SCALED:")')
+      call me%ogwrit(3,str)
+      write (str,'()')
+      call me%ogwrit(3,str)
       conerr = 0.0_wp  ! total constraint error (scaled to constr. threshod)
       convio = 0.0_wp  ! total constaint error norm (unscaled)
       ind = 0          ! index of largest constraint violation
       fac = 0.0_wp     ! value of largest constraint violation
       numvio = 0       ! number of violated constraints
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          val = Valcon(con)
          sca = me%Consca(con)
          cod = me%Contyp(con)
          sta = "   "
          err = 0.0_wp
-         IF ( cod==-1 ) sca = -sca
-         IF ( cod==-2 ) typ = "DER"
-         IF ( cod==-1 .AND. con<=me%Numcon ) typ = "LTE"
-         IF ( cod==0 .AND. con<=me%Numcon ) typ = "EQU"
-         IF ( cod==1 .AND. con<=me%Numcon ) typ = "GTE"
-         IF ( cod==-1 .AND. con>me%Numcon ) typ = "MIN"
-         IF ( cod==1 .AND. con>me%Numcon ) typ = "MAX"
-         IF ( cod==0 .AND. con<=me%Numcon .AND. abs(val)>1.0_wp ) THEN
+         if ( cod==-1 ) sca = -sca
+         if ( cod==-2 ) typ = "DER"
+         if ( cod==-1 .and. con<=me%Numcon ) typ = "LTE"
+         if ( cod==0 .and. con<=me%Numcon ) typ = "EQU"
+         if ( cod==1 .and. con<=me%Numcon ) typ = "GTE"
+         if ( cod==-1 .and. con>me%Numcon ) typ = "MIN"
+         if ( cod==1 .and. con>me%Numcon ) typ = "MAX"
+         if ( cod==0 .and. con<=me%Numcon .and. abs(val)>1.0_wp ) then
             sta = "VIO"
             err = abs(val)
             numvio = numvio + 1
-         ENDIF
-         IF ( cod/=0 .AND. con<=me%Numcon .AND. cod/=-2 .AND. -val>1.0_wp ) THEN
+         endif
+         if ( cod/=0 .and. con<=me%Numcon .and. cod/=-2 .and. -val>1.0_wp ) then
             sta = "VIO"
             err = abs(val)
             numvio = numvio + 1
-         ENDIF
+         endif
          conerr = conerr + err
          convio = convio + (err*sca)**2
-         IF ( err>fac ) ind = con
-         IF ( err>fac ) fac = err
+         if ( err>fac ) ind = con
+         if ( err>fac ) fac = err
          nam = me%Constr(con)
          len = me%Conlen(con)
-         WRITE (str,'("CON/VAL/SCA/TYP/STA/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A3,1X,A)') &
+         write (str,'("CON/VAL/SCA/TYP/STA/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A3,1X,A)') &
             con , val*sca , sca , typ , sta , nam(1:len)
-         CALL me%ogwrit(3,str)
-      ENDDO
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
-      WRITE (str,'("CONSTRAINT ERROR.:",2(1X,D13.6),I6)') conerr , fac , ind
-      CALL me%ogwrit(3,str)
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
+         call me%ogwrit(3,str)
+      enddo
+      write (str,'()')
+      call me%ogwrit(3,str)
+      write (str,'("CONSTRAINT ERROR.:",2(1X,D13.6),I6)') conerr , fac , ind
+      call me%ogwrit(3,str)
+      write (str,'()')
+      call me%ogwrit(3,str)
       ! write pygmo-style log output
       objval = -Valcon(me%Numcon+1)
       convio = sqrt(convio)
-      CALL me%ogpwri(objval,numvio,convio)
+      call me%ogpwri(objval,numvio,convio)
 
       ! ======================================================================
       ! NO DERIVATIVES
       ! ----------------------------------------------------------------------
-      IF ( Varder==0 ) THEN
-         RETURN
-      ELSEIF ( Varder==1 .OR. Varder==-1 ) THEN
-         CALL me%calder(varvec,convec,Dercon)
-      ENDIF
+      if ( Varder==0 ) then
+         return
+      elseif ( Varder==1 .or. Varder==-1 ) then
+         call me%calder(varvec,convec,Dercon)
+      endif
 
 ! ----------------------------------------------------------------------
 !    IF ( 1==2 ) THEN
@@ -1458,14 +1458,14 @@ contains
       ! ======================================================================
       ! WRITE DERIVATIVES
       ! ----------------------------------------------------------------------
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
-      WRITE (str,'("DERIVATIVES SCALED:")')
-      CALL me%ogwrit(3,str)
-      WRITE (str,'()')
-      CALL me%ogwrit(3,str)
+      write (str,'()')
+      call me%ogwrit(3,str)
+      write (str,'("DERIVATIVES SCALED:")')
+      call me%ogwrit(3,str)
+      write (str,'()')
+      call me%ogwrit(3,str)
 
-      DO var = 1 , me%Numvar
+      do var = 1 , me%Numvar
 
          ! ----------------------------------------------------------------------
          ! WRITE VARIABLE
@@ -1473,82 +1473,82 @@ contains
          val = Valvar(var)
          sca = me%Varsca(var)
          cod = me%Vartyp(var)
-         IF ( cod==0 ) typ = "FRE"
-         IF ( cod==1 ) typ = "PAR"
+         if ( cod==0 ) typ = "FRE"
+         if ( cod==1 ) typ = "PAR"
          nam = me%Varstr(var)
          len = me%Varlen(var)
-         WRITE (str,'("VAR/VAL/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') var , val*sca , sca , typ , nam(1:len)
-         CALL me%ogwrit(4,str)
-         WRITE (str,'()')
-         CALL me%ogwrit(4,str)
+         write (str,'("VAR/VAL/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') var , val*sca , sca , typ , nam(1:len)
+         call me%ogwrit(4,str)
+         write (str,'()')
+         call me%ogwrit(4,str)
 
          select case (Varder)
           case ( 2 )  ! DERIVATIVES BY DOUBLE DIFFERENCING
             per = me%Varper(var)
             sav = varvec(var)
             varvec(var) = sav + per
-            CALL me%calval(varvec,Dercon(1:,var),0)  ! JW added : here
+            call me%calval(varvec,Dercon(1:,var),0)  ! JW added : here
             varvec(var) = sav - per
-            CALL me%calval(varvec,convec,0)
+            call me%calval(varvec,convec,0)
             fac = 0.5_wp/per
-            DO con = 1 , me%Numcon + 1
+            do con = 1 , me%Numcon + 1
                Dercon(con,var) = (Dercon(con,var)-convec(con))*fac
-            ENDDO
+            enddo
             varvec(var) = sav
           case ( 3 )  ! DERIVATIVES BY SINGLE DIFFERENCING
             per = me%Varper(var)
             sav = varvec(var)
             varvec(var) = sav + per
-            CALL me%calval(varvec,Dercon(1:,var),0)  ! JW added : here
+            call me%calval(varvec,Dercon(1:,var),0)  ! JW added : here
             fac = 1.0_wp/per
-            DO con = 1 , me%Numcon + 1
+            do con = 1 , me%Numcon + 1
                Dercon(con,var) = (Dercon(con,var)-convec(con))*fac
-            ENDDO
+            enddo
             varvec(var) = sav
          end select
 
          ! ----------------------------------------------------------------------
          ! SCALE DERIVATIVES
          ! ----------------------------------------------------------------------
-         DO con = 1 , me%Numcon + 1
+         do con = 1 , me%Numcon + 1
             fac = me%Varsca(var)/me%Consca(con)
-            IF ( me%Contyp(con)==-1 ) fac = -fac
+            if ( me%Contyp(con)==-1 ) fac = -fac
             Dercon(con,var) = Dercon(con,var)*fac
-         ENDDO
+         enddo
 
          ! ----------------------------------------------------------------------
          ! WRITE DERIVATIVES
          ! ======================================================================
-         DO con = 1 , me%Numcon + 1
+         do con = 1 , me%Numcon + 1
             der = Dercon(con,var)
-            IF ( der/=0.0_wp ) THEN
+            if ( der/=0.0_wp ) then
                sca = me%Consca(con)
                cod = me%Contyp(con)
-               IF ( cod==-1 ) sca = -sca
-               IF ( cod==-2 ) typ = "DER"
-               IF ( cod==-1 .AND. con<=me%Numcon ) typ = "LTE"
-               IF ( cod==0 .AND. con<=me%Numcon ) typ = "EQU"
-               IF ( cod==1 .AND. con<=me%Numcon ) typ = "GTE"
-               IF ( cod==-1 .AND. con>me%Numcon ) typ = "MIN"
-               IF ( cod==1 .AND. con>me%Numcon ) typ = "MAX"
+               if ( cod==-1 ) sca = -sca
+               if ( cod==-2 ) typ = "DER"
+               if ( cod==-1 .and. con<=me%Numcon ) typ = "LTE"
+               if ( cod==0 .and. con<=me%Numcon ) typ = "EQU"
+               if ( cod==1 .and. con<=me%Numcon ) typ = "GTE"
+               if ( cod==-1 .and. con>me%Numcon ) typ = "MIN"
+               if ( cod==1 .and. con>me%Numcon ) typ = "MAX"
                nam = me%Constr(con)
                len = me%Conlen(con)
-               WRITE (str,'("CON/DER/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') &
+               write (str,'("CON/DER/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') &
                   con , der*sca/me%Varsca(var) , sca , typ , nam(1:len)
-               CALL me%ogwrit(4,str)
-            ENDIF
-         ENDDO
-         WRITE (str,'()')
-         CALL me%ogwrit(4,str)
+               call me%ogwrit(4,str)
+            endif
+         enddo
+         write (str,'()')
+         call me%ogwrit(4,str)
 
-      ENDDO
+      enddo
 
-      DEALLOCATE (varvec)
-      DEALLOCATE (convec)
+      deallocate (varvec)
+      deallocate (convec)
 
-   END SUBROUTINE ogeval
+   end subroutine ogeval
 
-   SUBROUTINE ogexcl(me,Exc)
+   subroutine ogexcl(me,Exc)
 
       !! REMOVE CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
       !!
@@ -1560,7 +1560,7 @@ contains
 
       real(wp) :: val , bet , gam
       integer(ip) :: row , col , act , con
-      CHARACTER(len=256) :: str
+      character(len=256) :: str
 
       ! ======================================================================
       ! ADJUST LIST OF ACTIVE CONSTRAINTS
@@ -1568,54 +1568,54 @@ contains
       con = me%Actcon(Exc)
       me%Conact(con) = 0
       me%Numact = me%Numact - 1
-      DO act = Exc , me%Numact
+      do act = Exc , me%Numact
          con = me%Actcon(act+1)
          me%Actcon(act) = con
          me%Conact(con) = me%Conact(con) - 1
-      ENDDO
+      enddo
       ! ======================================================================
       ! REDUCE FOR SUBSEQUENT CONSTRAINTS
       ! ----------------------------------------------------------------------
-      DO act = Exc , me%Numact
+      do act = Exc , me%Numact
          con = me%Actcon(act)
          val = 0.0_wp
-         DO col = act , act + 1
+         do col = act , act + 1
             val = val + me%Conred(con,col)**2
-         ENDDO
+         enddo
          val = sqrt(val)
-         IF ( me%Conred(con,act)>0.0_wp ) val = -val
-         IF ( abs(val)<1.0e-15_wp ) THEN
-            WRITE (me%Loglun,*) "OGEXCL-ERROR: CONSTRAINTS SINGULAR"
-            CALL me%ogwrit(2,str)
-            WRITE (me%Loglun,*) "VAL=" , val
-            CALL me%ogwrit(2,str)
-            STOP
-         ENDIF
+         if ( me%Conred(con,act)>0.0_wp ) val = -val
+         if ( abs(val)<1.0e-15_wp ) then
+            write (me%Loglun,*) "OGEXCL-ERROR: CONSTRAINTS SINGULAR"
+            call me%ogwrit(2,str)
+            write (me%Loglun,*) "VAL=" , val
+            call me%ogwrit(2,str)
+            stop
+         endif
          me%Conred(con,act) = me%Conred(con,act) - val
          bet = 1.0_wp/(val*me%Conred(con,act))
-         DO row = 1 , me%Numcon + 3
-            IF ( me%Conact(row)>act .OR. me%Conact(row)<=0 ) THEN
+         do row = 1 , me%Numcon + 3
+            if ( me%Conact(row)>act .or. me%Conact(row)<=0 ) then
                gam = 0.0_wp
-               DO col = act , act + 1
-                  IF ( me%Conred(row,col)/=0.0_wp ) gam = gam + me%Conred(row,col)*me%Conred(con,col)
-               ENDDO
-               IF ( gam/=0.0_wp ) THEN
+               do col = act , act + 1
+                  if ( me%Conred(row,col)/=0.0_wp ) gam = gam + me%Conred(row,col)*me%Conred(con,col)
+               enddo
+               if ( gam/=0.0_wp ) then
                   gam = gam*bet
-                  DO col = act , act + 1
+                  do col = act , act + 1
                      me%Conred(row,col) = me%Conred(row,col) + me%Conred(con,col)*gam
-                  ENDDO
-               ENDIF
-            ENDIF
-         ENDDO
+                  enddo
+               endif
+            endif
+         enddo
          me%Conred(con,act) = val
-         DO col = act + 1 , act + 1
+         do col = act + 1 , act + 1
             me%Conred(con,col) = 0.0_wp
-         ENDDO
-      ENDDO
+         enddo
+      enddo
       ! ======================================================================
-   END SUBROUTINE ogexcl
+   end subroutine ogexcl
 
-   SUBROUTINE ogexec(me,Valvar,Valcon,Finopt,Finite)
+   subroutine ogexec(me,Valvar,Valcon,Finopt,Finite)
       !! Main routine.
       !!
       !! 2008/01/16 | J. SCHOENMAEKERS | NEW
@@ -1637,32 +1637,32 @@ contains
       integer(ip) :: finish , itecor , iteopt
       integer(ip) :: var , con , typ , len , num , numvio
       real(wp) :: val , sca , red , der , fac , old , convio
-      CHARACTER(len=256) :: str , nam
+      character(len=256) :: str , nam
 
       integer(ip) :: numequ , itediv , itecnv
       real(wp) :: varacc , cosnew , cosold , varsav , meamer
       real(wp) :: conerr , desnor , norerr , meaerr
 
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varsum
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varcor
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: concor
-      INTEGER :: spag_nextblock_1
+      real(wp) , dimension(:) , allocatable :: varsum
+      real(wp) , dimension(:) , allocatable :: varcor
+      real(wp) , dimension(:) , allocatable :: concor
+      integer :: spag_nextblock_1
 
       spag_nextblock_1 = 1
-      SPAG_DispatchLoop_1: DO
-         SELECT CASE (spag_nextblock_1)
-          CASE (1)
+      SPAG_DispatchLoop_1: do
+         select case (spag_nextblock_1)
+          case (1)
             ! ----------------------------------------------------------------------
-            ALLOCATE (varsum(me%Numvar))
-            ALLOCATE (varcor(me%Numvar))
-            ALLOCATE (concor(me%Numcon+1))
+            allocate (varsum(me%Numvar))
+            allocate (varcor(me%Numvar))
+            allocate (concor(me%Numcon+1))
             ! ======================================================================
             ! GENERAL
             ! ----------------------------------------------------------------------
             ! LOGLEV = 2
-            CALL me%ogwrit(2,"")
-            CALL me%ogwrit(2,"OPTGRA START")
-            CALL me%ogwrit(2,"")
+            call me%ogwrit(2,"")
+            call me%ogwrit(2,"OPTGRA START")
+            call me%ogwrit(2,"")
             Finopt = 3
             itecor = 0
             iteopt = 0
@@ -1678,154 +1678,154 @@ contains
             me%Varstp = me%Varsnd
             me%Numite = 0
             cosnew = 0.0_wp
-            DO var = 1 , me%Numvar
+            do var = 1 , me%Numvar
                varsum(var) = 0.0_wp
                varcor(var) = 0.0_wp
-            ENDDO
+            enddo
             ! ======================================================================
             ! EQUALTIY CONSTRAINTS IN ACTIVE SET
             ! ----------------------------------------------------------------------
             me%Numact = 0
-            DO con = 1 , me%Numcon
+            do con = 1 , me%Numcon
 !              IF (CONTYP(CON) == -2) CYCLE
                nam = me%Constr(con)
                len = me%Conlen(con)
-               WRITE (str,*) "CON/PRI=" , con , me%Conpri(con) , " " , nam(1:len)
-               CALL me%ogwrit(3,str)
+               write (str,*) "CON/PRI=" , con , me%Conpri(con) , " " , nam(1:len)
+               call me%ogwrit(3,str)
                me%Conact(con) = 0
-               IF ( me%Consca(con)>=1.0e+09_wp ) me%Contyp(con) = -2
-               IF ( me%Contyp(con)==0 ) THEN
-               ELSEIF ( me%Contyp(con)==-2 ) THEN
+               if ( me%Consca(con)>=1.0e+09_wp ) me%Contyp(con) = -2
+               if ( me%Contyp(con)==0 ) then
+               elseif ( me%Contyp(con)==-2 ) then
                   me%Conact(con) = -2
-               ENDIF
-            ENDDO
+               endif
+            enddo
             numequ = me%Numact
             me%Conact(me%Numcon+1) = -3
             me%Conact(me%Numcon+2) = -3
             ! ======================================================================
             ! SCALE VARIABLES
             ! ----------------------------------------------------------------------
-            DO var = 1 , me%Numvar
+            do var = 1 , me%Numvar
                me%Varval(var) = Valvar(var)/me%Varsca(var)
-            ENDDO
+            enddo
             ! ======================================================================
             ! HEADER FOR TABLE
             ! ----------------------------------------------------------------------
-            IF ( me%Tablev>=1 ) WRITE (me%Tablun,'("ITER",1X,"OPT",1X,*(1X,I10))') (var,var=1,me%Numvar) , (con,con=1,me%Numcon)
+            if ( me%Tablev>=1 ) write (me%Tablun,'("ITER",1X,"OPT",1X,*(1X,I10))') (var,var=1,me%Numvar) , (con,con=1,me%Numcon)
             spag_nextblock_1 = 2
-          CASE (2)
-            SPAG_Loop_1_1: DO
+          case (2)
+            SPAG_Loop_1_1: do
                ! ======================================================================
                !      IF (NUMITE >= 52) MATLEV = 3
                !      IF (NUMITE >= 55) MATLEV = 2
                ! ======================================================================
                ! NEW ITERATION
                ! ----------------------------------------------------------------------
-               IF ( me%Numite>=me%Corite .AND. itecor==0 ) THEN
+               if ( me%Numite>=me%Corite .and. itecor==0 ) then
                   Finopt = 3
                   Finite = me%Numite
-                  CALL me%ogwrit(1,"")
-                  WRITE (str,'("OPTGRA: Converged: not ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-                  CALL me%ogwrit(1,str)
+                  call me%ogwrit(1,"")
+                  write (str,'("OPTGRA: Converged: not ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+                  call me%ogwrit(1,str)
 
                   ! Final Pygmo output
                   ! TODO: can this final fitness call be avoided (just for output)?
                   me%Pygfla = 3 ! pygmo flag in COMMON: no covergence
-                  CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ELSEIF ( me%Numite>=me%Maxite .OR. (me%Numite-itecor>=me%Optite-1 .AND. itecor/=0) ) THEN
+                  cycle SPAG_DispatchLoop_1
+               elseif ( me%Numite>=me%Maxite .or. (me%Numite-itecor>=me%Optite-1 .and. itecor/=0) ) then
                   Finopt = 2
                   Finite = iteopt
                   me%Varval = varcor
                   me%Conval = concor
-                  CALL me%ogwrit(1,"")
-                  WRITE (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-                  CALL me%ogwrit(1,str)
-                  CALL me%ogpwri_end(-Valcon(me%Numcon+1),numvio,convio)
+                  call me%ogwrit(1,"")
+                  write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+                  call me%ogwrit(1,str)
+                  call me%ogpwri_end(-Valcon(me%Numcon+1),numvio,convio)
 
                   ! Final Pygmo output
                   ! TODO: can this final fitness call be avoided (just for output)?
                   me%Pygfla = 2 ! pygmo flag in COMMON: constraints matched
-                  CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                ! ----------------------------------------------------------------------
                me%Numite = me%Numite + 1
                ! ----------------------------------------------------------------------
-               CALL me%ogwrit(3,"")
-               WRITE (str,'("ITERAT=",I5)')me%Numite
-               CALL me%ogwrit(2,str)
+               call me%ogwrit(3,"")
+               write (str,'("ITERAT=",I5)')me%Numite
+               call me%ogwrit(2,str)
                ! ======================================================================
                ! GET VALUES AND GRADIENTS
                ! ======================================================================
-               IF ( me%Senopt<=0 ) THEN
-                  CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
-               ELSEIF ( me%Senopt==+1 .OR. me%Senopt==+3 ) THEN
+               if ( me%Senopt<=0 ) then
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+               elseif ( me%Senopt==+1 .or. me%Senopt==+3 ) then
                   me%Varval = me%Senvar
-                  CALL me%ogeval(me%Varval,me%Conval,0,me%Conder(1:me%Numcon+1,:))
-               ELSEIF ( me%Senopt==+2 .OR. me%Senopt==+4 ) THEN
+                  call me%ogeval(me%Varval,me%Conval,0,me%Conder(1:me%Numcon+1,:))
+               elseif ( me%Senopt==+2 .or. me%Senopt==+4 ) then
                   me%Varval = me%Senvar
-                  DO con = 1 , me%Numcon + 1
+                  do con = 1 , me%Numcon + 1
                      sca = me%Consca(con)
-                     IF ( me%Contyp(con)==-1 ) sca = -sca
+                     if ( me%Contyp(con)==-1 ) sca = -sca
                      me%Conval(con) = me%Sencon(con) - me%Sendel(con)/sca
-                  ENDDO
-               ENDIF
-               IF ( me%Senopt==-1 ) THEN
+                  enddo
+               endif
+               if ( me%Senopt==-1 ) then
                   me%Senvar = me%Varval
                   me%Sencon = me%Conval
-               ENDIF
+               endif
                ! ======================================================================
-               IF ( me%Varder==-1 .AND. me%Senopt<=0 ) THEN
+               if ( me%Varder==-1 .and. me%Senopt<=0 ) then
                   me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:)
-                  CALL me%ogeval(me%Varval,me%Conval,2,me%Conder(1:me%Numcon+1,:))
-                  WRITE (str,'("GRADIENT CHECK")')
-                  CALL me%ogwrit(1,str)
-                  DO var = 1 , me%Numvar
-                     DO con = 1 , me%Numcon + 1
+                  call me%ogeval(me%Varval,me%Conval,2,me%Conder(1:me%Numcon+1,:))
+                  write (str,'("GRADIENT CHECK")')
+                  call me%ogwrit(1,str)
+                  do var = 1 , me%Numvar
+                     do con = 1 , me%Numcon + 1
                         fac = me%Varsca(var)/me%Consca(con)
                         fac = 1.0_wp
                         der = me%Conder(con,var)*fac
                         red = me%Conred(con,var)*fac
-                        IF ( abs(der)<1.0e-6_wp .AND. abs(red)<1.0e-6_wp ) CYCLE
-                        IF ( abs(der-red)<1.0e-2_wp ) CYCLE
-                        IF ( der/=0.0_wp ) THEN
+                        if ( abs(der)<1.0e-6_wp .and. abs(red)<1.0e-6_wp ) cycle
+                        if ( abs(der-red)<1.0e-2_wp ) cycle
+                        if ( der/=0.0_wp ) then
                            fac = red/der
-                        ELSE
+                        else
                            fac = 0.0_wp
-                        ENDIF
-                        IF ( abs(fac-1.0_wp)<1.0e-2_wp ) CYCLE
-                        WRITE (str,'("VAR/CON/ANA/NUM/A2N=",2I4,3(1X,D13.6))') var , con , red , der , fac
-                        CALL me%ogwrit(1,str)
+                        endif
+                        if ( abs(fac-1.0_wp)<1.0e-2_wp ) cycle
+                        write (str,'("VAR/CON/ANA/NUM/A2N=",2I4,3(1X,D13.6))') var , con , red , der , fac
+                        call me%ogwrit(1,str)
                         nam = me%Varstr(var)
                         len = me%Varlen(var)
-                        WRITE (str,'("      VAR=",A,1X,D13.6)') nam(1:len) , me%Varval(var)*me%Varsca(var)
-                        CALL me%ogwrit(1,str)
+                        write (str,'("      VAR=",A,1X,D13.6)') nam(1:len) , me%Varval(var)*me%Varsca(var)
+                        call me%ogwrit(1,str)
                         nam = me%Constr(con)
                         len = me%Conlen(con)
-                        WRITE (str,'("      CON=",A,1X,D13.6)') nam(1:len) , me%Conval(con)*me%Consca(con)
-                        CALL me%ogwrit(1,str)
-                     ENDDO
-                  ENDDO
+                        write (str,'("      CON=",A,1X,D13.6)') nam(1:len) , me%Conval(con)*me%Consca(con)
+                        call me%ogwrit(1,str)
+                     enddo
+                  enddo
 !                 CONDER(1:NUMCON+1,:) = CONRED(1:NUMCON+1,:)
 !                 GOTO 9999
-               ENDIF
+               endif
                ! ======================================================================
                me%Sender = me%Conder
-               DO var = 1 , me%Numvar
-                  IF ( me%Vartyp(var)/=1 ) CYCLE
+               do var = 1 , me%Numvar
+                  if ( me%Vartyp(var)/=1 ) cycle
 !                 WRITE (STR,*) "VAR=",VAR,VARVAL(VAR)*VARSCA(VAR)
 !                 CALL me%ogwrit (2,STR)
                   me%Conder(1:me%Numcon+1,var) = 0.0_wp
-               ENDDO
+               enddo
                ! ======================================================================
-               IF ( me%Numite==1 ) THEN
+               if ( me%Numite==1 ) then
                   me%Vargrd = me%Varval
-               ELSE
+               else
                   me%Vargrd = me%Varref
-               ENDIF
+               endif
                me%Varref = me%Varval
                me%Conref = me%Conval
                ! ======================================================================
@@ -1833,25 +1833,25 @@ contains
                ! ======================================================================
                cosold = cosnew
                cosnew = me%Conval(me%Numcon+1)
-               CALL me%ogwrit(3,"")
-               WRITE (str,'("OPTGRA: VALCOS=",D15.8,1X,D15.8)') cosnew , cosnew - cosold
-               CALL me%ogwrit(3,str)
+               call me%ogwrit(3,"")
+               write (str,'("OPTGRA: VALCOS=",D15.8,1X,D15.8)') cosnew , cosnew - cosold
+               call me%ogwrit(3,str)
                ! ======================================================================
                ! CORRECTION PART
                ! ----------------------------------------------------------------------
-               CALL me%ogcorr(varacc,finish,conerr,norerr)
+               call me%ogcorr(varacc,finish,conerr,norerr)
                ! ----------------------------------------------------------------------
-               IF ( me%Tablev>=1 ) WRITE (me%Tablun,'(I4,1X,"COR",1X,*(1X,D10.3))') &
+               if ( me%Tablev>=1 ) write (me%Tablun,'(I4,1X,"COR",1X,*(1X,D10.3))') &
                   me%Numite , (me%Varval(var),var=1,me%Numvar) , (me%Conval(con),con=1,me%Numcon)
                ! ----------------------------------------------------------------------
-               IF ( me%Senopt/=0 ) THEN
-                  IF ( finish/=0 ) EXIT SPAG_Loop_1_1
+               if ( me%Senopt/=0 ) then
+                  if ( finish/=0 ) exit SPAG_Loop_1_1
                   Finopt = 0
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                ! ----------------------------------------------------------------------
-               IF ( finish==0 ) THEN
+               if ( finish==0 ) then
                   me%Numact = 0
                   old = meaerr
                   itediv = itediv + 1
@@ -1859,32 +1859,32 @@ contains
                   meaerr = (meaerr*(num-1)+norerr)/num
 !                 WRITE (STR,*) "MEAERR=",MEAERR
 !                 CALL me%ogwrit (2,STR)
-                  IF ( itediv<me%Divite .OR. meaerr<=old ) CYCLE
+                  if ( itediv<me%Divite .or. meaerr<=old ) cycle
                   finish = -1
-               ENDIF
+               endif
                ! ----------------------------------------------------------------------
-               IF ( finish==-1 ) THEN
+               if ( finish==-1 ) then
                   Finopt = 4
                   Finite = me%Numite
-                  CALL me%ogwrit(1,"")
-                  WRITE (str,'("OPTGRA: Converged: unf ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-                  CALL me%ogwrit(1,str)
+                  call me%ogwrit(1,"")
+                  write (str,'("OPTGRA: Converged: unf ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+                  call me%ogwrit(1,str)
 
                   ! Final Pygmo output
                   ! TODO: can this final fitness call be avoided (just for output)?
                   me%Pygfla = 4 ! pygmo flag in COMMON: infeasible
-                  CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                ! ----------------------------------------------------------------------
                itediv = 0
                iteopt = me%Numite
-               IF ( itecor==0 .OR. concor(me%Numcon+1)<me%Conval(me%Numcon+1) ) THEN
+               if ( itecor==0 .or. concor(me%Numcon+1)<me%Conval(me%Numcon+1) ) then
                   varcor = me%Varval
                   concor = me%Conval
-               ENDIF
-               IF ( itecor==0 ) itecor = me%Numite
+               endif
+               if ( itecor==0 ) itecor = me%Numite
                ! ----------------------------------------------------------------------
                old = meamer
                itecnv = itecnv + 1
@@ -1892,75 +1892,75 @@ contains
                meamer = (meamer*(num-1)+concor(me%Numcon+1))/num
 !              WRITE (STR,*) "MEAMER=",ITECNV,NUM,MEAMER,OLD,OLD/MEAMER
 !              CALL me%ogwrit (-1,STR)
-               IF ( itecnv>=me%Cnvite .AND. meamer<old ) THEN
+               if ( itecnv>=me%Cnvite .and. meamer<old ) then
                   Finopt = 2
                   Finite = iteopt
                   me%Varval = varcor
                   me%Conval = concor
-                  CALL me%ogwrit(1,"")
-                  WRITE (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-                  CALL me%ogwrit(1,str)
+                  call me%ogwrit(1,"")
+                  write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+                  call me%ogwrit(1,str)
 
                   ! Final Pygmo output
                   ! TODO: can this final fitness call be avoided (just for output)?
                   me%Pygfla = 2 ! pygmo flag in COMMON: matched
-                  CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
-               EXIT SPAG_Loop_1_1
-            ENDDO SPAG_Loop_1_1
+                  cycle SPAG_DispatchLoop_1
+               endif
+               exit SPAG_Loop_1_1
+            enddo SPAG_Loop_1_1
             ! ======================================================================
             ! OPTIMISATION PART
             ! ----------------------------------------------------------------------
             ! ----------------------------------------------------------------------
-            IF ( me%Senopt<+3 ) THEN
+            if ( me%Senopt<+3 ) then
                varsav = me%Varmax
                me%Varmax = me%Varmax*10.0e-1_wp
-               CALL me%ogopti(varacc,numequ,finish,desnor)
+               call me%ogopti(varacc,numequ,finish,desnor)
                me%Varmax = varsav
-            ENDIF
+            endif
             ! ----------------------------------------------------------------------
-            IF ( me%Senopt/=0 ) THEN
-               CALL me%ogwrit(1,"")
-               IF ( finish==0 ) THEN
+            if ( me%Senopt/=0 ) then
+               call me%ogwrit(1,"")
+               if ( finish==0 ) then
                   Finopt = 0
-                  CALL me%ogwrit(1,"OPTGRA sensitivity converged: not")
-               ELSE
+                  call me%ogwrit(1,"OPTGRA sensitivity converged: not")
+               else
                   Finopt = 1
-                  CALL me%ogwrit(1,"OPTGRA sensitivity converged: yes")
-               ENDIF
+                  call me%ogwrit(1,"OPTGRA sensitivity converged: yes")
+               endif
                spag_nextblock_1 = 3
-               CYCLE SPAG_DispatchLoop_1
-            ENDIF
+               cycle SPAG_DispatchLoop_1
+            endif
             ! ----------------------------------------------------------------------
-            IF ( finish==0 ) THEN
+            if ( finish==0 ) then
                spag_nextblock_1 = 2
-               CYCLE SPAG_DispatchLoop_1
-            ENDIF
+               cycle SPAG_DispatchLoop_1
+            endif
             ! ======================================================================
             ! NOT CONVERGED
             ! ----------------------------------------------------------------------
-            IF ( varacc/=0.0_wp ) THEN
+            if ( varacc/=0.0_wp ) then
                spag_nextblock_1 = 2
-               CYCLE SPAG_DispatchLoop_1
-            ENDIF
+               cycle SPAG_DispatchLoop_1
+            endif
             ! ======================================================================
             ! CONVERGED
             ! ----------------------------------------------------------------------
             Finopt = 1
             Finite = me%Numite
-            CALL me%ogwrit(1,"")
-            WRITE (str,'("OPTGRA: Converged: yes ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-            CALL me%ogwrit(1,str)
-            CALL me%ogwrit(3,"")
+            call me%ogwrit(1,"")
+            write (str,'("OPTGRA: Converged: yes ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+            call me%ogwrit(1,str)
+            call me%ogwrit(3,"")
 
             ! Final Pygmo output
             ! TODO: can this final fitness call be avoided (just for output)?
             me%Pygfla = 1 ! covergence
-            CALL me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+            call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
             spag_nextblock_1 = 3
-          CASE (3)
+          case (3)
 
 !           WRITE (STR,*) "DIF=",NORM2(VARVAL-VARREF)
 !           CALL me%ogwrit (1,STR)
@@ -1970,57 +1970,57 @@ contains
             ! ----------------------------------------------------------------------
 !           CALL OGWMAT (3)
 !           CALL me%ogeval (VARVAL, VALCON, 0, CONDER)
-            DO var = 1 , me%Numvar
+            do var = 1 , me%Numvar
                Valvar(var) = me%Varval(var)*me%Varsca(var)
-            ENDDO
+            enddo
 !           IF (SENOPT /= 0) THEN
 !               CALL me%ogeval (VARVAL, VALCON, 0, CONDER)
 !           ENDIF
             ! ======================================================================
             ! DESCALE VALUES
             ! ----------------------------------------------------------------------
-            DO con = 1 , me%Numcon + 1
+            do con = 1 , me%Numcon + 1
                typ = me%Contyp(con)
                sca = me%Consca(con)
-               IF ( typ==-1 ) sca = -sca
+               if ( typ==-1 ) sca = -sca
                Valcon(con) = me%Conval(con)*sca
-            ENDDO
+            enddo
             ! ======================================================================
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3,"STATUS OF CONSTRAINTS:")
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
+            call me%ogwrit(3,"")
+            call me%ogwrit(3,"STATUS OF CONSTRAINTS:")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
                nam = me%Constr(con)
                len = me%Conlen(con)
                val = me%Conval(con)
-               IF ( me%Conact(con)>0 ) THEN
-                  WRITE (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
-                  CALL me%ogwrit(3,str)
-               ELSEIF ( me%Conact(con)==0 ) THEN
-                  WRITE (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
-                  CALL me%ogwrit(3,str)
-               ELSEIF ( me%Conact(con)<0 ) THEN
-                  WRITE (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
-                  CALL me%ogwrit(3,str)
-               ENDIF
-            ENDDO
+               if ( me%Conact(con)>0 ) then
+                  write (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
+                  call me%ogwrit(3,str)
+               elseif ( me%Conact(con)==0 ) then
+                  write (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
+                  call me%ogwrit(3,str)
+               elseif ( me%Conact(con)<0 ) then
+                  write (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
+                  call me%ogwrit(3,str)
+               endif
+            enddo
 
-            DEALLOCATE (varsum)
-            DEALLOCATE (varcor)
-            DEALLOCATE (concor)
+            deallocate (varsum)
+            deallocate (varcor)
+            deallocate (concor)
             ! ----------------------------------------------------------------------
-            CALL me%ogwrit(2,"")
-            CALL me%ogwrit(2,"OPTGRA END")
-            CALL me%ogwrit(2,"")
-            EXIT SPAG_DispatchLoop_1
-         END SELECT
-      ENDDO SPAG_DispatchLoop_1
+            call me%ogwrit(2,"")
+            call me%ogwrit(2,"OPTGRA END")
+            call me%ogwrit(2,"")
+            exit SPAG_DispatchLoop_1
+         end select
+      enddo SPAG_DispatchLoop_1
       ! ======================================================================
-   END SUBROUTINE ogexec
+   end subroutine ogexec
 
-   SUBROUTINE oggsst(me,Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
+   subroutine oggsst(me,Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
 
       !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
       !!
@@ -2046,38 +2046,38 @@ contains
       ! Variable values saved for sensitivity
       Actnum = me%Numact
 
-      DO var = 1 , me%Numvar
+      do var = 1 , me%Numvar
          Varsen(var) = me%Senvar(var)
-      ENDDO
+      enddo
 
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          Quasen(con) = me%Senqua(con)
          Consen(con) = me%Sencon(con)
          Actsen(con) = me%Senact(con)
-         DO var = 1 , me%Numvar
+         do var = 1 , me%Numvar
             Dersen(con,var) = me%Sender(con,var)
-         ENDDO
-      ENDDO
+         enddo
+      enddo
 
       ! Temporary status saved of which constraints are active
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          Actsav(con) = me%Actcon(con)
-      ENDDO
+      enddo
 
-      DO con = 1 , me%Numcon + 4
+      do con = 1 , me%Numcon + 4
          Consav(con) = me%Conact(con)
-      ENDDO
+      enddo
 
-      DO con = 1 , me%Numcon + 3
-         DO var = 1 , me%Numvar
+      do con = 1 , me%Numcon + 3
+         do var = 1 , me%Numvar
             Redsav(con,var) = me%Conred(con,var)
             Dersav(con,var) = me%Conder(con,var)
-         ENDDO
-      ENDDO
+         enddo
+      enddo
 
-   END SUBROUTINE oggsst
+   end subroutine oggsst
 
-   SUBROUTINE ogincl(me,Inc)
+   subroutine ogincl(me,Inc)
 
       !! ADDS CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
       !!
@@ -2088,68 +2088,68 @@ contains
 
       real(wp) :: val , fac , gam , sav , max
       integer(ip) :: row , col , ind , lst
-      CHARACTER(len=256) :: str
+      character(len=256) :: str
 
       ! GENERAL
       me%Numact = me%Numact + 1
 
       ! PERMUTATION TO GET ZERO DERIVATIVES AT END FOR NEW ACTIVE CONSTRAINT
       lst = me%Numvar
-      DO col = me%Numvar , me%Numact , -1
-         IF ( me%Conred(Inc,col)==0.0_wp ) THEN
-            IF ( col/=lst ) THEN
-               DO row = 1 , me%Numcon + 3
-                  IF ( me%Conact(row)<=0 ) THEN
+      do col = me%Numvar , me%Numact , -1
+         if ( me%Conred(Inc,col)==0.0_wp ) then
+            if ( col/=lst ) then
+               do row = 1 , me%Numcon + 3
+                  if ( me%Conact(row)<=0 ) then
                      sav = me%Conred(row,col)
                      me%Conred(row,col) = me%Conred(row,lst)
                      me%Conred(row,lst) = sav
-                  ENDIF
-               ENDDO
-            ENDIF
+                  endif
+               enddo
+            endif
             lst = lst - 1
-         ENDIF
-      ENDDO
+         endif
+      enddo
 
       ! PERMUTATION TO GET MAXIMUM PIVOT
       ind = me%Numact
       max = abs(me%Conred(Inc,ind))
-      DO col = me%Numact + 1 , lst
+      do col = me%Numact + 1 , lst
          val = abs(me%Conred(Inc,col))
-         IF ( val>max ) THEN
+         if ( val>max ) then
             ind = col
             max = val
-         ENDIF
-      ENDDO
+         endif
+      enddo
 
-      IF ( ind/=me%Numact ) THEN
-         DO row = 1 , me%Numcon + 3
-            IF ( me%Conact(row)<=0 ) THEN
+      if ( ind/=me%Numact ) then
+         do row = 1 , me%Numcon + 3
+            if ( me%Conact(row)<=0 ) then
                sav = me%Conred(row,ind)
                me%Conred(row,ind) = me%Conred(row,me%Numact)
                me%Conred(row,me%Numact) = sav
-            ENDIF
-         ENDDO
-      ENDIF
+            endif
+         enddo
+      endif
 
       ! UPDATE LIST OF ACTIVE CONSTRAINTS
       me%Actcon(me%Numact) = Inc
       me%Conact(Inc) = me%Numact
 
       ! REDUCE FOR NEW ACTIVE CONSTRAINT
-      IF ( abs(me%Conred(Inc,me%Numact))<1.0e-12_wp ) THEN
-         WRITE (str,*) "OGINCL-WARNING: CONSTRAINT SINGULAR"
-         CALL me%ogwrit(2,str)
-         WRITE (str,*) "INC=" , Inc
-         CALL me%ogwrit(2,str)
-         WRITE (str,*) "PIV=" , me%Conred(Inc,me%Numact)
-         CALL me%ogwrit(2,str)
+      if ( abs(me%Conred(Inc,me%Numact))<1.0e-12_wp ) then
+         write (str,*) "OGINCL-WARNING: CONSTRAINT SINGULAR"
+         call me%ogwrit(2,str)
+         write (str,*) "INC=" , Inc
+         call me%ogwrit(2,str)
+         write (str,*) "PIV=" , me%Conred(Inc,me%Numact)
+         call me%ogwrit(2,str)
          me%Numact = me%Numact - 1
          me%Conact(Inc) = 0
-         RETURN
-      ENDIF
+         return
+      endif
 
       val = sqrt(sum(me%Conred(Inc,me%Numact:lst)**2))
-      IF ( me%Conred(Inc,me%Numact)>0.0_wp ) val = -val
+      if ( me%Conred(Inc,me%Numact)>0.0_wp ) val = -val
 
       me%Conred(Inc,me%Numact) = me%Conred(Inc,me%Numact) - val
 
@@ -2158,22 +2158,22 @@ contains
       me%Conred(Inc,me%Numact:lst) = me%Conred(Inc,me%Numact:lst)*fac
 
       fac = sav/val
-      DO row = 1 , me%Numcon + 3
-         IF ( me%Conact(row)<=0 ) THEN
+      do row = 1 , me%Numcon + 3
+         if ( me%Conact(row)<=0 ) then
             gam = dot_product(me%Conred(row,me%Numact:lst),me%Conred(Inc,me%Numact:lst))
-            IF ( gam/=0.0_wp ) THEN
+            if ( gam/=0.0_wp ) then
                gam = gam*fac
                me%Conred(row,me%Numact:lst) = me%Conred(row,me%Numact:lst) + me%Conred(Inc,me%Numact:lst)*gam
-            ENDIF
-         ENDIF
-      ENDDO
+            endif
+         endif
+      enddo
 
       me%Conred(Inc,me%Numact) = val
       me%Conred(Inc,me%Numact+1:lst) = 0.0_wp
 
-   END SUBROUTINE ogincl
+   end subroutine ogincl
 
-   SUBROUTINE ogleft(me,Actinp,Actout)
+   subroutine ogleft(me,Actinp,Actout)
 
       !! LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
       !! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS
@@ -2187,18 +2187,18 @@ contains
       integer(ip) :: row , col , act
       real(wp) :: val
 
-      DO act = 1 , me%Numact
+      do act = 1 , me%Numact
          row = me%Actcon(act)
          val = Actinp(act)
-         DO col = 1 , act - 1
+         do col = 1 , act - 1
             val = val - me%Conred(row,col)*Actout(col)
-         ENDDO
+         enddo
          Actout(act) = val/me%Conred(row,act)
-      ENDDO
+      enddo
 
-   END SUBROUTINE ogleft
+   end subroutine ogleft
 
-   SUBROUTINE ogopti(me,Varacc,Numequ,Finish,Desnor)
+   subroutine ogopti(me,Varacc,Numequ,Finish,Desnor)
 
       !! OPTIMISATION PART
       !!
@@ -2219,35 +2219,35 @@ contains
       real(wp) :: val , max , det , ccc , dis
       real(wp) :: fac , del , exc , eps , imp
       real(wp) :: bet , tht
-      CHARACTER(len=256) :: str , nam
+      character(len=256) :: str , nam
 
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: cosact
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varvec
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varwrk
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: corvec
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: desder
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: desprv
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: varprv
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: convec
-      real(wp) , DIMENSION(:) , ALLOCATABLE :: conqua
-      integer(ip) , DIMENSION(:) , ALLOCATABLE :: concor
-      INTEGER :: spag_nextblock_1
+      real(wp) , dimension(:) , allocatable :: cosact
+      real(wp) , dimension(:) , allocatable :: varvec
+      real(wp) , dimension(:) , allocatable :: varwrk
+      real(wp) , dimension(:) , allocatable :: corvec
+      real(wp) , dimension(:) , allocatable :: desder
+      real(wp) , dimension(:) , allocatable :: desprv
+      real(wp) , dimension(:) , allocatable :: varprv
+      real(wp) , dimension(:) , allocatable :: convec
+      real(wp) , dimension(:) , allocatable :: conqua
+      integer(ip) , dimension(:) , allocatable :: concor
+      integer :: spag_nextblock_1
 
       spag_nextblock_1 = 1
-      SPAG_DispatchLoop_1: DO
-         SELECT CASE (spag_nextblock_1)
-          CASE (1)
+      SPAG_DispatchLoop_1: do
+         select case (spag_nextblock_1)
+          case (1)
             ! ----------------------------------------------------------------------
-            ALLOCATE (cosact(me%Numcon))
-            ALLOCATE (varvec(me%Numvar))
-            ALLOCATE (varwrk(me%Numvar))
-            ALLOCATE (corvec(me%Numcon))
-            ALLOCATE (desder(me%Numvar))
-            ALLOCATE (desprv(me%Numvar))
-            ALLOCATE (varprv(me%Numvar))
-            ALLOCATE (convec(me%Numcon+1))
-            ALLOCATE (conqua(me%Numcon+1))
-            ALLOCATE (concor(me%Numcon+1))
+            allocate (cosact(me%Numcon))
+            allocate (varvec(me%Numvar))
+            allocate (varwrk(me%Numvar))
+            allocate (corvec(me%Numcon))
+            allocate (desder(me%Numvar))
+            allocate (desprv(me%Numvar))
+            allocate (varprv(me%Numvar))
+            allocate (convec(me%Numcon+1))
+            allocate (conqua(me%Numcon+1))
+            allocate (concor(me%Numcon+1))
             ! ======================================================================
             ! OPTIMISATION PART
             ! ----------------------------------------------------------------------
@@ -2260,8 +2260,8 @@ contains
             desder = me%Vardes
             me%Conred(prv,:) = me%Funvar
             me%Conder(prv,:) = me%Funvar
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3,"OPTIMISATION PART")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3,"OPTIMISATION PART")
             ! ----------------------------------------------------------------------
 !           WRITE (STR,'("NUMACT = ",I4)') NUMACT
 !           CALL me%ogwrit (3,STR)
@@ -2270,7 +2270,7 @@ contains
             me%Numact = 0
             me%Conact(1:des) = 0
             spag_nextblock_1 = 2
-          CASE (2)
+          case (2)
    !        DO COR = 1, NUMCOR
    !            CON = CONCOR(COR)
    !            NAM = CONSTR(CON)
@@ -2283,57 +2283,57 @@ contains
             ! ======================================================================
             ! VECTOR OF STEEPEST ASCENT
             ! ----------------------------------------------------------------------
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3,"VECTOR OF STEEPEST ASCENT")
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3,"REMOVE AND INCLUDE CONSTRAINTS:")
-            CALL me%ogwrit(3,"")
-            CALL me%ogwrit(3," REM  INC CONSTRAINT")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3,"VECTOR OF STEEPEST ASCENT")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3,"REMOVE AND INCLUDE CONSTRAINTS:")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3," REM  INC CONSTRAINT")
             ! ----------------------------------------------------------------------
             ! REMOVE PASSIVE INEQUALITY CONSTRAINTS
             ! ----------------------------------------------------------------------
-            DO act = me%Numact , 1 , -1
+            do act = me%Numact , 1 , -1
                con = me%Actcon(act)
-               IF ( me%Conval(con)<=1.0_wp ) CYCLE
+               if ( me%Conval(con)<=1.0_wp ) cycle
                nam = me%Constr(con)
                len = me%Conlen(con)
-               WRITE (str,'(I4,5X,1X,A)') con , nam(1:len)
-               CALL me%ogwrit(2,str)
-               CALL me%ogexcl(act)
+               write (str,'(I4,5X,1X,A)') con , nam(1:len)
+               call me%ogwrit(2,str)
+               call me%ogexcl(act)
                me%Conact(con) = -1
-            ENDDO
+            enddo
             ! ----------------------------------------------------------------------
             ! INCLUDE VIOLATED INEQUALITY CONSTRAINTS AND SELECT PASSIVE ONES
             ! SELECT PASSIVE INEQUALITY CONSTRAINTS
             ! ----------------------------------------------------------------------
-            DO con = 1 , me%Numcon
-               IF ( me%Contyp(con)==-2 ) CYCLE
-               IF ( me%Conact(con)>0 ) THEN
-               ELSEIF ( me%Contyp(con)==0 ) THEN
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
+               if ( me%Conact(con)>0 ) then
+               elseif ( me%Contyp(con)==0 ) then
                   me%Conact(con) = 0
-               ELSEIF ( me%Conval(con)<-1.0_wp ) THEN
+               elseif ( me%Conval(con)<-1.0_wp ) then
                   me%Conact(con) = 0
-               ELSEIF ( me%Conval(con)<=+1.0_wp ) THEN
+               elseif ( me%Conval(con)<=+1.0_wp ) then
                   me%Conact(con) = 0
-               ELSE
+               else
                   me%Conact(con) = -1
-               ENDIF
-            ENDDO
+               endif
+            enddo
             ! ======================================================================
             nnn = 1
-            SPAG_Loop_1_1: DO
+            SPAG_Loop_1_1: do
                nnn = nnn + 1
-               IF ( nnn>999 ) THEN
+               if ( nnn>999 ) then
                   Finish = 0
-                  WRITE (str,*) "NNN=" , nnn
-                  CALL me%ogwrit(2,str)
+                  write (str,*) "NNN=" , nnn
+                  call me%ogwrit(2,str)
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                ! ======================================================================
                ! DERIVATIVES OF MERIT W.R.T. ACTIVE CONSTRAINTS
                ! ----------------------------------------------------------------------
-               CALL me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
+               call me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
                Desnor = sqrt(sum(me%Conred(cos,me%Numact+1:me%Numvar)**2))
                ! ----------------------------------------------------------------------
                ! CONSTRAINT REMOVAL
@@ -2341,208 +2341,208 @@ contains
                ind = 0
                exc = -1.0e-12_wp
                max = exc
-               DO act = 1 , me%Numact
+               do act = 1 , me%Numact
                   con = me%Actcon(act)
-                  IF ( me%Contyp(con)==0 ) CYCLE
+                  if ( me%Contyp(con)==0 ) cycle
                   val = cosact(act)
                   fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
                   fac = sqrt(fac)
                   val = val*fac
-                  IF ( val>=exc ) CYCLE
-                  IF ( val>max ) CYCLE
+                  if ( val>=exc ) cycle
+                  if ( val>max ) cycle
                   max = val
                   ind = act
-               ENDDO
+               enddo
                ! ----------------------------------------------------------------------
-               IF ( ind/=0 ) THEN
+               if ( ind/=0 ) then
                   con = me%Actcon(ind)
                   nam = me%Constr(con)
                   len = me%Conlen(con)
-                  WRITE (str,'(I4,5X,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
-                  CALL me%ogwrit(3,str)
-                  CALL me%ogexcl(ind)
-                  CYCLE
-               ENDIF
+                  write (str,'(I4,5X,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
+                  call me%ogwrit(3,str)
+                  call me%ogexcl(ind)
+                  cycle
+               endif
                ! ----------------------------------------------------------------------
                ! CONSTRAINT INCLUSION
                ! ----------------------------------------------------------------------
-               IF ( Desnor/=0.0_wp ) THEN
+               if ( Desnor/=0.0_wp ) then
                   ! ----------------------------------------------------------------------
                   inc = 0
                   eps = 1.0e-03_wp
                   max = -1.0e10_wp
                   max = 0.0_wp
                   ! ----------------------------------------------------------------------
-                  DO con = 1 , me%Numcon
-                     IF ( me%Contyp(con)==-2 ) CYCLE
-                     IF ( me%Conact(con)/=0 ) CYCLE
+                  do con = 1 , me%Numcon
+                     if ( me%Contyp(con)==-2 ) cycle
+                     if ( me%Conact(con)/=0 ) cycle
                      del = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))/Desnor
                      val = abs(del)*me%Varmax
-                     IF ( val<eps ) CYCLE
+                     if ( val<eps ) cycle
                      fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
                      fac = sqrt(fac)
                      del = del/fac
-                     IF ( del<0.0_wp .AND. del<max ) THEN
+                     if ( del<0.0_wp .and. del<max ) then
                         max = del
                         inc = con
-                     ENDIF
-                     IF ( me%Contyp(con)/=0 ) CYCLE
+                     endif
+                     if ( me%Contyp(con)/=0 ) cycle
                      del = -del
-                     IF ( del<0.0_wp .AND. del<max ) THEN
+                     if ( del<0.0_wp .and. del<max ) then
                         max = del
                         inc = con
-                     ENDIF
-                  ENDDO
+                     endif
+                  enddo
                   ! ----------------------------------------------------------------------
-                  IF ( inc/=0 ) THEN
+                  if ( inc/=0 ) then
                      con = inc
                      nam =me%Constr(con)
                      len = me%Conlen(con)
-                     WRITE (str,'(5X,I4,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
-                     CALL me%ogwrit(3,str)
-                     CALL me%ogincl(inc)
-                     CYCLE
-                  ENDIF
-               ENDIF
+                     write (str,'(5X,I4,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
+                     call me%ogwrit(3,str)
+                     call me%ogincl(inc)
+                     cycle
+                  endif
+               endif
                ! ----------------------------------------------------------------------
                ! ----------------------------------------------------------------------
                ! MATCHED INEQUALITY CONSTRAINTS + STEEPEST ASCENT VECTOR NORM
                ! ----------------------------------------------------------------------
-               CALL me%ogwrit(3,"")
-               CALL me%ogwrit(3,"STATUS OF MATCHED INEQUALITY CONSTRAINTS:")
-               CALL me%ogwrit(3,"")
-               CALL me%ogwrit(3," ACT  PAS CONSTRAINT")
-               DO con = 1 , me%Numcon
-                  IF ( me%Contyp(con)==-2 ) CYCLE
+               call me%ogwrit(3,"")
+               call me%ogwrit(3,"STATUS OF MATCHED INEQUALITY CONSTRAINTS:")
+               call me%ogwrit(3,"")
+               call me%ogwrit(3," ACT  PAS CONSTRAINT")
+               do con = 1 , me%Numcon
+                  if ( me%Contyp(con)==-2 ) cycle
                   nam = me%Constr(con)
                   len = me%Conlen(con)
-                  IF ( me%Contyp(con)==0 ) THEN
-                  ELSEIF ( me%Conact(con)>0 ) THEN
-                     WRITE (str,'(I4,5X,1X,A)') con , nam(1:len)
-                     CALL me%ogwrit(3,str)
-                  ELSEIF ( me%Conact(con)==0 ) THEN
-                     WRITE (str,'(5X,I4,1X,A)') con , nam(1:len)
-                     CALL me%ogwrit(3,str)
-                  ENDIF
-               ENDDO
-               CALL me%ogwrit(3,"")
-               WRITE (str,'("STEEPEST ASCENT NORM: ",D13.6)') Desnor
-               CALL me%ogwrit(3,str)
-               WRITE (str,'("MAXIMUM DISTANCE....: ",D13.6)') me%Varmax
-               CALL me%ogwrit(3,str)
+                  if ( me%Contyp(con)==0 ) then
+                  elseif ( me%Conact(con)>0 ) then
+                     write (str,'(I4,5X,1X,A)') con , nam(1:len)
+                     call me%ogwrit(3,str)
+                  elseif ( me%Conact(con)==0 ) then
+                     write (str,'(5X,I4,1X,A)') con , nam(1:len)
+                     call me%ogwrit(3,str)
+                  endif
+               enddo
+               call me%ogwrit(3,"")
+               write (str,'("STEEPEST ASCENT NORM: ",D13.6)') Desnor
+               call me%ogwrit(3,str)
+               write (str,'("MAXIMUM DISTANCE....: ",D13.6)') me%Varmax
+               call me%ogwrit(3,str)
                ! ======================================================================
                Finish = 0
                ! ======================================================================
                ! IF CONVERGENCE
                ! ----------------------------------------------------------------------
                cosimp = Desnor*me%Varmax
-               IF ( abs(cosimp)<=1.0_wp ) THEN
+               if ( abs(cosimp)<=1.0_wp ) then
                   foldis = 0.0_wp
                   Finish = 1
-                  WRITE (str,'("FINAL...............:",1X,D13.6,'//'11X,1(1X,D10.3),1X,D16.9)') &
+                  write (str,'("FINAL...............:",1X,D13.6,'//'11X,1(1X,D10.3),1X,D16.9)') &
                      foldis , cosimp , me%Conval(cos) + cosimp
-                  CALL me%ogwrit(2,str)
+                  call me%ogwrit(2,str)
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                ! ======================================================================
                ! IF CONSTRAINT IS HIT
                ! ----------------------------------------------------------------------
-               DO var = 1 , me%Numvar
+               do var = 1 , me%Numvar
                   val = me%Conder(cos,var)
-                  DO act = 1 , me%Numact
+                  do act = 1 , me%Numact
                      con = me%Actcon(act)
                      val = val + me%Conder(con,var)*cosact(act)
-                  ENDDO
+                  enddo
                   me%Vardes(var) = val
-               ENDDO
+               enddo
                ! ----------------------------------------------------------------------
                ind = 0
                dis = 1.0e10_wp
-               DO con = 1 , me%Numcon
-                  IF ( me%Contyp(con)==-2 ) CYCLE
-                  IF ( me%Conact(con)/=-1 ) CYCLE
+               do con = 1 , me%Numcon
+                  if ( me%Contyp(con)==-2 ) cycle
+                  if ( me%Conact(con)/=-1 ) cycle
                   val = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))
-                  IF ( val==0.0_wp ) CYCLE
+                  if ( val==0.0_wp ) cycle
                   val = -me%Conval(con)/val*Desnor
-                  IF ( val<=0.0_wp ) CYCLE
-                  IF ( val>=dis ) CYCLE
+                  if ( val<=0.0_wp ) cycle
+                  if ( val>=dis ) cycle
                   dis = val
                   ind = con
-               ENDDO
+               enddo
                ! ----------------------------------------------------------------------
-               IF ( ind/=0 ) THEN
+               if ( ind/=0 ) then
                   val = sqrt(sum((me%Varval-me%Varref+me%Vardes*dis/Desnor)**2))
-                  IF ( val>me%Varmax ) ind = 0
-               ENDIF
+                  if ( val>me%Varmax ) ind = 0
+               endif
                ! ----------------------------------------------------------------------
-               IF ( ind/=0 ) THEN
-                  IF ( me%Confix(ind)<=0 ) THEN
-                     IF ( val>me%Varmax*1.0e-1_wp ) ind = 0
-                  ENDIF
-               ENDIF
+               if ( ind/=0 ) then
+                  if ( me%Confix(ind)<=0 ) then
+                     if ( val>me%Varmax*1.0e-1_wp ) ind = 0
+                  endif
+               endif
                ! ----------------------------------------------------------------------
-               IF ( ind/=0 ) THEN
+               if ( ind/=0 ) then
                   imp = dis*Desnor
                   con = ind
                   tht = 1.0_wp
                   bet = 0.0_wp
                   nam = me%Constr(con)
                   len = me%Conlen(con)
-                  WRITE (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,11X,1(1X,D10.3),1X,D16.9,22X,1X,I4,1X,A)') &
+                  write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,11X,1(1X,D10.3),1X,D16.9,22X,1X,I4,1X,A)') &
                      dis , imp , me%Conval(cos) + cosimp , con , nam(1:len)
-                  CALL me%ogwrit(2,str)
+                  call me%ogwrit(2,str)
                   Varacc = Varacc + dis
                   me%Varval = me%Varval + dis*me%Vardes/Desnor
-                  DO con = 1 , me%Numcon + 1
+                  do con = 1 , me%Numcon + 1
                      val = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))
                      me%Conval(con) = me%Conval(con) + val*dis/Desnor
-                  ENDDO
+                  enddo
                   spag_nextblock_1 = 2
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
-               EXIT SPAG_Loop_1_1
-            ENDDO SPAG_Loop_1_1
-            SPAG_Loop_1_2: DO
+                  cycle SPAG_DispatchLoop_1
+               endif
+               exit SPAG_Loop_1_1
+            enddo SPAG_Loop_1_1
+            SPAG_Loop_1_2: do
                ! ======================================================================
                ! ----------------------------------------------------------------------
-               CALL me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
-               DO var = 1 , me%Numvar
+               call me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
+               do var = 1 , me%Numvar
                   val = me%Conder(cos,var)
-                  DO act = 1 ,me%Numact
+                  do act = 1 ,me%Numact
                      con = me%Actcon(act)
                      val = val + me%Conder(con,var)*cosact(act)
-                  ENDDO
+                  enddo
                   desprv(var) = val
-               ENDDO
+               enddo
                Desnor = sqrt(sum(desprv**2))
-               WRITE (str,'("DESNOR=",D13.6)') Desnor
+               write (str,'("DESNOR=",D13.6)') Desnor
 !              CALL me%ogwrit (2,STR)
                ! ----------------------------------------------------------------------
-               CALL me%ogrigt(-me%Conred(prv,1:me%Numact),cosact)
-               DO var = 1 , me%Numvar
+               call me%ogrigt(-me%Conred(prv,1:me%Numact),cosact)
+               do var = 1 , me%Numvar
                   val = me%Conder(prv,var)
-                  DO act = 1 , me%Numact
+                  do act = 1 , me%Numact
                      con = me%Actcon(act)
                      val = val + me%Conder(con,var)*cosact(act)
-                  ENDDO
+                  enddo
                   varprv(var) = val
-               ENDDO
+               enddo
                norprv = sqrt(sum(varprv**2))
-               WRITE (str,'("NORPRV=",D13.6)') norprv
+               write (str,'("NORPRV=",D13.6)') norprv
 !              CALL me%ogwrit (2,STR)
                ! ----------------------------------------------------------------------
-               CALL me%ogrigt(-me%Conred(des,1:me%Numact),cosact)
-               DO var = 1 , me%Numvar
+               call me%ogrigt(-me%Conred(des,1:me%Numact),cosact)
+               do var = 1 , me%Numvar
                   val = desder(var)
-                  DO act = 1 , me%Numact
+                  do act = 1 , me%Numact
                      con = me%Actcon(act)
                      val = val + me%Conder(con,var)*cosact(act)
-                  ENDDO
+                  enddo
                   me%Vardir(var) = val
-               ENDDO
+               enddo
                nor = sqrt(sum(me%Vardir**2))
-               WRITE (str,'("NOR=",D13.6)') nor
+               write (str,'("NOR=",D13.6)') nor
 !              CALL me%ogwrit (2,STR)
                met = me%Optmet
                tht = 1.0_wp
@@ -2551,25 +2551,25 @@ contains
                 case ( 0 ) ! STEEPEST DESCENT METHOD
                 case ( 1 ) ! MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
                   varvec = desprv - varprv
-                  IF ( norprv**2>1.0e-12_wp ) THEN
+                  if ( norprv**2>1.0e-12_wp ) then
                      tht = -dot_product(me%Vardir,varvec)/norprv**2
                      bet = Desnor**2/norprv**2
-                  ENDIF
+                  endif
                 case ( 2 ) ! SPECTRAL CONJUGATE GRADIENT METHOD
                   varvec = desprv - varprv
                   varwrk = me%Varref - me%Vargrd
                   val = dot_product(varwrk,varvec)
                   fac = dot_product(me%Vardir,varvec)
-                  IF ( abs(val)>1.0e-12_wp .AND. abs(fac)>1.0e-12_wp ) THEN
+                  if ( abs(val)>1.0e-12_wp .and. abs(fac)>1.0e-12_wp ) then
                      tht = -dot_product(varwrk,varwrk)/val
                      varwrk = -varvec*tht - varwrk
                      bet = dot_product(varwrk,desprv)/fac
-                  ENDIF
+                  endif
                 case ( 3 ) ! CONJUGATE GRADIENT METHOD
-                  IF ( norprv/=0.0_wp ) THEN
+                  if ( norprv/=0.0_wp ) then
                      tht = 1.0_wp
                      bet = Desnor**2/norprv**2
-                  ENDIF
+                  endif
                end select
 !              WRITE (STR,'("THT=",D13.6)') THT
 !              CALL me%ogwrit (3,STR)
@@ -2582,36 +2582,36 @@ contains
                me%Vardes = tht*desprv + bet*me%Vardir
                Desnor = sqrt(sum(me%Vardes**2))
                nor = Desnor
-               DO con = 1 , me%Numcon
-                  IF ( me%Contyp(con)==-2 ) CYCLE
-                  IF ( me%Conact(con)/=0 ) CYCLE
+               do con = 1 , me%Numcon
+                  if ( me%Contyp(con)==-2 ) cycle
+                  if ( me%Conact(con)/=0 ) cycle
                   del = dot_product(me%Conder(con,1:me%Numvar),me%Vardes(1:me%Numvar))/nor
                   val = abs(del)*me%Varmax
-                  IF ( val<eps ) CYCLE
+                  if ( val<eps ) cycle
                   fac = dot_product(me%Conder(con,1:me%Numvar),me%Conder(con,1:me%Numvar))
                   del = del/sqrt(fac)
                   nam = me%Constr(con)
                   len = me%Conlen(con)
                   typ = me%Contyp(con)
-                  IF ( del<0.0_wp ) THEN
+                  if ( del<0.0_wp ) then
 !                    CALL OGINCL (CON)
                      act = me%Conact(con)
 !                    WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
 !                      CON,ACT,+NOR,VAL,DEL,NAM(1:LEN)
 !                    CALL me%ogwrit (2,STR)
-                     IF ( act/=0 ) CYCLE SPAG_Loop_1_2
+                     if ( act/=0 ) cycle SPAG_Loop_1_2
                      bet = 0.0_wp
                      tht = 1.0_wp
-                  ENDIF
-                  IF ( me%Contyp(con)/=0 ) CYCLE
+                  endif
+                  if ( me%Contyp(con)/=0 ) cycle
                   del = -del
-                  IF ( del<0.0_wp ) THEN
+                  if ( del<0.0_wp ) then
 !                    CALL OGINCL (CON)
                      act = me%Conact(con)
 !                    WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
 !                      CON,ACT,-NOR,VAL,DEL,NAM(1:LEN)
 !                    CALL me%ogwrit (2,STR)
-                     IF ( act/=0 ) CYCLE SPAG_Loop_1_2
+                     if ( act/=0 ) cycle SPAG_Loop_1_2
                      bet = 0.0_wp
                      tht = 1.0_wp
                      del = dot_product(me%Conder(con,1:me%Numvar),me%Conder(cos,1:me%Numvar))
@@ -2619,29 +2619,29 @@ contains
 !                    WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
 !                       CON,TYP,-DESNOR,VAL,DEL,NAM(1:LEN)
 !                    CALL me%ogwrit (2,STR)
-                  ENDIF
-               ENDDO
+                  endif
+               enddo
                cosco1 = dot_product(me%Vardes,me%Conder(cos,1:me%Numvar))/Desnor
-               IF ( cosco1<0.0_wp ) THEN
-                  WRITE (str,*) "COSCO1=" , cosco1
-                  CALL me%ogwrit(2,str)
+               if ( cosco1<0.0_wp ) then
+                  write (str,*) "COSCO1=" , cosco1
+                  call me%ogwrit(2,str)
                   bet = 0.0_wp
                   tht = 1.0_wp
-               ENDIF
+               endif
                me%Vardes = tht*desprv + bet*me%Vardir
                Desnor = sqrt(sum(me%Vardes**2))
-               EXIT SPAG_Loop_1_2
-            ENDDO SPAG_Loop_1_2
-            SPAG_Loop_1_3: DO
+               exit SPAG_Loop_1_2
+            enddo SPAG_Loop_1_2
+            SPAG_Loop_1_3: do
 !              WRITE (STR,*) "THT/BET=",THT,BET
 !              CALL me%ogwrit (2,STR)
                ! ======================================================================
                ! SECOND ORDER DERIVATIVES BY NUMERICAL DIFFERENCING
                ! ----------------------------------------------------------------------
                ! ----------------------------------------------------------------------
-               CALL me%ogwrit(3,"")
-               WRITE (str,'("SECOND ORDER CORRECTION")')
-               CALL me%ogwrit(3,str)
+               call me%ogwrit(3,"")
+               write (str,'("SECOND ORDER CORRECTION")')
+               call me%ogwrit(3,str)
                me%Vardes = tht*desprv + bet*me%Vardir
                Desnor = sqrt(sum(me%Vardes**2))
                ! ----------------------------------------------------------------------
@@ -2650,305 +2650,305 @@ contains
                dis = me%Varmax
                varvec = me%Varval - me%Varref
                co0 = dot_product(varvec,varvec) - dis**2
-               IF ( co0>=0.0_wp ) THEN
+               if ( co0>=0.0_wp ) then
                   dis = 0.0_wp
-               ELSE
+               else
                   co1 = dot_product(me%Vardes,varvec)
                   co2 = Desnor**2
                   det = co1**2 - co0*co2
                   dis = (sqrt(det)-co1)/co2
-               ENDIF
+               endif
                dis = dis*Desnor
                maxdis = dis
                ! ======================================================================
                ! COMPUTE SECOND ORDER EFFECTS
                ! ----------------------------------------------------------------------
                nnn = 0
-               IF ( me%Senopt>=+1 ) THEN
-                  DO con = 1 , me%Numcon
-                     IF ( me%Contyp(con)==-2 ) CYCLE
+               if ( me%Senopt>=+1 ) then
+                  do con = 1 , me%Numcon
+                     if ( me%Contyp(con)==-2 ) cycle
                      act = me%Conact(con)
                      ind = me%Senact(con)
-                     IF ( act==-1 .AND. ind==-1 ) CYCLE
-                     IF ( act==0 .AND. ind==0 ) CYCLE
-                     IF ( act>0 .AND. ind>0 ) CYCLE
+                     if ( act==-1 .and. ind==-1 ) cycle
+                     if ( act==0 .and. ind==0 ) cycle
+                     if ( act>0 .and. ind>0 ) cycle
                      nam = me%Constr(con)
                      len = me%Conlen(con)
-                     WRITE (str,'(I4,1X,I4,1X,I4,1X,A)') con , act , ind , nam(1:len)
-                     CALL me%ogwrit(2,str)
+                     write (str,'(I4,1X,I4,1X,I4,1X,A)') con , act , ind , nam(1:len)
+                     call me%ogwrit(2,str)
                      nnn = 1
-                  ENDDO
-               ENDIF
-               IF ( me%Senopt<=0 .OR. nnn==1 ) THEN
+                  enddo
+               endif
+               if ( me%Senopt<=0 .or. nnn==1 ) then
                   fac = me%Varstp/Desnor
                   varvec = me%Varref + me%Vardes*me%Varstp/Desnor
-                  CALL me%ogeval(varvec,convec,0,me%Conder)
+                  call me%ogeval(varvec,convec,0,me%Conder)
                   conqua = matmul(me%Conder(1:cos,1:me%Numvar),me%Vardes(1:me%Numvar))
                   conqua = 2.0_wp*(convec-me%Conref-conqua*fac)/fac**2
-               ENDIF
-               IF ( me%Senopt==-1 ) THEN
+               endif
+               if ( me%Senopt==-1 ) then
                   me%Senqua = conqua
-               ELSEIF ( me%Senopt>=+1 .AND. nnn==0 ) THEN
+               elseif ( me%Senopt>=+1 .and. nnn==0 ) then
                   conqua = me%Senqua
-               ENDIF
+               endif
                ! ======================================================================
                ! COMPUTE CORRECTION VECTOR
                ! ----------------------------------------------------------------------
-               DO act = 1 , me%Numact
+               do act = 1 , me%Numact
                   con = me%Actcon(act)
                   corvec(act) = conqua(con)
-               ENDDO
-               CALL me%ogleft(corvec,corvec)
+               enddo
+               call me%ogleft(corvec,corvec)
                ! ----------------------------------------------------------------------
                cornor = sqrt(sum(corvec(1:me%Numact)**2))*0.5_wp/Desnor/Desnor
-               CALL me%ogwrit(3,"")
-               WRITE (str,'("STEEPEST ASCENT  NORM: ",D13.6)') Desnor
-               CALL me%ogwrit(3,str)
-               WRITE (str,'("ACCUMULATED  DISTANCE: ",D13.6)') Varacc
-               CALL me%ogwrit(3,str)
+               call me%ogwrit(3,"")
+               write (str,'("STEEPEST ASCENT  NORM: ",D13.6)') Desnor
+               call me%ogwrit(3,str)
+               write (str,'("ACCUMULATED  DISTANCE: ",D13.6)') Varacc
+               call me%ogwrit(3,str)
                ! ======================================================================
                ! GET EXTREMUM
                ! ----------------------------------------------------------------------
                cosco1 = dot_product(me%Vardes,me%Conder(cos,1:me%Numvar))/Desnor
                cosco2 = conqua(cos) - dot_product(me%Conred(cos,1:me%Numact),corvec(1:me%Numact))
                cosco2 = cosco2*0.5_wp/Desnor/Desnor
-               WRITE (str,*) "COSCO2/COSCO1=" , cosco2 , cosco1
-               CALL me%ogwrit(3,str)
-               IF ( cosco1<0.0_wp ) CALL me%ogwrit(2,str)
+               write (str,*) "COSCO2/COSCO1=" , cosco2 , cosco1
+               call me%ogwrit(3,str)
+               if ( cosco1<0.0_wp ) call me%ogwrit(2,str)
                ! ----------------------------------------------------------------------
                foldis = 0.0_wp
                quacor = cornor*foldis*foldis
                cosimp = foldis*(cosco1+foldis*cosco2)
-               CALL me%ogwrit(3,"")
-               WRITE (str,'(    "STEEPEST ASCENT FOLLOW",'//'  5X,"DISTANCE",'//'  1X,"CORRECTION",'//'  2X,"MERIT_DEL",'//'  6X,"MERIT_VALUE")')
-               CALL me%ogwrit(3,str)
-               WRITE (str,'("INITIAL.............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp ,me%Conval(cos) + cosimp
-               CALL me%ogwrit(3,str)
+               call me%ogwrit(3,"")
+               write (str,'(    "STEEPEST ASCENT FOLLOW",'//'  5X,"DISTANCE",'//'  1X,"CORRECTION",'//'  2X,"MERIT_DEL",'//'  6X,"MERIT_VALUE")')
+               call me%ogwrit(3,str)
+               write (str,'("INITIAL.............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp ,me%Conval(cos) + cosimp
+               call me%ogwrit(3,str)
                ! ======================================================================
-               IF ( cosco2<0.0_wp ) THEN
+               if ( cosco2<0.0_wp ) then
                   foldis = -0.5_wp*cosco1/cosco2
                   quacor = cornor*foldis*foldis
                   cosimp = foldis*(cosco1+foldis*cosco2)
-                  WRITE (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  write (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  CALL me%ogwrit(3,str)
+                  call me%ogwrit(3,str)
                   staflg = 1
-               ELSEIF ( cosco2>0.0_wp ) THEN
+               elseif ( cosco2>0.0_wp ) then
                   foldis = me%Varmax
                   quacor = cornor*foldis*foldis
                   cosimp = foldis*(cosco1+foldis*cosco2)
-                  WRITE (str,'("MERIT CONVEX........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  write (str,'("MERIT CONVEX........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  CALL me%ogwrit(3,str)
+                  call me%ogwrit(3,str)
                   staflg = 2
-               ELSE
+               else
                   foldis = me%Varmax
                   quacor = cornor*foldis*foldis
                   cosimp = foldis*(cosco1+foldis*cosco2)
-                  WRITE (str,'("MERIT LINEAR........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  write (str,'("MERIT LINEAR........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  CALL me%ogwrit(3,str)
+                  call me%ogwrit(3,str)
                   staflg = 2
-               ENDIF
+               endif
                ! ======================================================================
                ! IF MAXIMUM DISTANCE IS HIT
                ! ----------------------------------------------------------------------
-               IF ( foldis>me%Varmax ) THEN
+               if ( foldis>me%Varmax ) then
                   foldis = me%Varmax
                   quacor = cornor*foldis*foldis
                   cosimp = foldis*(cosco1+foldis*cosco2)
-                  WRITE (str,'("MAXIMUM DISTANCE....:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  write (str,'("MAXIMUM DISTANCE....:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  CALL me%ogwrit(3,str)
+                  call me%ogwrit(3,str)
                   staflg = 2
-               ENDIF
+               endif
                ! ======================================================================
                ! IF CONVERGENCE
                ! ----------------------------------------------------------------------
-               IF ( abs(cosimp)<=1.0_wp ) THEN
-                  WRITE (str,'("FINAL...............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9,2D11.3)') &
+               if ( abs(cosimp)<=1.0_wp ) then
+                  write (str,'("FINAL...............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9,2D11.3)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
-                  CALL me%ogwrit(2,str)
-                  IF ( tht/=1.0_wp .OR. bet/=0.0_wp ) THEN
+                  call me%ogwrit(2,str)
+                  if ( tht/=1.0_wp .or. bet/=0.0_wp ) then
                      tht = 1.0_wp
                      bet = 0.0_wp
-                     CYCLE
-                  ENDIF
+                     cycle
+                  endif
                   foldis = 0.0_wp
                   Finish = 1
                   spag_nextblock_1 = 3
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
+                  cycle SPAG_DispatchLoop_1
+               endif
                ! ======================================================================
                ! IF REMAINING DISTANCE IS HIT
                ! ----------------------------------------------------------------------
-               IF ( foldis>maxdis ) THEN
+               if ( foldis>maxdis ) then
                   foldis = maxdis
                   quacor = cornor*foldis*foldis
                   cosimp = foldis*(cosco1+foldis*cosco2)
-                  WRITE (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  write (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  CALL me%ogwrit(3,str)
+                  call me%ogwrit(3,str)
                   staflg = 2
-               ENDIF
+               endif
                ! ======================================================================
                ! IF CONSTRAINT IS HIT
                ! ----------------------------------------------------------------------
                ind = 0
-               DO con = 1 , me%Numcon
-                  IF ( me%Contyp(con)==-2 ) CYCLE
-                  IF ( me%Conact(con)/=-1 ) CYCLE
+               do con = 1 , me%Numcon
+                  if ( me%Contyp(con)==-2 ) cycle
+                  if ( me%Conact(con)/=-1 ) cycle
                   co2 = conqua(con) - dot_product(me%Conred(con,1:me%Numact),corvec(1:me%Numact))
                   co1 = dot_product(me%Conder(con,1:me%Numvar),me%Vardes(1:me%Numvar))
                   co0 = me%Conval(con)*2.0_wp
-                  IF ( co2/=0.0_wp ) THEN
+                  if ( co2/=0.0_wp ) then
                      det = co1**2 - co2*co0
-                     IF ( det<0.0_wp ) CYCLE
+                     if ( det<0.0_wp ) cycle
                      det = sqrt(det)
                      val = 1.0e10_wp
                      fac = (-co1+det)/co2
-                     IF ( fac>0.0_wp .AND. fac<val ) val = fac
+                     if ( fac>0.0_wp .and. fac<val ) val = fac
                      fac = (-co1-det)/co2
-                     IF ( fac>0.0_wp .AND. fac<val ) val = fac
-                  ELSEIF ( co1/=0.0_wp ) THEN
+                     if ( fac>0.0_wp .and. fac<val ) val = fac
+                  elseif ( co1/=0.0_wp ) then
                      val = -co0/co1*0.5_wp
-                  ELSE
-                     CYCLE
-                  ENDIF
+                  else
+                     cycle
+                  endif
                   val = val*Desnor
-                  IF ( val>0.0_wp .AND. val<foldis ) THEN
+                  if ( val>0.0_wp .and. val<foldis ) then
                      foldis = val
                      ind = con
-                  ENDIF
-               ENDDO
+                  endif
+               enddo
                ! ----------------------------------------------------------------------
-               IF ( ind/=0 ) THEN
+               if ( ind/=0 ) then
                   quacor = cornor*foldis*foldis
                   cosimp = foldis*(cosco1+foldis*cosco2)
                   con = ind
                   nam = me%Constr(con)
                   len = me%Conlen(con)
-                  WRITE (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,2(1X,D10.3),1X,D16.9,1X,I4,1X,A)') &
+                  write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,2(1X,D10.3),1X,D16.9,1X,I4,1X,A)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp , con , nam(1:len)
-                  CALL me%ogwrit(3,str)
+                  call me%ogwrit(3,str)
                   staflg = 3
-               ENDIF
+               endif
                ! ======================================================================
                ! UPDATE
                ! ----------------------------------------------------------------------
                refdis = foldis
-               EXIT SPAG_Loop_1_3
-            ENDDO SPAG_Loop_1_3
+               exit SPAG_Loop_1_3
+            enddo SPAG_Loop_1_3
 
-            SPAG_Loop_1_4: DO
-               WRITE (str,'("FINAL...............:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+            SPAG_Loop_1_4: do
+               write (str,'("FINAL...............:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
                   foldis , quacor , cosimp , me%Conval(cos) + cosimp
-               CALL me%ogwrit(3,str)
+               call me%ogwrit(3,str)
                ! ----------------------------------------------------------------------
                fac = foldis/Desnor
                ! ----------------------------------------------------------------------
                ! VARIABLE DELTA
                ! ----------------------------------------------------------------------
-               CALL me%ogrigt(corvec,cosact)
+               call me%ogrigt(corvec,cosact)
                dis = 0.0_wp
-               DO var = 1 , me%Numvar
+               do var = 1 , me%Numvar
                   val = 0.0_wp
-                  DO act = 1 , me%Numact
+                  do act = 1 , me%Numact
                      ind = me%Actcon(act)
                      val = val - cosact(act)*me%Conder(ind,var)
-                  ENDDO
+                  enddo
                   varvec(var) = fac*(me%Vardes(var)+(val*fac*0.5_wp))
                   dis = dis + varvec(var)*varvec(var)
-               ENDDO
+               enddo
                dis = sqrt(dis)
                ! ----------------------------------------------------------------------
-               WRITE (str,*) "REFDIS=" , refdis
-               CALL me%ogwrit(3,str)
-               WRITE (str,*) "FOLDIS=" , foldis
-               CALL me%ogwrit(3,str)
-               WRITE (str,*) "DIS=" , dis
-               CALL me%ogwrit(3,str)
-               IF ( dis>refdis*1.2_wp .AND. me%Senopt>0 ) THEN
+               write (str,*) "REFDIS=" , refdis
+               call me%ogwrit(3,str)
+               write (str,*) "FOLDIS=" , foldis
+               call me%ogwrit(3,str)
+               write (str,*) "DIS=" , dis
+               call me%ogwrit(3,str)
+               if ( dis>refdis*1.2_wp .and. me%Senopt>0 ) then
                   faccnt = faccnt + 1
-                  IF ( faccnt>=10 ) EXIT SPAG_Loop_1_4
+                  if ( faccnt>=10 ) exit SPAG_Loop_1_4
                   foldis = foldis*0.5_wp
                   quacor = cornor*foldis*foldis
                   cosimp = foldis*(cosco1+foldis*cosco2)
-                  CYCLE
-               ENDIF
+                  cycle
+               endif
                ! ----------------------------------------------------------------------
                ! UPDATE VARIABLES
                ! ----------------------------------------------------------------------
                Varacc = Varacc + foldis
                me%Varval = me%Varval + varvec
                ccc = sqrt(sum((me%Varval-me%Varref)**2)) - me%Varmax**2
-               IF ( ccc>=0.0_wp ) THEN
-                  WRITE (str,*) "CCC > 0" , ccc
-                  CALL me%ogwrit(3,str)
+               if ( ccc>=0.0_wp ) then
+                  write (str,*) "CCC > 0" , ccc
+                  call me%ogwrit(3,str)
                   staflg = 2
-               ENDIF
+               endif
                ! ======================================================================
                ! MAXIMUM REACHED: NEXT ITERATION
                ! ----------------------------------------------------------------------
-               IF ( staflg==1 ) THEN
-                  WRITE (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9,2D11.3)') &
+               if ( staflg==1 ) then
+                  write (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9,2D11.3)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
-                  CALL me%ogwrit(2,str)
-                  IF ( me%Senopt>0 ) Finish = 1
-                  EXIT SPAG_Loop_1_4
-               ENDIF
+                  call me%ogwrit(2,str)
+                  if ( me%Senopt>0 ) Finish = 1
+                  exit SPAG_Loop_1_4
+               endif
                ! ======================================================================
                ! MAXIMUM TRAVEL DISTANCE REACHED: NEXT ITERATION
                ! ----------------------------------------------------------------------
-               IF ( staflg==2 ) THEN
-                  WRITE (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9,2D11.3)') &
+               if ( staflg==2 ) then
+                  write (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9,2D11.3)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
-                  CALL me%ogwrit(2,str)
-                  EXIT SPAG_Loop_1_4
-               ENDIF
+                  call me%ogwrit(2,str)
+                  exit SPAG_Loop_1_4
+               endif
                ! ======================================================================
                ! CONSTRAINT HIT: UPDATE CONSTRAINT + CORRECT
                ! ----------------------------------------------------------------------
-               IF ( staflg==3 ) THEN
+               if ( staflg==3 ) then
                   nam = me%Constr(con)
                   len = me%Conlen(con)
-                  WRITE (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,2(1X,D10.3),1X,D16.9,2D11.3,1X,I4,1X,A)') &
+                  write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,2(1X,D10.3),1X,D16.9,2D11.3,1X,I4,1X,A)') &
                      foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet , con , nam(1:len)
-                  CALL me%ogwrit(2,str)
+                  call me%ogwrit(2,str)
                   convec = conqua - matmul(me%Conred(1:cos,1:me%Numact),corvec(1:me%Numact))
                   convec = convec*fac*0.5_wp
                   convec = convec + matmul(me%Conder(1:cos,1:me%Numvar),me%Vardes(1:me%Numvar))
                   me%Conval = me%Conval + convec*fac
                   spag_nextblock_1 = 2
-                  CYCLE SPAG_DispatchLoop_1
-               ENDIF
-               EXIT SPAG_Loop_1_4
-            ENDDO SPAG_Loop_1_4
+                  cycle SPAG_DispatchLoop_1
+               endif
+               exit SPAG_Loop_1_4
+            enddo SPAG_Loop_1_4
             spag_nextblock_1 = 3
-          CASE (3)
+          case (3)
             ! ======================================================================
             ! ----------------------------------------------------------------------
             me%Funvar = desprv
             me%Confix = me%Conact(1:me%Numcon)
-            IF ( me%Senopt==-1 ) me%Senact = me%Conact(1:me%Numcon)
+            if ( me%Senopt==-1 ) me%Senact = me%Conact(1:me%Numcon)
             ! ----------------------------------------------------------------------
-            DEALLOCATE (cosact)
-            DEALLOCATE (varvec)
-            DEALLOCATE (varwrk)
-            DEALLOCATE (corvec)
-            DEALLOCATE (desder)
-            DEALLOCATE (desprv)
-            DEALLOCATE (varprv)
-            DEALLOCATE (convec)
-            DEALLOCATE (conqua)
-            DEALLOCATE (concor)
-            EXIT SPAG_DispatchLoop_1
-         END SELECT
-      ENDDO SPAG_DispatchLoop_1
+            deallocate (cosact)
+            deallocate (varvec)
+            deallocate (varwrk)
+            deallocate (corvec)
+            deallocate (desder)
+            deallocate (desprv)
+            deallocate (varprv)
+            deallocate (convec)
+            deallocate (conqua)
+            deallocate (concor)
+            exit SPAG_DispatchLoop_1
+         end select
+      enddo SPAG_DispatchLoop_1
       ! ======================================================================
-   END SUBROUTINE ogopti
+   end subroutine ogopti
 
-   SUBROUTINE ogpwri(me,Objval,Numvio,Convio)
+   subroutine ogpwri(me,Objval,Numvio,Convio)
 
       !! WRITE OPTIMIZATION LOG IN PYGMO FORMAT
       !!
@@ -2959,39 +2959,39 @@ contains
       integer(ip),intent(in) :: Numvio !! NUMBER OF VIOLATED CONSTRAINTS
       real(wp),intent(in) :: Convio !! TOTAL CONSTRAINT VIOLATION
 
-      CHARACTER(len=2) :: feas
+      character(len=2) :: feas
 
-      IF ( me%Verbos==0 ) RETURN
+      if ( me%Verbos==0 ) return
       ! Print header
-      IF ( me%Fevals==0 ) CALL me%ogpwri_start()
+      if ( me%Fevals==0 ) call me%ogpwri_start()
       ! Increase counter for cost function evaluations
       me%Fevals = me%Fevals + 1
       ! Every 50 lines print the column names.
-      IF ( mod(real(me%Fevals-1.0_wp)/real(me%Verbos),50.0_wp)==0.0_wp ) &
-         WRITE (me%Loglup,'(A10,A15,A15,A15,A2)') "objevals:" , "objval:" , "violated:" , "viol. norm:"
-      IF ( me%Verbos/=0 .AND. mod(me%Fevals,me%Verbos)==0.0_wp ) THEN
-         IF ( Convio>0.0_wp ) THEN
+      if ( mod(real(me%Fevals-1.0_wp)/real(me%Verbos),50.0_wp)==0.0_wp ) &
+         write (me%Loglup,'(A10,A15,A15,A15,A2)') "objevals:" , "objval:" , "violated:" , "viol. norm:"
+      if ( me%Verbos/=0 .and. mod(me%Fevals,me%Verbos)==0.0_wp ) then
+         if ( Convio>0.0_wp ) then
             feas = " i"
-         ELSE
+         else
             feas = "  "
-         ENDIF
+         endif
 
          ! Write the log line (different format depending on violation size)
-         IF ( Convio==0.0_wp ) THEN
-            WRITE (me%Loglup,'(I10,F15.4,I15,I15,A2)') me%Fevals , Objval , Numvio , int(Convio) , feas
-         ELSEIF ( Convio>1.0e-3_wp ) THEN
-            WRITE (me%Loglup,'(I10,F15.4,I15,F15.6,A2)') me%Fevals , Objval , Numvio , Convio , feas
-         ELSE
-            WRITE (me%Loglup,'(I10,F15.4,I15,E15.6,A2)') me%Fevals , Objval , Numvio , Convio , feas
-         ENDIF
-      ENDIF
+         if ( Convio==0.0_wp ) then
+            write (me%Loglup,'(I10,F15.4,I15,I15,A2)') me%Fevals , Objval , Numvio , int(Convio) , feas
+         elseif ( Convio>1.0e-3_wp ) then
+            write (me%Loglup,'(I10,F15.4,I15,F15.6,A2)') me%Fevals , Objval , Numvio , Convio , feas
+         else
+            write (me%Loglup,'(I10,F15.4,I15,E15.6,A2)') me%Fevals , Objval , Numvio , Convio , feas
+         endif
+      endif
 
       ! Write final summary
-      IF ( me%Pygfla/=0 ) CALL me%ogpwri_end(Objval,Numvio,Convio)
+      if ( me%Pygfla/=0 ) call me%ogpwri_end(Objval,Numvio,Convio)
 
-   END SUBROUTINE ogpwri
+   end subroutine ogpwri
 
-   SUBROUTINE ogpwri_end(me,Objval,Numvio,Convio)
+   subroutine ogpwri_end(me,Objval,Numvio,Convio)
 
       !! WRITE OPTIMIZATION END RESULT IN PYGMO FORMAT
       !!
@@ -3002,26 +3002,26 @@ contains
       real(wp),intent(in) :: Convio !! TOTAL CONSTRAINT VIOLATION
       integer(ip),intent(in) :: Numvio !! NUMBER OF VIOLATED CONSTRAINTS
 
-      IF ( me%Pygfla==0 ) RETURN
+      if ( me%Pygfla==0 ) return
 
       ! Write termination message
-      WRITE (me%Loglup,'("")')
-      WRITE (me%Loglup,'("Final values after iteration        ", I10:)') me%Numite
-      WRITE (me%Loglup,'("Final objective value:              ", F10.4)') Objval
-      WRITE (me%Loglup,'("Final constraint violation:         ", F10.4)') Convio
-      WRITE (me%Loglup,'("Final num. of violated constraints: ",I10)') Numvio
+      write (me%Loglup,'("")')
+      write (me%Loglup,'("Final values after iteration        ", I10:)') me%Numite
+      write (me%Loglup,'("Final objective value:              ", F10.4)') Objval
+      write (me%Loglup,'("Final constraint violation:         ", F10.4)') Convio
+      write (me%Loglup,'("Final num. of violated constraints: ",I10)') Numvio
 
       select case (me%Pygfla)
-       case ( 1 ); WRITE (me%Loglup,'("Successful termination: Optimal solution found.")')
-       case ( 2 ); WRITE (me%Loglup,'("Successful termination: Constraints matched.")')
-       case ( 3 ); WRITE (me%Loglup,'("Not converged.")')
-       case ( 4 ); WRITE (me%Loglup,'("Problem appears infeasible.")')
+       case ( 1 ); write (me%Loglup,'("Successful termination: Optimal solution found.")')
+       case ( 2 ); write (me%Loglup,'("Successful termination: Constraints matched.")')
+       case ( 3 ); write (me%Loglup,'("Not converged.")')
+       case ( 4 ); write (me%Loglup,'("Problem appears infeasible.")')
       end select
-      WRITE (me%Loglup,'("")')
+      write (me%Loglup,'("")')
 
-   END SUBROUTINE ogpwri_end
+   end subroutine ogpwri_end
 
-   SUBROUTINE ogpwri_start(me)
+   subroutine ogpwri_start(me)
 
       !! WRITE OPTIMIZATION LOG IN PYGMO FORMAT
       !!
@@ -3029,26 +3029,26 @@ contains
 
       class(optgra),intent(inout) :: me
 
-      WRITE (me%Loglup,'("OPTGRA plugin for pagmo/pygmo:")')
+      write (me%Loglup,'("OPTGRA plugin for pagmo/pygmo:")')
       select case (me%Varder) ! DERIVATIVES COMPUTATION MODE
-       case ( 0 );      WRITE (me%Loglup,'("")') ! VALUES ONLY
-       case ( 1, -1 );  WRITE (me%Loglup,'("    User-defined gradients")')
-       case ( 2 );      WRITE (me%Loglup,'("    Numerical gradients by double differencing")')
-       case ( 3 );      WRITE (me%Loglup,'("    Numerical gradients by single differencing")')
+       case ( 0 );      write (me%Loglup,'("")') ! VALUES ONLY
+       case ( 1, -1 );  write (me%Loglup,'("    User-defined gradients")')
+       case ( 2 );      write (me%Loglup,'("    Numerical gradients by double differencing")')
+       case ( 3 );      write (me%Loglup,'("    Numerical gradients by single differencing")')
       end select
 
       select case (me%Optmet)
-       case ( 0 ); WRITE (me%Loglup,'("    Steepest descent method")')
-       case ( 1 ); WRITE (me%Loglup,'("    Modified spectral conjugate gradient method")')
-       case ( 2 ); WRITE (me%Loglup,'("    Spectral conjugate gradient method")')
-       case ( 3 ); WRITE (me%Loglup,'("    Conjugate gradient method")')
+       case ( 0 ); write (me%Loglup,'("    Steepest descent method")')
+       case ( 1 ); write (me%Loglup,'("    Modified spectral conjugate gradient method")')
+       case ( 2 ); write (me%Loglup,'("    Spectral conjugate gradient method")')
+       case ( 3 ); write (me%Loglup,'("    Conjugate gradient method")')
       end select
 
-      WRITE (me%Loglup,'("")')
+      write (me%Loglup,'("")')
 
-   END SUBROUTINE ogpwri_start
+   end subroutine ogpwri_start
 
-   SUBROUTINE ogrigt(me,Actinp,Actout)
+   subroutine ogrigt(me,Actinp,Actout)
 
       !! RIGHT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
       !! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS
@@ -3062,19 +3062,19 @@ contains
       integer(ip) :: row , col , act
       real(wp) :: val
 
-      DO col = me%Numact , 1 , -1
+      do col = me%Numact , 1 , -1
          val = Actinp(col)
-         DO act = me%Numact , col + 1 , -1
+         do act = me%Numact , col + 1 , -1
             row = me%Actcon(act)
             val = val - me%Conred(row,col)*Actout(act)
-         ENDDO
+         enddo
          row = me%Actcon(col)
          Actout(col) = val/me%Conred(row,col)
-      ENDDO
+      enddo
 
-   END SUBROUTINE ogrigt
+   end subroutine ogrigt
 
-   SUBROUTINE ogsens(me,Consta,Concon,Convar,Varcon,Varvar)
+   subroutine ogsens(me,Consta,Concon,Convar,Varcon,Varvar)
 
       !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
       !!
@@ -3093,94 +3093,94 @@ contains
 
       ! CONVERGED
       Consta = 0
-      DO act = 1 , me%Numact
+      do act = 1 , me%Numact
          con = me%Actcon(act)
          Consta(con) = 1
-      ENDDO
+      enddo
 
       ! SENSITIVITY OF CONTRAINTS W.R.T. ACTIVE CONSTRAINTS
       Concon = 0.0_wp
-      DO con = 1 , me%Numcon + 1
-         IF ( me%Conact(con)>0 ) Concon(con,con) = 1.0_wp
-         IF ( me%Conact(con)>0 ) CYCLE
+      do con = 1 , me%Numcon + 1
+         if ( me%Conact(con)>0 ) Concon(con,con) = 1.0_wp
+         if ( me%Conact(con)>0 ) cycle
          me%Conref = me%Conred(con,1:me%Numact)
-         CALL me%ogrigt(me%Conref,me%Conref)
-         DO act = 1 , me%Numact
+         call me%ogrigt(me%Conref,me%Conref)
+         do act = 1 , me%Numact
             ind = me%Actcon(act)
             Concon(con,ind) = -me%Conref(act)
-         ENDDO
-      ENDDO
+         enddo
+      enddo
 
       ! SENSITIVITY OF CONSTRAINTS W.R.T. PARAMETERS
       Convar = 0.0_wp
-      DO con = 1 , me%Numcon + 1
-         IF ( me%Conact(con)>0 ) CYCLE
-         DO var = 1 , me%Numvar
-            IF ( me%Vartyp(var)==0 ) CYCLE
+      do con = 1 , me%Numcon + 1
+         if ( me%Conact(con)>0 ) cycle
+         do var = 1 , me%Numvar
+            if ( me%Vartyp(var)==0 ) cycle
             val = me%Sender(con,var)
-            DO act = 1 , me%Numact
+            do act = 1 , me%Numact
                ind = me%Actcon(act)
                val = val + Concon(con,ind)*me%Sender(ind,var)
-            ENDDO
+            enddo
             Convar(con,var) = val
-         ENDDO
-      ENDDO
+         enddo
+      enddo
 
       ! SENSITIVITY OF VARIABLES W.R.T. ACTIVE CONSTRAINTS
       Varcon = 0.0_wp
-      DO var = 1 , me%Numvar
-         IF ( me%Vartyp(var)/=0 ) CYCLE
-         DO act = 1 , me%Numact
+      do var = 1 , me%Numvar
+         if ( me%Vartyp(var)/=0 ) cycle
+         do act = 1 , me%Numact
             con = me%Actcon(act)
             me%Conref(act) = me%Conder(con,var)
-         ENDDO
-         CALL me%ogleft(me%Conref,me%Conref)
-         CALL me%ogrigt(me%Conref,me%Conref)
-         DO act = 1 , me%Numact
+         enddo
+         call me%ogleft(me%Conref,me%Conref)
+         call me%ogrigt(me%Conref,me%Conref)
+         do act = 1 , me%Numact
             con = me%Actcon(act)
             Varcon(var,con) = -me%Conref(act)
-         ENDDO
-      ENDDO
+         enddo
+      enddo
 
       ! SENSITIVITY OF VARIABLES W.R.T. PARAMETERS
       Varvar = 0.0_wp
-      DO par = 1 , me%Numvar
+      do par = 1 , me%Numvar
          Varvar(par,par) = 1.0_wp
-         IF ( me%Vartyp(par)/=1 ) CYCLE
-         DO var = 1 , me%Numvar
-            IF ( me%Vartyp(var)/=0 ) CYCLE
+         if ( me%Vartyp(par)/=1 ) cycle
+         do var = 1 , me%Numvar
+            if ( me%Vartyp(var)/=0 ) cycle
             val = 0.0_wp
-            DO act = 1 , me%Numact
+            do act = 1 , me%Numact
                con = me%Actcon(act)
                val = val + Varcon(var,con)*me%Sender(con,par)
-            ENDDO
+            enddo
             Varvar(var,par) = val
-         ENDDO
-      ENDDO
+         enddo
+      enddo
 
       ! DESCALE SENSITIVITY
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          typ = me%Contyp(con)
          sca = me%Consca(con)
-         IF ( typ<0 ) sca = -sca
+         if ( typ<0 ) sca = -sca
          Convar(con,1:me%Numvar) = Convar(con,1:me%Numvar)*sca
          Concon(con,1:me%Numcon) = Concon(con,1:me%Numcon)*sca
-         IF ( con>me%Numcon ) CYCLE
+         if ( con>me%Numcon ) cycle
          Varcon(1:me%Numvar,con) = Varcon(1:me%Numvar,con)/sca
          Concon(1:me%Numcon+1,con) = Concon(1:me%Numcon+1,con)/sca
-      ENDDO
+      enddo
 
-      DO var = 1 , me%Numvar
+      do var = 1 , me%Numvar
          sca = me%Varsca(var)
          Varcon(var,1:me%Numcon) = Varcon(var,1:me%Numcon)*sca
          Varvar(var,1:me%Numvar) = Varvar(var,1:me%Numvar)*sca
          Convar(1:me%Numcon+1,var) = Convar(1:me%Numcon+1,var)/sca
          Varvar(1:me%Numvar,var) = Varvar(1:me%Numvar,var)/sca
-      ENDDO
+      enddo
 
-   END SUBROUTINE ogsens
+   end subroutine ogsens
 
-   SUBROUTINE ogssst(me,Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
+   subroutine ogssst(me,Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
 
       !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
       !!
@@ -3206,42 +3206,42 @@ contains
       ! Variable values saved for sensitivity
       me%Numact = Actnum
 
-      DO var = 1 , me%Numvar
+      do var = 1 , me%Numvar
          me%Senvar(var) = Varsen(var)
-      ENDDO
+      enddo
 
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          me%Senqua(con) = Quasen(con)
          me%Sencon(con) = Consen(con)
          me%Senact(con) = Actsen(con)
-         DO var = 1 , me%Numvar
+         do var = 1 , me%Numvar
             me%Sender(con,var) = Dersen(con,var)
-         ENDDO
-      ENDDO
+         enddo
+      enddo
 
       ! Temporary status saved of which constraints are active
-      DO con = 1 , me%Numcon + 1
+      do con = 1 , me%Numcon + 1
          me%Actcon(con) = Actsav(con)
-      ENDDO
+      enddo
 
-      DO con = 1 , me%Numcon + 4
+      do con = 1 , me%Numcon + 4
          me%Conact(con) = Consav(con)
-      ENDDO
+      enddo
 
-      DO con = 1 , me%Numcon + 3
-         DO var = 1 , me%Numvar
+      do con = 1 , me%Numcon + 3
+         do var = 1 , me%Numvar
             me%Conred(con,var) = Redsav(con,var)
-         ENDDO
-      ENDDO
+         enddo
+      enddo
 
-      DO con = 1 , me%Numcon
-         DO var = 1 , me%Numvar
+      do con = 1 , me%Numcon
+         do var = 1 , me%Numvar
             me%Conder(con,var) = Dersav(con,var)
-         ENDDO
-      ENDDO
-   END SUBROUTINE ogssst
+         enddo
+      enddo
+   end subroutine ogssst
 
-   SUBROUTINE ogwrit(me,Lev,Str)
+   subroutine ogwrit(me,Lev,Str)
 
       !! Write a meessage to the log.
       !!
@@ -3249,15 +3249,15 @@ contains
       !! 2025/02/09 | J. Williams | added trim()
 
       class(optgra),intent(inout) :: me
-      CHARACTER(len=*),intent(in) :: Str !! string to print
+      character(len=*),intent(in) :: Str !! string to print
       integer(ip),intent(in) :: Lev !! only print if `Loglev` is >= this
 
-      IF ( Lev<=me%Loglev ) THEN
-         WRITE (me%Loglun,'(A)') trim(Str)
-         FLUSH (me%Loglun)
-      ENDIF
+      if ( Lev<=me%Loglev ) then
+         write (me%Loglun,'(A)') trim(Str)
+         flush (me%Loglun)
+      endif
 
-   END SUBROUTINE ogwrit
+   end subroutine ogwrit
 
 !****************************************************************************************************
 end module optgra_module
