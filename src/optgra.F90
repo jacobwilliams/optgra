@@ -10,9 +10,7 @@
 !  * Original code by J. Schoenmaekers et al. (ESA) from [pyoptgra](https://github.com/esa/pyoptgra).
 !  * Jacob Williams, Feb 2025 : created new version.
 !
-!@todo
-! * remove the STOP statement in one subroutine.
-! * see about removing the `spag_nextblock_1` loop thing which I don't like.
+!@todo finish removing the `spag_nextblock_1` loop thing which I don't like.
 
 module optgra_module
 
@@ -484,7 +482,7 @@ contains
 
    end subroutine ogclos
 
-   subroutine ogcorr(me,Varacc,Finish,Toterr,Norerr)
+   subroutine ogcorr(me,Varacc,Finish,Toterr,Norerr,error)
 
       !! CORRECTION PART
       !!
@@ -495,6 +493,7 @@ contains
       integer(ip) :: Finish
       real(wp) :: Toterr
       real(wp) :: Norerr
+      logical,intent(out) :: error !! if there was a fatal error
 
       integer(ip) :: coritr , numfff , minpri , maxpri , curpri
       real(wp) :: cornor , foldis , cstval , conerr
@@ -520,6 +519,8 @@ contains
       integer(ip) , dimension(:) , allocatable :: fffcon
       integer(ip) , dimension(:) , allocatable :: prisav
       integer :: spag_nextblock_1
+
+      error = .false.
 
       ! initialize   - JW : these could also be in the class.
       !                     that would save the allocate/reallocate
@@ -875,7 +876,8 @@ contains
                   len = me%Conlen(con)
                   write (str,'(5X,I4,5X,3(1X,D10.3),1X,A)') con , cstval , cornor , upr , nam(1:len)
                   call me%ogwrit(3,str)
-                  call me%ogexcl(ind)
+                  call me%ogexcl(ind,error)
+                  if (error) return
                   if ( coninc(con)>=5 ) then
                      write (str,'("OGCORR-WARNING: CONSTRAINT INCLUDED")')
                      call me%ogwrit(1,str)
@@ -1492,7 +1494,7 @@ contains
 
    end subroutine ogeval
 
-   subroutine ogexcl(me,Exc)
+   subroutine ogexcl(me,Exc,error)
 
       !! REMOVE CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES
       !!
@@ -1501,10 +1503,13 @@ contains
       class(optgra),intent(inout) :: me
       integer(ip),intent(in) :: Exc !! CONSTRAINT TO BE REMOVED
                                     !! SEQUENCE NUMBER IN ACTIVE LIST
+      logical,intent(out) :: error !! if there was a fatal error (constraints singular)
 
       real(wp) :: val , bet , gam
       integer(ip) :: row , col , act , con
       character(len=str_len) :: str
+
+      error = .false.
 
       ! ======================================================================
       ! ADJUST LIST OF ACTIVE CONSTRAINTS
@@ -1533,7 +1538,8 @@ contains
             call me%ogwrit(2,str)
             write (me%Loglun,*) "VAL=" , val
             call me%ogwrit(2,str)
-            stop
+            error = .true.
+            return   ! fatal error
          endif
          me%Conred(con,act) = me%Conred(con,act) - val
          bet = 1.0_wp/(val*me%Conred(con,act))
@@ -1572,10 +1578,11 @@ contains
                                                   !! -> NOT SCALED
       integer(ip),intent(out) :: Finopt !! TERMINATION STATUS
                                         !!
-                                        !!  * 1=    MATCHED &     OPTIMAL
-                                        !!  * 2=    MATCHED & NOT OPTIMAL
-                                        !!  * 3=NOT MATCHED & NOT OPTIMAL
-                                        !!  * 4=NOT FEASIBL & NOT OPTIMAL
+                                        !!  *  1 =     MATCHED &     OPTIMAL
+                                        !!  *  2 =     MATCHED & NOT OPTIMAL
+                                        !!  *  3 = NOT MATCHED & NOT OPTIMAL
+                                        !!  *  4 = NOT FEASIBL & NOT OPTIMAL
+                                        !!  * -1 = Fatal error (constraints singular)
       integer(ip),intent(out) :: Finite !! ?
 
       integer(ip) :: finish , itecor , iteopt
@@ -1590,6 +1597,7 @@ contains
       real(wp) , dimension(:) , allocatable :: varcor
       real(wp) , dimension(:) , allocatable :: concor
       real(wp) , dimension(:,:) , allocatable :: conder_tmp !! JW: created to avoid "array temporary" warning
+      logical :: error
 
       ! initialize:
       allocate (varsum(me%Numvar))
@@ -1784,7 +1792,11 @@ contains
             ! ======================================================================
             ! CORRECTION PART
             ! ----------------------------------------------------------------------
-            call me%ogcorr(varacc,finish,conerr,norerr)
+            call me%ogcorr(varacc,finish,conerr,norerr,error)
+            if (error) then
+               Finopt = -1
+               return
+            end if
             ! ----------------------------------------------------------------------
             if ( me%Tablev>=1 ) write (me%Tablun,'(I4,1X,"COR",1X,*(1X,D10.3))') &
                me%Numite , (me%Varval(var),var=1,me%Numvar) , (me%Conval(con),con=1,me%Numcon)
@@ -1861,7 +1873,11 @@ contains
          if ( me%Senopt<+3 ) then
             varsav = me%Varmax
             me%Varmax = me%Varmax*10.0e-1_wp
-            call me%ogopti(varacc,numequ,finish,desnor)
+            call me%ogopti(varacc,numequ,finish,desnor,error)
+            if (error) then
+               Finopt = -1
+               return
+            end if
             me%Varmax = varsav
          endif
          ! ----------------------------------------------------------------------
@@ -2137,7 +2153,7 @@ contains
 
    end subroutine ogleft
 
-   subroutine ogopti(me,Varacc,Numequ,Finish,Desnor)
+   subroutine ogopti(me,Varacc,Numequ,Finish,Desnor,error)
 
       !! OPTIMIZATION PART
       !!
@@ -2147,6 +2163,7 @@ contains
       real(wp),intent(inout) :: Varacc !! ITERATION SCALED DISTANCE ACCUMULATED
       integer(ip),intent(in) :: Numequ !! NUMBER OF EQUALITY CONSTRAINTS [not used?]
       integer(ip),intent(out) :: Finish !! 0=LIMIT 1=OPTIM
+      logical,intent(out) :: error !! if there was a fatal error
 
       integer(ip) :: staflg , faccnt , numcor
       integer(ip) :: con , var , cos , act , ind , len , inc
@@ -2172,6 +2189,7 @@ contains
       real(wp) , dimension(:) , allocatable :: conqua
       integer(ip) , dimension(:) , allocatable :: concor
 
+      error = .false.
       ! initialize:  - JW : these could also be in the class.
       !                     that would save the allocate/reallocate
       !                     step every time this routine is called.
@@ -2236,7 +2254,8 @@ contains
             len = me%Conlen(con)
             write (str,'(I4,5X,1X,A)') con , nam(1:len)
             call me%ogwrit(2,str)
-            call me%ogexcl(act)
+            call me%ogexcl(act,error)
+            if (error) return
             me%Conact(con) = -1
          enddo
          ! ----------------------------------------------------------------------
@@ -2296,7 +2315,8 @@ contains
                len = me%Conlen(con)
                write (str,'(I4,5X,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
                call me%ogwrit(3,str)
-               call me%ogexcl(ind)
+               call me%ogexcl(ind,error)
+               if (error) return
                cycle
             endif
             ! ----------------------------------------------------------------------
