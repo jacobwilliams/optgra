@@ -22,7 +22,7 @@ program optgra_test
                                                                   !! -> 1=GTE -1=LTE 0=EQU -2=DERIVED DATA
                                                                   !! MERIT       TYPE (1+NUMCON)
                                                                   !! -> 1=MAX -1=MIN
-    INTEGER, parameter :: Dervar = 1   !! DERIVATIVES COMPUTATION MODE
+    INTEGER, parameter :: Dervar = 1    !! DERIVATIVES COMPUTATION MODE
                                         !! -> 1: USER DEFINED
                                         !! -> 2: NUMERIC WITH DOUBLE DIFFERENCING
                                         !! -> 3: NUMERIC WITH SINGLE DIFFERENCING

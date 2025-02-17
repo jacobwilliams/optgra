@@ -3009,7 +3009,7 @@ contains
       real(wp),intent(out) :: Convar(me%Numcon+1,me%Numvar) !! SENSITIVITY OF CONTRAINTS+MERIT W.R.T. PARAMETERS
       real(wp),intent(out) :: Varcon(me%Numvar,me%Numcon) !! SENSITIVITY OF VARIABLES W.R.T. ACTIVE CONSTRAINTS
       real(wp),intent(out) :: Varvar(me%Numvar,me%Numvar) !! SENSITIVITY OF VARIABLES W.R.T. PARAMETERS
-      !! -> NOT SCALED
+                                                          !! -> NOT SCALED
 
       real(wp) :: val , sca
       integer(ip) :: var , con , act , par , ind , typ
@@ -3181,7 +3181,6 @@ contains
       endif
 
    end subroutine ogwrit
-
 
    pure subroutine mul2m(a1,m1,k1,l1,n1,a2,m2,k2,l2,n2,a,m,k,l,n)
 
