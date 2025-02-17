@@ -16,6 +16,11 @@ It is specifically designed for near-linear optimization problems with many cons
 
 For this, constraints and the merit function are linearized. Optgra will perform less well on very non-linear merit functions or constraints.
 
+### Documentation
+
+The latest API documentation for the `master` branch can be found [here](https://jacobwilliams.github.io/optgra/). This was generated from the source code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford).
+
+
 ### See also
 
   * [pyoptgra](https://github.com/esa/pyoptgra) -- Python interface to OPTGRA.
