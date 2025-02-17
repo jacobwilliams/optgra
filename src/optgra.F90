@@ -247,7 +247,6 @@ contains
                                         !!  * +2: WITH CONSTRAINT BIAS
                                         !!  * +3: WITH CONSTRAINT CALC / NO OPTIM
                                         !!  * +4: WITH CONSTRAINT BIAS / NO OPTIM
-
       real(wp),intent(in) :: Varsca(Numvar) !! VARIABLES SCALE FACTOR
       character(len=name_len),intent(in) :: Varstr(Numvar) !! VARIABLES NAME STRING
       integer(ip),intent(in) :: Varlen(Numvar) !! VARIABLES NAME LENGTH
@@ -522,7 +521,9 @@ contains
       integer(ip) , dimension(:) , allocatable :: prisav
       integer :: spag_nextblock_1
 
-      ! initialize
+      ! initialize   - JW : these could also be in the class.
+      !                     that would save the allocate/reallocate
+      !                     step every time this routine is called.
       allocate (cosact(me%Numvar))
       allocate (varvec(me%Numvar))
       allocate (varsav(me%Numvar))
@@ -718,26 +719,22 @@ contains
                else
                   Finish = 0
                endif
-               spag_nextblock_1 = 6
-               cycle main
+               exit main
             endif
             if ( coritr==0 .and. conerr==0.0_wp ) then
                me%Numact = numfff
                me%Actcon = fffcon
                Finish = 1
-               spag_nextblock_1 = 6
-               cycle main
+               exit main
             elseif ( coritr/=0 .and. conerr==0.0_wp ) then
                Finish = 1
-               spag_nextblock_1 = 6
-               cycle main
+               exit main
             elseif ( coritr==maxitr ) then
                Finish = 0
                call me%ogwrit(3,"")
                write (str,'("CORITR=",I2)') coritr
                call me%ogwrit(3,str)
-               spag_nextblock_1 = 6
-               cycle main
+               exit main
             else
                Finish = 0
                coritr = coritr + 1
@@ -816,14 +813,14 @@ contains
                else
                   concor(con) = 0
                endif
-!          IF (ACT /= CONACT(CON) .OR. COR /= CONCOR(CON)) THEN
-!              NAM = CONSTR(CON)
-!              LEN = CONLEN(CON)
-!              WRITE (STR,'(5X,5X,I4,23X,D10.3,1X,A,4I4)') &
-!                 CON, CONVAL(CON),NAM(1:LEN), &
-!                 CONACT(CON),CONCOR(CON), ACT, COR
-!              CALL me%ogwrit (3,STR)
-!          ENDIF
+!              IF (ACT /= CONACT(CON) .OR. COR /= CONCOR(CON)) THEN
+!                  NAM = CONSTR(CON)
+!                  LEN = CONLEN(CON)
+!                  WRITE (STR,'(5X,5X,I4,23X,D10.3,1X,A,4I4)') &
+!                     CON, CONVAL(CON),NAM(1:LEN), &
+!                     CONACT(CON),CONCOR(CON), ACT, COR
+!                  CALL me%ogwrit (3,STR)
+!              ENDIF
             enddo
             ! ======================================================================
             ! STEEPEST ASCENT VECTOR
@@ -1036,8 +1033,7 @@ contains
                   cycle main
                else
                   Finish = 0
-                  spag_nextblock_1 = 6
-                  cycle main
+                  exit main
                endif
                ! ----------------------------------------------------------------------
             endif
@@ -1086,8 +1082,7 @@ contains
                   cycle main
                else
                   me%Numact = 0
-                  spag_nextblock_1 = 6
-                  cycle main
+                  exit main
                endif
             endif
             ! ======================================================================
@@ -1112,65 +1107,64 @@ contains
             conhit(con) = conhit(con) + 1
             spag_nextblock_1 = 5
             cycle main
-          case (6)
-            ! ======================================================================
-            ! MATCHED INEQUALITY CONSTRAINTS + MINIMUM CORRECTION NORM
-            ! ----------------------------------------------------------------------
-            call me%ogwrit(3,"")
-            write (str,'("CSTVAL:",D13.6)') cstval
-            call me%ogwrit(3,str)
-            call me%ogwrit(3,"")
-            call me%ogwrit(3,"STATUS OF CONSTRAINTS:")
-            call me%ogwrit(3,"")
-            call me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
-            do con = 1 , me%Numcon
-               if ( me%Contyp(con)==-2 ) cycle
-               nam = me%Constr(con)
-               len = me%Conlen(con)
-               val = me%Conval(con)
-               if ( me%Conact(con)>0 ) then
-                  write (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
-                  call me%ogwrit(3,str)
-               elseif ( me%Conact(con)==0 ) then
-                  write (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
-                  call me%ogwrit(3,str)
-               elseif ( me%Conact(con)<0 ) then
-                  write (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
-                  call me%ogwrit(3,str)
-               endif
-            enddo
-            ! ----------------------------------------------------------------------
-            call me%ogwrit(3,"")
-            call me%ogwrit(3,"STATUS OF VIOLATED CONSTRAINTS:")
-            call me%ogwrit(3,"")
-            call me%ogwrit(3," CON COST___VAL CONSTRAINT")
-            conerr = 0.0_wp
-            do con = 1 , me%Numcon
-               if ( me%Contyp(con)==-2 ) cycle
-               nam = me%Constr(con)
-               len = me%Conlen(con)
-               val = me%Conval(con)
-               if ( val<-dlt ) then
-                  conerr = conerr + abs(val)
-                  write (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
-                  call me%ogwrit(3,str)
-               elseif ( me%Contyp(con)/=0 ) then
-               elseif ( val>dlt ) then
-                  conerr = conerr + abs(val)
-                  write (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
-                  call me%ogwrit(3,str)
-               endif
-            enddo
-            ! ----------------------------------------------------------------------
-            call me%ogwrit(3,"")
-            write (str,'("LINEAR ERROR.: ",D13.6)') conerr
-            call me%ogwrit(3,str)
-            call done()
-            exit main
 
          end select
 
       enddo main
+
+      ! ======================================================================
+      ! MATCHED INEQUALITY CONSTRAINTS + MINIMUM CORRECTION NORM
+      ! ----------------------------------------------------------------------
+      call me%ogwrit(3,"")
+      write (str,'("CSTVAL:",D13.6)') cstval
+      call me%ogwrit(3,str)
+      call me%ogwrit(3,"")
+      call me%ogwrit(3,"STATUS OF CONSTRAINTS:")
+      call me%ogwrit(3,"")
+      call me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
+      do con = 1 , me%Numcon
+         if ( me%Contyp(con)==-2 ) cycle
+         nam = me%Constr(con)
+         len = me%Conlen(con)
+         val = me%Conval(con)
+         if ( me%Conact(con)>0 ) then
+            write (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
+            call me%ogwrit(3,str)
+         elseif ( me%Conact(con)==0 ) then
+            write (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
+            call me%ogwrit(3,str)
+         elseif ( me%Conact(con)<0 ) then
+            write (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
+            call me%ogwrit(3,str)
+         endif
+      enddo
+      ! ----------------------------------------------------------------------
+      call me%ogwrit(3,"")
+      call me%ogwrit(3,"STATUS OF VIOLATED CONSTRAINTS:")
+      call me%ogwrit(3,"")
+      call me%ogwrit(3," CON COST___VAL CONSTRAINT")
+      conerr = 0.0_wp
+      do con = 1 , me%Numcon
+         if ( me%Contyp(con)==-2 ) cycle
+         nam = me%Constr(con)
+         len = me%Conlen(con)
+         val = me%Conval(con)
+         if ( val<-dlt ) then
+            conerr = conerr + abs(val)
+            write (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
+            call me%ogwrit(3,str)
+         elseif ( me%Contyp(con)/=0 ) then
+         elseif ( val>dlt ) then
+            conerr = conerr + abs(val)
+            write (str,'( I4,D11.3,1X,A)') con , val , nam(1:len)
+            call me%ogwrit(3,str)
+         endif
+      enddo
+      ! ----------------------------------------------------------------------
+      call me%ogwrit(3,"")
+      write (str,'("LINEAR ERROR.: ",D13.6)') conerr
+      call me%ogwrit(3,str)
+      call done()
 
    contains
 
@@ -2270,7 +2264,6 @@ contains
                Finish = 0
                write (str,*) "NNN=" , nnn
                call me%ogwrit(2,str)
-               call done()
                exit main
             endif
             ! ======================================================================
@@ -2384,7 +2377,6 @@ contains
                write (str,'("FINAL...............:",1X,D13.6,'//'11X,1(1X,D10.3),1X,D16.9)') &
                   foldis , cosimp , me%Conval(cos) + cosimp
                call me%ogwrit(2,str)
-               call done()
                exit main
             endif
             ! ======================================================================
@@ -2718,7 +2710,6 @@ contains
                endif
                foldis = 0.0_wp
                Finish = 1
-               call done()
                exit main
             endif
             ! ======================================================================
@@ -2865,31 +2856,24 @@ contains
             exit inner4
          enddo inner4
 
-         call done()
          exit main
 
       enddo main
 
-      contains
+      me%Funvar = desprv
+      me%Confix = me%Conact(1:me%Numcon)
+      if ( me%Senopt==-1 ) me%Senact = me%Conact(1:me%Numcon)
 
-      subroutine done() ! 3
-
-         me%Funvar = desprv
-         me%Confix = me%Conact(1:me%Numcon)
-         if ( me%Senopt==-1 ) me%Senact = me%Conact(1:me%Numcon)
-
-         deallocate (cosact)
-         deallocate (varvec)
-         deallocate (varwrk)
-         deallocate (corvec)
-         deallocate (desder)
-         deallocate (desprv)
-         deallocate (varprv)
-         deallocate (convec)
-         deallocate (conqua)
-         deallocate (concor)
-
-      end subroutine done
+      deallocate (cosact)
+      deallocate (varvec)
+      deallocate (varwrk)
+      deallocate (corvec)
+      deallocate (desder)
+      deallocate (desprv)
+      deallocate (varprv)
+      deallocate (convec)
+      deallocate (conqua)
+      deallocate (concor)
 
    end subroutine ogopti
 
