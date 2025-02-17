@@ -9,15 +9,8 @@ auto-executables = false
 auto-examples = false
 auto-tests = true
 
-
 [library]
 source-dir = "src"
 
 [install]
 library = true
-
-[fortran]
-implicit-typing = false
-implicit-external = true
-source-form = "free"
-
