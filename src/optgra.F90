@@ -12,7 +12,7 @@
 !
 !@todo
 ! * remove the STOP statement in one subroutine.
-! * see about removing the SPAG DISPATCH loop thing which I don't like.
+! * see about removing the `spag_nextblock_1` loop thing which I don't like.
 
 module optgra_module
 
@@ -242,7 +242,7 @@ contains
       integer(ip),intent(in) :: Senopt  !! sensitivity optimization mode
                                         !!
                                         !!  *  0: NO
-                                        !!  * -1: INITIALISATION
+                                        !!  * -1: INITIALIZATION
                                         !!  * +1: WITH CONSTRAINT CALCULATION
                                         !!  * +2: WITH CONSTRAINT BIAS
                                         !!  * +3: WITH CONSTRAINT CALC / NO OPTIM
@@ -1582,405 +1582,386 @@ contains
                                         !!  * 2=    MATCHED & NOT OPTIMAL
                                         !!  * 3=NOT MATCHED & NOT OPTIMAL
                                         !!  * 4=NOT FEASIBL & NOT OPTIMAL
-      integer(ip),intent(out) :: Finite
+      integer(ip),intent(out) :: Finite !! ?
 
       integer(ip) :: finish , itecor , iteopt
       integer(ip) :: var , con , typ , len , num , numvio
       real(wp) :: val , sca , red , der , fac , old , convio
       character(len=str_len) :: str
       character(len=name_len) :: nam
-
       integer(ip) :: numequ , itediv , itecnv
       real(wp) :: varacc , cosnew , cosold , varsav , meamer
       real(wp) :: conerr , desnor , norerr , meaerr
-
       real(wp) , dimension(:) , allocatable :: varsum
       real(wp) , dimension(:) , allocatable :: varcor
       real(wp) , dimension(:) , allocatable :: concor
       real(wp) , dimension(:,:) , allocatable :: conder_tmp !! JW: created to avoid "array temporary" warning
-      integer :: spag_nextblock_1
 
-      spag_nextblock_1 = 1
+      ! initialize:
+      allocate (varsum(me%Numvar))
+      allocate (varcor(me%Numvar))
+      allocate (concor(me%Numcon+1))
+      allocate (conder_tmp(me%Numcon+1,me%Numvar))
+
+      ! ======================================================================
+      ! GENERAL
+      ! ----------------------------------------------------------------------
+      ! LOGLEV = 2
+      call me%ogwrit(2,"")
+      call me%ogwrit(2,"OPTGRA START")
+      call me%ogwrit(2,"")
+      Finopt = 3
+      itecor = 0
+      iteopt = 0
+      meaerr = 0.0_wp
+      meamer = 0.0_wp
+      itediv = 0
+      itecnv = 0
+      !me%Conopt = 0
+      concor = 0.0_wp
+      varcor = 0.0_wp
+      desnor = 0.0_wp
+      ! ----------------------------------------------------------------------
+      me%Varstp = me%Varsnd
+      me%Numite = 0
+      cosnew = 0.0_wp
+      do var = 1 , me%Numvar
+         varsum(var) = 0.0_wp
+         varcor(var) = 0.0_wp
+      enddo
+      ! ======================================================================
+      ! EQUALTIY CONSTRAINTS IN ACTIVE SET
+      ! ----------------------------------------------------------------------
+      me%Numact = 0
+      do con = 1 , me%Numcon
+!        IF (CONTYP(CON) == -2) CYCLE
+         nam = me%Constr(con)
+         len = me%Conlen(con)
+         write (str,*) "CON/PRI=" , con , me%Conpri(con) , " " , nam(1:len)
+         call me%ogwrit(3,str)
+         me%Conact(con) = 0
+         if ( me%Consca(con)>=1.0e+09_wp ) me%Contyp(con) = -2
+         if ( me%Contyp(con)==0 ) then
+         elseif ( me%Contyp(con)==-2 ) then
+            me%Conact(con) = -2
+         endif
+      enddo
+      numequ = me%Numact
+      me%Conact(me%Numcon+1) = -3
+      me%Conact(me%Numcon+2) = -3
+      ! ======================================================================
+      ! SCALE VARIABLES
+      ! ----------------------------------------------------------------------
+      do var = 1 , me%Numvar
+         me%Varval(var) = Valvar(var)/me%Varsca(var)
+      enddo
+      ! ======================================================================
+      ! HEADER FOR TABLE
+      ! ----------------------------------------------------------------------
+      if ( me%Tablev>=1 ) write (me%Tablun,'("ITER",1X,"OPT",1X,*(1X,I10))') (var,var=1,me%Numvar) , (con,con=1,me%Numcon)
+
       main: do
-         select case (spag_nextblock_1)
-          case (1)
-            ! ----------------------------------------------------------------------
-            allocate (varsum(me%Numvar))
-            allocate (varcor(me%Numvar))
-            allocate (concor(me%Numcon+1))
-            allocate (conder_tmp(me%Numcon+1,me%Numvar))
+         inner: do
             ! ======================================================================
-            ! GENERAL
-            ! ----------------------------------------------------------------------
-            ! LOGLEV = 2
-            call me%ogwrit(2,"")
-            call me%ogwrit(2,"OPTGRA START")
-            call me%ogwrit(2,"")
-            Finopt = 3
-            itecor = 0
-            iteopt = 0
-            meaerr = 0.0_wp
-            meamer = 0.0_wp
-            itediv = 0
-            itecnv = 0
-            !me%Conopt = 0
-            concor = 0.0_wp
-            varcor = 0.0_wp
-            desnor = 0.0_wp
-            ! ----------------------------------------------------------------------
-            me%Varstp = me%Varsnd
-            me%Numite = 0
-            cosnew = 0.0_wp
-            do var = 1 , me%Numvar
-               varsum(var) = 0.0_wp
-               varcor(var) = 0.0_wp
-            enddo
+            ! IF (NUMITE >= 52) MATLEV = 3
+            ! IF (NUMITE >= 55) MATLEV = 2
             ! ======================================================================
-            ! EQUALTIY CONSTRAINTS IN ACTIVE SET
+            ! NEW ITERATION
             ! ----------------------------------------------------------------------
-            me%Numact = 0
-            do con = 1 , me%Numcon
-!              IF (CONTYP(CON) == -2) CYCLE
-               nam = me%Constr(con)
-               len = me%Conlen(con)
-               write (str,*) "CON/PRI=" , con , me%Conpri(con) , " " , nam(1:len)
-               call me%ogwrit(3,str)
-               me%Conact(con) = 0
-               if ( me%Consca(con)>=1.0e+09_wp ) me%Contyp(con) = -2
-               if ( me%Contyp(con)==0 ) then
-               elseif ( me%Contyp(con)==-2 ) then
-                  me%Conact(con) = -2
-               endif
-            enddo
-            numequ = me%Numact
-            me%Conact(me%Numcon+1) = -3
-            me%Conact(me%Numcon+2) = -3
-            ! ======================================================================
-            ! SCALE VARIABLES
-            ! ----------------------------------------------------------------------
-            do var = 1 , me%Numvar
-               me%Varval(var) = Valvar(var)/me%Varsca(var)
-            enddo
-            ! ======================================================================
-            ! HEADER FOR TABLE
-            ! ----------------------------------------------------------------------
-            if ( me%Tablev>=1 ) write (me%Tablun,'("ITER",1X,"OPT",1X,*(1X,I10))') (var,var=1,me%Numvar) , (con,con=1,me%Numcon)
-            spag_nextblock_1 = 2
-          case (2)
-            inner: do
-               ! ======================================================================
-               ! IF (NUMITE >= 52) MATLEV = 3
-               ! IF (NUMITE >= 55) MATLEV = 2
-               ! ======================================================================
-               ! NEW ITERATION
-               ! ----------------------------------------------------------------------
-               if ( me%Numite>=me%Corite .and. itecor==0 ) then
-                  Finopt = 3
-                  Finite = me%Numite
-                  call me%ogwrit(1,"")
-                  write (str,'("OPTGRA: Converged: not ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-                  call me%ogwrit(1,str)
+            if ( me%Numite>=me%Corite .and. itecor==0 ) then
+               Finopt = 3
+               Finite = me%Numite
+               call me%ogwrit(1,"")
+               write (str,'("OPTGRA: Converged: not ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+               call me%ogwrit(1,str)
 
-                  ! Final Pygmo output
-                  ! TODO: can this final fitness call be avoided (just for output)?
-                  me%Pygfla = 3 ! pygmo flag in COMMON: no covergence
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-                  me%Conder(1:me%Numcon+1,:) = conder_tmp
-                  spag_nextblock_1 = 3
-                  cycle main
-               elseif ( me%Numite>=me%Maxite .or. (me%Numite-itecor>=me%Optite-1 .and. itecor/=0) ) then
-                  Finopt = 2
-                  Finite = iteopt
-                  me%Varval = varcor
-                  me%Conval = concor
-                  call me%ogwrit(1,"")
-                  write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-                  call me%ogwrit(1,str)
-                  call me%ogpwri_end(-Valcon(me%Numcon+1),numvio,convio)
+               ! Final Pygmo output
+               ! TODO: can this final fitness call be avoided (just for output)?
+               me%Pygfla = 3 ! pygmo flag in COMMON: no covergence
+               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               exit main
+            elseif ( me%Numite>=me%Maxite .or. (me%Numite-itecor>=me%Optite-1 .and. itecor/=0) ) then
+               Finopt = 2
+               Finite = iteopt
+               me%Varval = varcor
+               me%Conval = concor
+               call me%ogwrit(1,"")
+               write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+               call me%ogwrit(1,str)
+               call me%ogpwri_end(-Valcon(me%Numcon+1),numvio,convio)
 
-                  ! Final Pygmo output
-                  ! TODO: can this final fitness call be avoided (just for output)?
-                  me%Pygfla = 2 ! pygmo flag in COMMON: constraints matched
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-                  me%Conder(1:me%Numcon+1,:) = conder_tmp
-                  spag_nextblock_1 = 3
-                  cycle main
-               endif
-               ! ----------------------------------------------------------------------
-               me%Numite = me%Numite + 1
-               ! ----------------------------------------------------------------------
-               call me%ogwrit(3,"")
-               write (str,'("ITERAT=",I5)')me%Numite
-               call me%ogwrit(2,str)
-               ! ======================================================================
-               ! GET VALUES AND GRADIENTS
-               ! ======================================================================
-               if ( me%Senopt<=0 ) then
-                  !call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:)) ! JW : original
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-                  me%Conder(1:me%Numcon+1,:) = conder_tmp
-               elseif ( me%Senopt==+1 .or. me%Senopt==+3 ) then
-                  me%Varval = me%Senvar
-                  call me%ogeval(me%Varval,me%Conval,0,conder_tmp)
-                  me%Conder(1:me%Numcon+1,:) = conder_tmp
-               elseif ( me%Senopt==+2 .or. me%Senopt==+4 ) then
-                  me%Varval = me%Senvar
-                  do con = 1 , me%Numcon + 1
-                     sca = me%Consca(con)
-                     if ( me%Contyp(con)==-1 ) sca = -sca
-                     me%Conval(con) = me%Sencon(con) - me%Sendel(con)/sca
-                  enddo
-               endif
-               if ( me%Senopt==-1 ) then
-                  me%Senvar = me%Varval
-                  me%Sencon = me%Conval
-               endif
-               ! ======================================================================
-               if ( me%Varder==-1 .and. me%Senopt<=0 ) then
-                  me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:)
-                  call me%ogeval(me%Varval,me%Conval,2,conder_tmp)
-                  me%Conder(1:me%Numcon+1,:) = conder_tmp
-                  write (str,'("GRADIENT CHECK")')
-                  call me%ogwrit(1,str)
-                  do var = 1 , me%Numvar
-                     do con = 1 , me%Numcon + 1
-                        fac = me%Varsca(var)/me%Consca(con)
-                        fac = 1.0_wp
-                        der = me%Conder(con,var)*fac
-                        red = me%Conred(con,var)*fac
-                        if ( abs(der)<1.0e-6_wp .and. abs(red)<1.0e-6_wp ) cycle
-                        if ( abs(der-red)<1.0e-2_wp ) cycle
-                        if ( der/=0.0_wp ) then
-                           fac = red/der
-                        else
-                           fac = 0.0_wp
-                        endif
-                        if ( abs(fac-1.0_wp)<1.0e-2_wp ) cycle
-                        write (str,'("VAR/CON/ANA/NUM/A2N=",2I4,3(1X,D13.6))') var , con , red , der , fac
-                        call me%ogwrit(1,str)
-                        nam = me%Varstr(var)
-                        len = me%Varlen(var)
-                        write (str,'("      VAR=",A,1X,D13.6)') nam(1:len) , me%Varval(var)*me%Varsca(var)
-                        call me%ogwrit(1,str)
-                        nam = me%Constr(con)
-                        len = me%Conlen(con)
-                        write (str,'("      CON=",A,1X,D13.6)') nam(1:len) , me%Conval(con)*me%Consca(con)
-                        call me%ogwrit(1,str)
-                     enddo
-                  enddo
-!                 CONDER(1:NUMCON+1,:) = CONRED(1:NUMCON+1,:)
-!                 GOTO 9999
-               endif
-               ! ======================================================================
-               me%Sender = me%Conder
-               do var = 1 , me%Numvar
-                  if ( me%Vartyp(var)/=1 ) cycle
-!                 WRITE (STR,*) "VAR=",VAR,VARVAL(VAR)*VARSCA(VAR)
-!                 CALL me%ogwrit (2,STR)
-                  me%Conder(1:me%Numcon+1,var) = 0.0_wp
-               enddo
-               ! ======================================================================
-               if ( me%Numite==1 ) then
-                  me%Vargrd = me%Varval
-               else
-                  me%Vargrd = me%Varref
-               endif
-               me%Varref = me%Varval
-               me%Conref = me%Conval
-               ! ======================================================================
-               varacc = 0.0_wp
-               ! ======================================================================
-               cosold = cosnew
-               cosnew = me%Conval(me%Numcon+1)
-               call me%ogwrit(3,"")
-               write (str,'("OPTGRA: VALCOS=",D15.8,1X,D15.8)') cosnew , cosnew - cosold
-               call me%ogwrit(3,str)
-               ! ======================================================================
-               ! CORRECTION PART
-               ! ----------------------------------------------------------------------
-               call me%ogcorr(varacc,finish,conerr,norerr)
-               ! ----------------------------------------------------------------------
-               if ( me%Tablev>=1 ) write (me%Tablun,'(I4,1X,"COR",1X,*(1X,D10.3))') &
-                  me%Numite , (me%Varval(var),var=1,me%Numvar) , (me%Conval(con),con=1,me%Numcon)
-               ! ----------------------------------------------------------------------
-               if ( me%Senopt/=0 ) then
-                  if ( finish/=0 ) exit inner
-                  Finopt = 0
-                  spag_nextblock_1 = 3
-                  cycle main
-               endif
-               ! ----------------------------------------------------------------------
-               if ( finish==0 ) then
-                  me%Numact = 0
-                  old = meaerr
-                  itediv = itediv + 1
-                  num = min(itediv,me%Divite)
-                  meaerr = (meaerr*(num-1)+norerr)/num
-!                 WRITE (STR,*) "MEAERR=",MEAERR
-!                 CALL me%ogwrit (2,STR)
-                  if ( itediv<me%Divite .or. meaerr<=old ) cycle
-                  finish = -1
-               endif
-               ! ----------------------------------------------------------------------
-               if ( finish==-1 ) then
-                  Finopt = 4
-                  Finite = me%Numite
-                  call me%ogwrit(1,"")
-                  write (str,'("OPTGRA: Converged: unf ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-                  call me%ogwrit(1,str)
-
-                  ! Final Pygmo output
-                  ! TODO: can this final fitness call be avoided (just for output)?
-                  me%Pygfla = 4 ! pygmo flag in COMMON: infeasible
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-                  me%Conder(1:me%Numcon+1,:) = conder_tmp
-                  spag_nextblock_1 = 3
-                  cycle main
-               endif
-               ! ----------------------------------------------------------------------
-               itediv = 0
-               iteopt = me%Numite
-               if ( itecor==0 .or. concor(me%Numcon+1)<me%Conval(me%Numcon+1) ) then
-                  varcor = me%Varval
-                  concor = me%Conval
-               endif
-               if ( itecor==0 ) itecor = me%Numite
-               ! ----------------------------------------------------------------------
-               old = meamer
-               itecnv = itecnv + 1
-               num = min(itecnv,me%Cnvite)
-               meamer = (meamer*(num-1)+concor(me%Numcon+1))/num
-!              WRITE (STR,*) "MEAMER=",ITECNV,NUM,MEAMER,OLD,OLD/MEAMER
-!              CALL me%ogwrit (-1,STR)
-               if ( itecnv>=me%Cnvite .and. meamer<old ) then
-                  Finopt = 2
-                  Finite = iteopt
-                  me%Varval = varcor
-                  me%Conval = concor
-                  call me%ogwrit(1,"")
-                  write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-                  call me%ogwrit(1,str)
-
-                  ! Final Pygmo output
-                  ! TODO: can this final fitness call be avoided (just for output)?
-                  me%Pygfla = 2 ! pygmo flag in COMMON: matched
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-                  me%Conder(1:me%Numcon+1,:) = conder_tmp
-                  spag_nextblock_1 = 3
-                  cycle main
-               endif
-               exit inner
-            enddo inner
-            ! ======================================================================
-            ! OPTIMIZATION PART
-            ! ----------------------------------------------------------------------
-            ! ----------------------------------------------------------------------
-            if ( me%Senopt<+3 ) then
-               varsav = me%Varmax
-               me%Varmax = me%Varmax*10.0e-1_wp
-               call me%ogopti(varacc,numequ,finish,desnor)
-               me%Varmax = varsav
+               ! Final Pygmo output
+               ! TODO: can this final fitness call be avoided (just for output)?
+               me%Pygfla = 2 ! pygmo flag in COMMON: constraints matched
+               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               exit main
             endif
             ! ----------------------------------------------------------------------
+            me%Numite = me%Numite + 1
+            ! ----------------------------------------------------------------------
+            call me%ogwrit(3,"")
+            write (str,'("ITERAT=",I5)')me%Numite
+            call me%ogwrit(2,str)
+            ! ======================================================================
+            ! GET VALUES AND GRADIENTS
+            ! ======================================================================
+            if ( me%Senopt<=0 ) then
+               !call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:)) ! JW : original
+               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+               me%Conder(1:me%Numcon+1,:) = conder_tmp
+            elseif ( me%Senopt==+1 .or. me%Senopt==+3 ) then
+               me%Varval = me%Senvar
+               call me%ogeval(me%Varval,me%Conval,0,conder_tmp)
+               me%Conder(1:me%Numcon+1,:) = conder_tmp
+            elseif ( me%Senopt==+2 .or. me%Senopt==+4 ) then
+               me%Varval = me%Senvar
+               do con = 1 , me%Numcon + 1
+                  sca = me%Consca(con)
+                  if ( me%Contyp(con)==-1 ) sca = -sca
+                  me%Conval(con) = me%Sencon(con) - me%Sendel(con)/sca
+               enddo
+            endif
+            if ( me%Senopt==-1 ) then
+               me%Senvar = me%Varval
+               me%Sencon = me%Conval
+            endif
+            ! ======================================================================
+            if ( me%Varder==-1 .and. me%Senopt<=0 ) then
+               me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:)
+               call me%ogeval(me%Varval,me%Conval,2,conder_tmp)
+               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               write (str,'("GRADIENT CHECK")')
+               call me%ogwrit(1,str)
+               do var = 1 , me%Numvar
+                  do con = 1 , me%Numcon + 1
+                     fac = me%Varsca(var)/me%Consca(con)
+                     fac = 1.0_wp
+                     der = me%Conder(con,var)*fac
+                     red = me%Conred(con,var)*fac
+                     if ( abs(der)<1.0e-6_wp .and. abs(red)<1.0e-6_wp ) cycle
+                     if ( abs(der-red)<1.0e-2_wp ) cycle
+                     if ( der/=0.0_wp ) then
+                        fac = red/der
+                     else
+                        fac = 0.0_wp
+                     endif
+                     if ( abs(fac-1.0_wp)<1.0e-2_wp ) cycle
+                     write (str,'("VAR/CON/ANA/NUM/A2N=",2I4,3(1X,D13.6))') var , con , red , der , fac
+                     call me%ogwrit(1,str)
+                     nam = me%Varstr(var)
+                     len = me%Varlen(var)
+                     write (str,'("      VAR=",A,1X,D13.6)') nam(1:len) , me%Varval(var)*me%Varsca(var)
+                     call me%ogwrit(1,str)
+                     nam = me%Constr(con)
+                     len = me%Conlen(con)
+                     write (str,'("      CON=",A,1X,D13.6)') nam(1:len) , me%Conval(con)*me%Consca(con)
+                     call me%ogwrit(1,str)
+                  enddo
+               enddo
+!              CONDER(1:NUMCON+1,:) = CONRED(1:NUMCON+1,:)
+!              GOTO 9999
+            endif
+            ! ======================================================================
+            me%Sender = me%Conder
+            do var = 1 , me%Numvar
+               if ( me%Vartyp(var)/=1 ) cycle
+!              WRITE (STR,*) "VAR=",VAR,VARVAL(VAR)*VARSCA(VAR)
+!              CALL me%ogwrit (2,STR)
+               me%Conder(1:me%Numcon+1,var) = 0.0_wp
+            enddo
+            ! ======================================================================
+            if ( me%Numite==1 ) then
+               me%Vargrd = me%Varval
+            else
+               me%Vargrd = me%Varref
+            endif
+            me%Varref = me%Varval
+            me%Conref = me%Conval
+            ! ======================================================================
+            varacc = 0.0_wp
+            ! ======================================================================
+            cosold = cosnew
+            cosnew = me%Conval(me%Numcon+1)
+            call me%ogwrit(3,"")
+            write (str,'("OPTGRA: VALCOS=",D15.8,1X,D15.8)') cosnew , cosnew - cosold
+            call me%ogwrit(3,str)
+            ! ======================================================================
+            ! CORRECTION PART
+            ! ----------------------------------------------------------------------
+            call me%ogcorr(varacc,finish,conerr,norerr)
+            ! ----------------------------------------------------------------------
+            if ( me%Tablev>=1 ) write (me%Tablun,'(I4,1X,"COR",1X,*(1X,D10.3))') &
+               me%Numite , (me%Varval(var),var=1,me%Numvar) , (me%Conval(con),con=1,me%Numcon)
+            ! ----------------------------------------------------------------------
             if ( me%Senopt/=0 ) then
-               call me%ogwrit(1,"")
-               if ( finish==0 ) then
-                  Finopt = 0
-                  call me%ogwrit(1,"OPTGRA sensitivity converged: not")
-               else
-                  Finopt = 1
-                  call me%ogwrit(1,"OPTGRA sensitivity converged: yes")
-               endif
-               spag_nextblock_1 = 3
-               cycle main
+               if ( finish/=0 ) exit inner
+               Finopt = 0
+               exit main
             endif
             ! ----------------------------------------------------------------------
             if ( finish==0 ) then
-               spag_nextblock_1 = 2
-               cycle main
+               me%Numact = 0
+               old = meaerr
+               itediv = itediv + 1
+               num = min(itediv,me%Divite)
+               meaerr = (meaerr*(num-1)+norerr)/num
+!              WRITE (STR,*) "MEAERR=",MEAERR
+!              CALL me%ogwrit (2,STR)
+               if ( itediv<me%Divite .or. meaerr<=old ) cycle
+               finish = -1
             endif
-            ! ======================================================================
-            ! NOT CONVERGED
             ! ----------------------------------------------------------------------
-            if ( varacc/=0.0_wp ) then
-               spag_nextblock_1 = 2
-               cycle main
+            if ( finish==-1 ) then
+               Finopt = 4
+               Finite = me%Numite
+               call me%ogwrit(1,"")
+               write (str,'("OPTGRA: Converged: unf ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+               call me%ogwrit(1,str)
+
+               ! Final Pygmo output
+               ! TODO: can this final fitness call be avoided (just for output)?
+               me%Pygfla = 4 ! pygmo flag in COMMON: infeasible
+               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               exit main
             endif
-            ! ======================================================================
-            ! CONVERGED
             ! ----------------------------------------------------------------------
-            Finopt = 1
-            Finite = me%Numite
+            itediv = 0
+            iteopt = me%Numite
+            if ( itecor==0 .or. concor(me%Numcon+1)<me%Conval(me%Numcon+1) ) then
+               varcor = me%Varval
+               concor = me%Conval
+            endif
+            if ( itecor==0 ) itecor = me%Numite
+            ! ----------------------------------------------------------------------
+            old = meamer
+            itecnv = itecnv + 1
+            num = min(itecnv,me%Cnvite)
+            meamer = (meamer*(num-1)+concor(me%Numcon+1))/num
+!           WRITE (STR,*) "MEAMER=",ITECNV,NUM,MEAMER,OLD,OLD/MEAMER
+!           CALL me%ogwrit (-1,STR)
+            if ( itecnv>=me%Cnvite .and. meamer<old ) then
+               Finopt = 2
+               Finite = iteopt
+               me%Varval = varcor
+               me%Conval = concor
+               call me%ogwrit(1,"")
+               write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+               call me%ogwrit(1,str)
+
+               ! Final Pygmo output
+               ! TODO: can this final fitness call be avoided (just for output)?
+               me%Pygfla = 2 ! pygmo flag in COMMON: matched
+               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               exit main
+            endif
+            exit inner
+         enddo inner
+
+         ! ======================================================================
+         ! OPTIMIZATION PART
+         ! ----------------------------------------------------------------------
+         if ( me%Senopt<+3 ) then
+            varsav = me%Varmax
+            me%Varmax = me%Varmax*10.0e-1_wp
+            call me%ogopti(varacc,numequ,finish,desnor)
+            me%Varmax = varsav
+         endif
+         ! ----------------------------------------------------------------------
+         if ( me%Senopt/=0 ) then
             call me%ogwrit(1,"")
-            write (str,'("OPTGRA: Converged: yes ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
-            call me%ogwrit(1,str)
-            call me%ogwrit(3,"")
-
-            ! Final Pygmo output
-            ! TODO: can this final fitness call be avoided (just for output)?
-            me%Pygfla = 1 ! covergence
-            !call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:)) ! JW : original
-            call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-            me%Conder(1:me%Numcon+1,:) = conder_tmp
-            spag_nextblock_1 = 3
-          case (3)
-
-!           WRITE (STR,*) "DIF=",NORM2(VARVAL-VARREF)
-!           CALL me%ogwrit (1,STR)
-            ! ======================================================================
-            ! DESCALE VARIABLES
-            ! ----------------------------------------------------------------------
-!           CALL OGWMAT (3)
-!           CALL me%ogeval (VARVAL, VALCON, 0, CONDER)
-            do var = 1 , me%Numvar
-               Valvar(var) = me%Varval(var)*me%Varsca(var)
-            enddo
-!           IF (SENOPT /= 0) THEN
-!               CALL me%ogeval (VARVAL, VALCON, 0, CONDER)
-!           ENDIF
-            ! ======================================================================
-            ! DESCALE VALUES
-            ! ----------------------------------------------------------------------
-            do con = 1 , me%Numcon + 1
-               typ = me%Contyp(con)
-               sca = me%Consca(con)
-               if ( typ==-1 ) sca = -sca
-               Valcon(con) = me%Conval(con)*sca
-            enddo
-            ! ======================================================================
-            call me%ogwrit(3,"")
-            call me%ogwrit(3,"STATUS OF CONSTRAINTS:")
-            call me%ogwrit(3,"")
-            call me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
-            do con = 1 , me%Numcon
-               if ( me%Contyp(con)==-2 ) cycle
-               nam = me%Constr(con)
-               len = me%Conlen(con)
-               val = me%Conval(con)
-               if ( me%Conact(con)>0 ) then
-                  write (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
-                  call me%ogwrit(3,str)
-               elseif ( me%Conact(con)==0 ) then
-                  write (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
-                  call me%ogwrit(3,str)
-               elseif ( me%Conact(con)<0 ) then
-                  write (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
-                  call me%ogwrit(3,str)
-               endif
-            enddo
-
-            deallocate (varsum)
-            deallocate (varcor)
-            deallocate (concor)
-            deallocate (conder_tmp)
-            ! ----------------------------------------------------------------------
-            call me%ogwrit(2,"")
-            call me%ogwrit(2,"OPTGRA END")
-            call me%ogwrit(2,"")
+            if ( finish==0 ) then
+               Finopt = 0
+               call me%ogwrit(1,"OPTGRA sensitivity converged: not")
+            else
+               Finopt = 1
+               call me%ogwrit(1,"OPTGRA sensitivity converged: yes")
+            endif
             exit main
-         end select
+         endif
+         ! ----------------------------------------------------------------------
+         if ( finish==0 ) cycle main
+
+         ! ======================================================================
+         ! NOT CONVERGED
+         ! ----------------------------------------------------------------------
+         if ( varacc/=0.0_wp ) cycle main
+
+         ! ======================================================================
+         ! CONVERGED
+         ! ----------------------------------------------------------------------
+         Finopt = 1
+         Finite = me%Numite
+         call me%ogwrit(1,"")
+         write (str,'("OPTGRA: Converged: yes ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+         call me%ogwrit(1,str)
+         call me%ogwrit(3,"")
+
+         ! Final Pygmo output
+         ! TODO: can this final fitness call be avoided (just for output)?
+         me%Pygfla = 1 ! covergence
+         !call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:)) ! JW : original
+         call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+         me%Conder(1:me%Numcon+1,:) = conder_tmp
+         exit main
 
       enddo main
+
+!     WRITE (STR,*) "DIF=",NORM2(VARVAL-VARREF)
+!     CALL me%ogwrit (1,STR)
+      ! ======================================================================
+      ! DESCALE VARIABLES
+      ! ----------------------------------------------------------------------
+!     CALL OGWMAT (3)
+!     CALL me%ogeval (VARVAL, VALCON, 0, CONDER)
+      do var = 1 , me%Numvar
+         Valvar(var) = me%Varval(var)*me%Varsca(var)
+      enddo
+!     IF (SENOPT /= 0) THEN
+!         CALL me%ogeval (VARVAL, VALCON, 0, CONDER)
+!     ENDIF
+      ! ======================================================================
+      ! DESCALE VALUES
+      ! ----------------------------------------------------------------------
+      do con = 1 , me%Numcon + 1
+         typ = me%Contyp(con)
+         sca = me%Consca(con)
+         if ( typ==-1 ) sca = -sca
+         Valcon(con) = me%Conval(con)*sca
+      enddo
+      ! ======================================================================
+      call me%ogwrit(3,"")
+      call me%ogwrit(3,"STATUS OF CONSTRAINTS:")
+      call me%ogwrit(3,"")
+      call me%ogwrit(3," ACT  PAS  NON COST___VAL CONSTRAINT")
+      do con = 1 , me%Numcon
+         if ( me%Contyp(con)==-2 ) cycle
+         nam = me%Constr(con)
+         len = me%Conlen(con)
+         val = me%Conval(con)
+         if ( me%Conact(con)>0 ) then
+            write (str,'( I4,5X,6X,D10.3,1X,A)') con , val , nam(1:len)
+            call me%ogwrit(3,str)
+         elseif ( me%Conact(con)==0 ) then
+            write (str,'( 5X,I4,6X,D10.3,1X,A)') con , val , nam(1:len)
+            call me%ogwrit(3,str)
+         elseif ( me%Conact(con)<0 ) then
+            write (str,'(10X,I4,1X,D10.3,1X,A)') con , val , nam(1:len)
+            call me%ogwrit(3,str)
+         endif
+      enddo
+
+      deallocate (varsum)
+      deallocate (varcor)
+      deallocate (concor)
+      deallocate (conder_tmp)
+      ! ----------------------------------------------------------------------
+      call me%ogwrit(2,"")
+      call me%ogwrit(2,"OPTGRA END")
+      call me%ogwrit(2,"")
 
    end subroutine ogexec
 
@@ -2170,7 +2151,7 @@ contains
 
       class(optgra),intent(inout) :: me
       real(wp),intent(inout) :: Varacc !! ITERATION SCALED DISTANCE ACCUMULATED
-      integer(ip),intent(in) :: Numequ !! NUMBER OF EQUALITY CONSTRAINTS
+      integer(ip),intent(in) :: Numequ !! NUMBER OF EQUALITY CONSTRAINTS [not used?]
       integer(ip),intent(out) :: Finish !! 0=LIMIT 1=OPTIM
 
       integer(ip) :: staflg , faccnt , numcor
@@ -2196,720 +2177,719 @@ contains
       real(wp) , dimension(:) , allocatable :: convec
       real(wp) , dimension(:) , allocatable :: conqua
       integer(ip) , dimension(:) , allocatable :: concor
-      integer :: spag_nextblock_1
 
-      spag_nextblock_1 = 1
+      ! initialize:  - JW : these could also be in the class.
+      !                     that would save the allocate/reallocate
+      !                     step every time this routine is called.
+      allocate (cosact(me%Numcon))
+      allocate (varvec(me%Numvar))
+      allocate (varwrk(me%Numvar))
+      allocate (corvec(me%Numcon))
+      allocate (desder(me%Numvar))
+      allocate (desprv(me%Numvar))
+      allocate (varprv(me%Numvar))
+      allocate (convec(me%Numcon+1))
+      allocate (conqua(me%Numcon+1))
+      allocate (concor(me%Numcon+1))
+
+      ! ======================================================================
+      ! OPTIMIZATION PART
+      ! ----------------------------------------------------------------------
+      cos = me%Numcon + 1
+      des = me%Numcon + 2
+      prv = me%Numcon + 3
+      faccnt = 0
+      me%Conred(1:cos,:) = me%Conder(1:cos,:)
+      me%Conred(des,:) = me%Vardes
+      desder = me%Vardes
+      me%Conred(prv,:) = me%Funvar
+      me%Conder(prv,:) = me%Funvar
+      call me%ogwrit(3,"")
+      call me%ogwrit(3,"OPTIMIZATION PART")
+      ! ----------------------------------------------------------------------
+!     WRITE (STR,'("NUMACT = ",I4)') NUMACT
+!     CALL me%ogwrit (3,STR)
+      numcor = me%Numact
+      concor = me%Actcon
+      me%Numact = 0
+      me%Conact(1:des) = 0
 
       main: do
-         select case (spag_nextblock_1)
-          case (1)
-            ! ----------------------------------------------------------------------
-            allocate (cosact(me%Numcon))
-            allocate (varvec(me%Numvar))
-            allocate (varwrk(me%Numvar))
-            allocate (corvec(me%Numcon))
-            allocate (desder(me%Numvar))
-            allocate (desprv(me%Numvar))
-            allocate (varprv(me%Numvar))
-            allocate (convec(me%Numcon+1))
-            allocate (conqua(me%Numcon+1))
-            allocate (concor(me%Numcon+1))
+!        DO COR = 1, NUMCOR
+!            CON = CONCOR(COR)
+!            NAM = CONSTR(CON)
+!            LEN = CONLEN(CON)
+!            WRITE (STR,'("ACT = ",I4,5X,1X,A)') CON, NAM(1:LEN)
+!            CALL me%ogwrit (3,STR)
+!            CALL me%OGINCL (CON)
+!        ENDDO
+         ! ======================================================================
+         ! VECTOR OF STEEPEST ASCENT
+         ! ----------------------------------------------------------------------
+         call me%ogwrit(3,"")
+         call me%ogwrit(3,"VECTOR OF STEEPEST ASCENT")
+         call me%ogwrit(3,"")
+         call me%ogwrit(3,"REMOVE AND INCLUDE CONSTRAINTS:")
+         call me%ogwrit(3,"")
+         call me%ogwrit(3," REM  INC CONSTRAINT")
+         ! ----------------------------------------------------------------------
+         ! REMOVE PASSIVE INEQUALITY CONSTRAINTS
+         ! ----------------------------------------------------------------------
+         do act = me%Numact , 1 , -1
+            con = me%Actcon(act)
+            if ( me%Conval(con)<=1.0_wp ) cycle
+            nam = me%Constr(con)
+            len = me%Conlen(con)
+            write (str,'(I4,5X,1X,A)') con , nam(1:len)
+            call me%ogwrit(2,str)
+            call me%ogexcl(act)
+            me%Conact(con) = -1
+         enddo
+         ! ----------------------------------------------------------------------
+         ! INCLUDE VIOLATED INEQUALITY CONSTRAINTS AND SELECT PASSIVE ONES
+         ! SELECT PASSIVE INEQUALITY CONSTRAINTS
+         ! ----------------------------------------------------------------------
+         do con = 1 , me%Numcon
+            if ( me%Contyp(con)==-2 ) cycle
+            if ( me%Conact(con)>0 ) then
+            elseif ( me%Contyp(con)==0 ) then
+               me%Conact(con) = 0
+            elseif ( me%Conval(con)<-1.0_wp ) then
+               me%Conact(con) = 0
+            elseif ( me%Conval(con)<=+1.0_wp ) then
+               me%Conact(con) = 0
+            else
+               me%Conact(con) = -1
+            endif
+         enddo
+         ! ======================================================================
+         nnn = 1
+         inner: do
+            nnn = nnn + 1
+            if ( nnn>999 ) then
+               Finish = 0
+               write (str,*) "NNN=" , nnn
+               call me%ogwrit(2,str)
+               call done()
+               exit main
+            endif
             ! ======================================================================
-            ! OPTIMIZATION PART
+            ! DERIVATIVES OF MERIT W.R.T. ACTIVE CONSTRAINTS
             ! ----------------------------------------------------------------------
-            cos = me%Numcon + 1
-            des = me%Numcon + 2
-            prv = me%Numcon + 3
-            faccnt = 0
-            me%Conred(1:cos,:) = me%Conder(1:cos,:)
-            me%Conred(des,:) = me%Vardes
-            desder = me%Vardes
-            me%Conred(prv,:) = me%Funvar
-            me%Conder(prv,:) = me%Funvar
-            call me%ogwrit(3,"")
-            call me%ogwrit(3,"OPTIMIZATION PART")
+            call me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
+            Desnor = sqrt(sum(me%Conred(cos,me%Numact+1:me%Numvar)**2))
             ! ----------------------------------------------------------------------
-!           WRITE (STR,'("NUMACT = ",I4)') NUMACT
-!           CALL me%ogwrit (3,STR)
-            numcor = me%Numact
-            concor = me%Actcon
-            me%Numact = 0
-            me%Conact(1:des) = 0
-            spag_nextblock_1 = 2
-          case (2)
-   !        DO COR = 1, NUMCOR
-   !            CON = CONCOR(COR)
-   !            NAM = CONSTR(CON)
-   !            LEN = CONLEN(CON)
-   !            WRITE (STR,'("ACT = ",I4,5X,1X,A)') CON, NAM(1:LEN)
-   !            CALL me%ogwrit (3,STR)
-   !            CALL me%OGINCL (CON)
-   !        ENDDO
-            ! ======================================================================
-            ! VECTOR OF STEEPEST ASCENT
+            ! CONSTRAINT REMOVAL
             ! ----------------------------------------------------------------------
-            call me%ogwrit(3,"")
-            call me%ogwrit(3,"VECTOR OF STEEPEST ASCENT")
-            call me%ogwrit(3,"")
-            call me%ogwrit(3,"REMOVE AND INCLUDE CONSTRAINTS:")
-            call me%ogwrit(3,"")
-            call me%ogwrit(3," REM  INC CONSTRAINT")
-            ! ----------------------------------------------------------------------
-            ! REMOVE PASSIVE INEQUALITY CONSTRAINTS
-            ! ----------------------------------------------------------------------
-            do act = me%Numact , 1 , -1
+            ind = 0
+            exc = -1.0e-12_wp
+            max = exc
+            do act = 1 , me%Numact
                con = me%Actcon(act)
-               if ( me%Conval(con)<=1.0_wp ) cycle
+               if ( me%Contyp(con)==0 ) cycle
+               val = cosact(act)
+               fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
+               fac = sqrt(fac)
+               val = val*fac
+               if ( val>=exc ) cycle
+               if ( val>max ) cycle
+               max = val
+               ind = act
+            enddo
+            ! ----------------------------------------------------------------------
+            if ( ind/=0 ) then
+               con = me%Actcon(ind)
                nam = me%Constr(con)
                len = me%Conlen(con)
-               write (str,'(I4,5X,1X,A)') con , nam(1:len)
-               call me%ogwrit(2,str)
-               call me%ogexcl(act)
-               me%Conact(con) = -1
-            enddo
-            ! ----------------------------------------------------------------------
-            ! INCLUDE VIOLATED INEQUALITY CONSTRAINTS AND SELECT PASSIVE ONES
-            ! SELECT PASSIVE INEQUALITY CONSTRAINTS
-            ! ----------------------------------------------------------------------
-            do con = 1 , me%Numcon
-               if ( me%Contyp(con)==-2 ) cycle
-               if ( me%Conact(con)>0 ) then
-               elseif ( me%Contyp(con)==0 ) then
-                  me%Conact(con) = 0
-               elseif ( me%Conval(con)<-1.0_wp ) then
-                  me%Conact(con) = 0
-               elseif ( me%Conval(con)<=+1.0_wp ) then
-                  me%Conact(con) = 0
-               else
-                  me%Conact(con) = -1
-               endif
-            enddo
-            ! ======================================================================
-            nnn = 1
-            inner: do
-               nnn = nnn + 1
-               if ( nnn>999 ) then
-                  Finish = 0
-                  write (str,*) "NNN=" , nnn
-                  call me%ogwrit(2,str)
-                  spag_nextblock_1 = 3
-                  cycle main
-               endif
-               ! ======================================================================
-               ! DERIVATIVES OF MERIT W.R.T. ACTIVE CONSTRAINTS
-               ! ----------------------------------------------------------------------
-               call me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
-               Desnor = sqrt(sum(me%Conred(cos,me%Numact+1:me%Numvar)**2))
-               ! ----------------------------------------------------------------------
-               ! CONSTRAINT REMOVAL
-               ! ----------------------------------------------------------------------
-               ind = 0
-               exc = -1.0e-12_wp
-               max = exc
-               do act = 1 , me%Numact
-                  con = me%Actcon(act)
-                  if ( me%Contyp(con)==0 ) cycle
-                  val = cosact(act)
-                  fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
-                  fac = sqrt(fac)
-                  val = val*fac
-                  if ( val>=exc ) cycle
-                  if ( val>max ) cycle
-                  max = val
-                  ind = act
-               enddo
-               ! ----------------------------------------------------------------------
-               if ( ind/=0 ) then
-                  con = me%Actcon(ind)
-                  nam = me%Constr(con)
-                  len = me%Conlen(con)
-                  write (str,'(I4,5X,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
-                  call me%ogwrit(3,str)
-                  call me%ogexcl(ind)
-                  cycle
-               endif
-               ! ----------------------------------------------------------------------
-               ! CONSTRAINT INCLUSION
-               ! ----------------------------------------------------------------------
-               if ( Desnor/=0.0_wp ) then
-                  ! ----------------------------------------------------------------------
-                  inc = 0
-                  eps = 1.0e-03_wp
-                  max = -1.0e10_wp
-                  max = 0.0_wp
-                  ! ----------------------------------------------------------------------
-                  do con = 1 , me%Numcon
-                     if ( me%Contyp(con)==-2 ) cycle
-                     if ( me%Conact(con)/=0 ) cycle
-                     del = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))/Desnor
-                     val = abs(del)*me%Varmax
-                     if ( val<eps ) cycle
-                     fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
-                     fac = sqrt(fac)
-                     del = del/fac
-                     if ( del<0.0_wp .and. del<max ) then
-                        max = del
-                        inc = con
-                     endif
-                     if ( me%Contyp(con)/=0 ) cycle
-                     del = -del
-                     if ( del<0.0_wp .and. del<max ) then
-                        max = del
-                        inc = con
-                     endif
-                  enddo
-                  ! ----------------------------------------------------------------------
-                  if ( inc/=0 ) then
-                     con = inc
-                     nam =me%Constr(con)
-                     len = me%Conlen(con)
-                     write (str,'(5X,I4,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
-                     call me%ogwrit(3,str)
-                     call me%ogincl(inc)
-                     cycle
-                  endif
-               endif
-               ! ----------------------------------------------------------------------
-               ! ----------------------------------------------------------------------
-               ! MATCHED INEQUALITY CONSTRAINTS + STEEPEST ASCENT VECTOR NORM
-               ! ----------------------------------------------------------------------
-               call me%ogwrit(3,"")
-               call me%ogwrit(3,"STATUS OF MATCHED INEQUALITY CONSTRAINTS:")
-               call me%ogwrit(3,"")
-               call me%ogwrit(3," ACT  PAS CONSTRAINT")
-               do con = 1 , me%Numcon
-                  if ( me%Contyp(con)==-2 ) cycle
-                  nam = me%Constr(con)
-                  len = me%Conlen(con)
-                  if ( me%Contyp(con)==0 ) then
-                  elseif ( me%Conact(con)>0 ) then
-                     write (str,'(I4,5X,1X,A)') con , nam(1:len)
-                     call me%ogwrit(3,str)
-                  elseif ( me%Conact(con)==0 ) then
-                     write (str,'(5X,I4,1X,A)') con , nam(1:len)
-                     call me%ogwrit(3,str)
-                  endif
-               enddo
-               call me%ogwrit(3,"")
-               write (str,'("STEEPEST ASCENT NORM: ",D13.6)') Desnor
+               write (str,'(I4,5X,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
                call me%ogwrit(3,str)
-               write (str,'("MAXIMUM DISTANCE....: ",D13.6)') me%Varmax
-               call me%ogwrit(3,str)
-               ! ======================================================================
-               Finish = 0
-               ! ======================================================================
-               ! IF CONVERGENCE
+               call me%ogexcl(ind)
+               cycle
+            endif
+            ! ----------------------------------------------------------------------
+            ! CONSTRAINT INCLUSION
+            ! ----------------------------------------------------------------------
+            if ( Desnor/=0.0_wp ) then
                ! ----------------------------------------------------------------------
-               cosimp = Desnor*me%Varmax
-               if ( abs(cosimp)<=1.0_wp ) then
-                  foldis = 0.0_wp
-                  Finish = 1
-                  write (str,'("FINAL...............:",1X,D13.6,'//'11X,1(1X,D10.3),1X,D16.9)') &
-                     foldis , cosimp , me%Conval(cos) + cosimp
-                  call me%ogwrit(2,str)
-                  spag_nextblock_1 = 3
-                  cycle main
-               endif
-               ! ======================================================================
-               ! IF CONSTRAINT IS HIT
-               ! ----------------------------------------------------------------------
-               do var = 1 , me%Numvar
-                  val = me%Conder(cos,var)
-                  do act = 1 , me%Numact
-                     con = me%Actcon(act)
-                     val = val + me%Conder(con,var)*cosact(act)
-                  enddo
-                  me%Vardes(var) = val
-               enddo
-               ! ----------------------------------------------------------------------
-               ind = 0
-               dis = 1.0e10_wp
-               do con = 1 , me%Numcon
-                  if ( me%Contyp(con)==-2 ) cycle
-                  if ( me%Conact(con)/=-1 ) cycle
-                  val = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))
-                  if ( val==0.0_wp ) cycle
-                  val = -me%Conval(con)/val*Desnor
-                  if ( val<=0.0_wp ) cycle
-                  if ( val>=dis ) cycle
-                  dis = val
-                  ind = con
-               enddo
-               ! ----------------------------------------------------------------------
-               if ( ind/=0 ) then
-                  val = sqrt(sum((me%Varval-me%Varref+me%Vardes*dis/Desnor)**2))
-                  if ( val>me%Varmax ) ind = 0
-               endif
-               ! ----------------------------------------------------------------------
-               if ( ind/=0 ) then
-                  if ( me%Confix(ind)<=0 ) then
-                     if ( val>me%Varmax*1.0e-1_wp ) ind = 0
-                  endif
-               endif
-               ! ----------------------------------------------------------------------
-               if ( ind/=0 ) then
-                  imp = dis*Desnor
-                  con = ind
-                  tht = 1.0_wp
-                  bet = 0.0_wp
-                  nam = me%Constr(con)
-                  len = me%Conlen(con)
-                  write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,11X,1(1X,D10.3),1X,D16.9,22X,1X,I4,1X,A)') &
-                     dis , imp , me%Conval(cos) + cosimp , con , nam(1:len)
-                  call me%ogwrit(2,str)
-                  Varacc = Varacc + dis
-                  me%Varval = me%Varval + dis*me%Vardes/Desnor
-                  do con = 1 , me%Numcon + 1
-                     val = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))
-                     me%Conval(con) = me%Conval(con) + val*dis/Desnor
-                  enddo
-                  spag_nextblock_1 = 2
-                  cycle main
-               endif
-               exit inner
-            enddo inner
-
-            inner2: do
-               ! ======================================================================
-               ! ----------------------------------------------------------------------
-               call me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
-               do var = 1 , me%Numvar
-                  val = me%Conder(cos,var)
-                  do act = 1 ,me%Numact
-                     con = me%Actcon(act)
-                     val = val + me%Conder(con,var)*cosact(act)
-                  enddo
-                  desprv(var) = val
-               enddo
-               Desnor = sqrt(sum(desprv**2))
-               write (str,'("DESNOR=",D13.6)') Desnor
-!              CALL me%ogwrit (2,STR)
-               ! ----------------------------------------------------------------------
-               call me%ogrigt(-me%Conred(prv,1:me%Numact),cosact)
-               do var = 1 , me%Numvar
-                  val = me%Conder(prv,var)
-                  do act = 1 , me%Numact
-                     con = me%Actcon(act)
-                     val = val + me%Conder(con,var)*cosact(act)
-                  enddo
-                  varprv(var) = val
-               enddo
-               norprv = sqrt(sum(varprv**2))
-               write (str,'("NORPRV=",D13.6)') norprv
-!              CALL me%ogwrit (2,STR)
-               ! ----------------------------------------------------------------------
-               call me%ogrigt(-me%Conred(des,1:me%Numact),cosact)
-               do var = 1 , me%Numvar
-                  val = desder(var)
-                  do act = 1 , me%Numact
-                     con = me%Actcon(act)
-                     val = val + me%Conder(con,var)*cosact(act)
-                  enddo
-                  me%Vardir(var) = val
-               enddo
-               nor = sqrt(sum(me%Vardir**2))
-               write (str,'("NOR=",D13.6)') nor
-!              CALL me%ogwrit (2,STR)
-               met = me%Optmet
-               tht = 1.0_wp
-               bet = 0.0_wp
-               select case (met)
-                case ( 0 ) ! STEEPEST DESCENT METHOD
-                case ( 1 ) ! MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
-                  varvec = desprv - varprv
-                  if ( norprv**2>1.0e-12_wp ) then
-                     tht = -dot_product(me%Vardir,varvec)/norprv**2
-                     bet = Desnor**2/norprv**2
-                  endif
-                case ( 2 ) ! SPECTRAL CONJUGATE GRADIENT METHOD
-                  varvec = desprv - varprv
-                  varwrk = me%Varref - me%Vargrd
-                  val = dot_product(varwrk,varvec)
-                  fac = dot_product(me%Vardir,varvec)
-                  if ( abs(val)>1.0e-12_wp .and. abs(fac)>1.0e-12_wp ) then
-                     tht = -dot_product(varwrk,varwrk)/val
-                     varwrk = -varvec*tht - varwrk
-                     bet = dot_product(varwrk,desprv)/fac
-                  endif
-                case ( 3 ) ! CONJUGATE GRADIENT METHOD
-                  if ( norprv/=0.0_wp ) then
-                     tht = 1.0_wp
-                     bet = Desnor**2/norprv**2
-                  endif
-               end select
-!              WRITE (STR,'("THT=",D13.6)') THT
-!              CALL me%ogwrit (3,STR)
-!              WRITE (STR,'("BET=",D13.6)') BET
-!              CALL me%ogwrit (3,STR)
-               ! ----------------------------------------------------------------------
+               inc = 0
                eps = 1.0e-03_wp
-!              WRITE (STR,*) "THT/BET=",THT,BET
-!              CALL me%ogwrit (2,STR)
-               me%Vardes = tht*desprv + bet*me%Vardir
-               Desnor = sqrt(sum(me%Vardes**2))
-               nor = Desnor
+               max = -1.0e10_wp     ! JW : what is going on here ?
+               max = 0.0_wp
+               ! ----------------------------------------------------------------------
                do con = 1 , me%Numcon
                   if ( me%Contyp(con)==-2 ) cycle
                   if ( me%Conact(con)/=0 ) cycle
-                  del = dot_product(me%Conder(con,1:me%Numvar),me%Vardes(1:me%Numvar))/nor
+                  del = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))/Desnor
                   val = abs(del)*me%Varmax
                   if ( val<eps ) cycle
-                  fac = dot_product(me%Conder(con,1:me%Numvar),me%Conder(con,1:me%Numvar))
-                  del = del/sqrt(fac)
-                  nam = me%Constr(con)
-                  len = me%Conlen(con)
-                  typ = me%Contyp(con)
-                  if ( del<0.0_wp ) then
-!                    CALL OGINCL (CON)
-                     act = me%Conact(con)
-!                    WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
-!                      CON,ACT,+NOR,VAL,DEL,NAM(1:LEN)
-!                    CALL me%ogwrit (2,STR)
-                     if ( act/=0 ) cycle inner2
-                     bet = 0.0_wp
-                     tht = 1.0_wp
+                  fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
+                  fac = sqrt(fac)
+                  del = del/fac
+                  if ( del<0.0_wp .and. del<max ) then
+                     max = del
+                     inc = con
                   endif
                   if ( me%Contyp(con)/=0 ) cycle
                   del = -del
-                  if ( del<0.0_wp ) then
-!                    CALL OGINCL (CON)
-                     act = me%Conact(con)
-!                    WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
-!                      CON,ACT,-NOR,VAL,DEL,NAM(1:LEN)
-!                    CALL me%ogwrit (2,STR)
-                     if ( act/=0 ) cycle inner2
-                     bet = 0.0_wp
-                     tht = 1.0_wp
-                     del = dot_product(me%Conder(con,1:me%Numvar),me%Conder(cos,1:me%Numvar))
-                     val = abs(del)*me%Varmax/Desnor
-!                    WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
-!                       CON,TYP,-DESNOR,VAL,DEL,NAM(1:LEN)
-!                    CALL me%ogwrit (2,STR)
+                  if ( del<0.0_wp .and. del<max ) then
+                     max = del
+                     inc = con
                   endif
                enddo
-               cosco1 = dot_product(me%Vardes,me%Conder(cos,1:me%Numvar))/Desnor
-               if ( cosco1<0.0_wp ) then
-                  write (str,*) "COSCO1=" , cosco1
-                  call me%ogwrit(2,str)
+               ! ----------------------------------------------------------------------
+               if ( inc/=0 ) then
+                  con = inc
+                  nam = me%Constr(con)
+                  len = me%Conlen(con)
+                  write (str,'(5X,I4,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
+                  call me%ogwrit(3,str)
+                  call me%ogincl(inc)
+                  cycle
+               endif
+            endif
+            ! ----------------------------------------------------------------------
+            ! MATCHED INEQUALITY CONSTRAINTS + STEEPEST ASCENT VECTOR NORM
+            ! ----------------------------------------------------------------------
+            call me%ogwrit(3,"")
+            call me%ogwrit(3,"STATUS OF MATCHED INEQUALITY CONSTRAINTS:")
+            call me%ogwrit(3,"")
+            call me%ogwrit(3," ACT  PAS CONSTRAINT")
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
+               nam = me%Constr(con)
+               len = me%Conlen(con)
+               if ( me%Contyp(con)==0 ) then
+               elseif ( me%Conact(con)>0 ) then
+                  write (str,'(I4,5X,1X,A)') con , nam(1:len)
+                  call me%ogwrit(3,str)
+               elseif ( me%Conact(con)==0 ) then
+                  write (str,'(5X,I4,1X,A)') con , nam(1:len)
+                  call me%ogwrit(3,str)
+               endif
+            enddo
+            call me%ogwrit(3,"")
+            write (str,'("STEEPEST ASCENT NORM: ",D13.6)') Desnor
+            call me%ogwrit(3,str)
+            write (str,'("MAXIMUM DISTANCE....: ",D13.6)') me%Varmax
+            call me%ogwrit(3,str)
+            ! ======================================================================
+            Finish = 0
+            ! ======================================================================
+            ! IF CONVERGENCE
+            ! ----------------------------------------------------------------------
+            cosimp = Desnor*me%Varmax
+            if ( abs(cosimp)<=1.0_wp ) then
+               foldis = 0.0_wp
+               Finish = 1
+               write (str,'("FINAL...............:",1X,D13.6,'//'11X,1(1X,D10.3),1X,D16.9)') &
+                  foldis , cosimp , me%Conval(cos) + cosimp
+               call me%ogwrit(2,str)
+               call done()
+               exit main
+            endif
+            ! ======================================================================
+            ! IF CONSTRAINT IS HIT
+            ! ----------------------------------------------------------------------
+            do var = 1 , me%Numvar
+               val = me%Conder(cos,var)
+               do act = 1 , me%Numact
+                  con = me%Actcon(act)
+                  val = val + me%Conder(con,var)*cosact(act)
+               enddo
+               me%Vardes(var) = val
+            enddo
+            ! ----------------------------------------------------------------------
+            ind = 0
+            dis = 1.0e10_wp
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
+               if ( me%Conact(con)/=-1 ) cycle
+               val = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))
+               if ( val==0.0_wp ) cycle
+               val = -me%Conval(con)/val*Desnor
+               if ( val<=0.0_wp ) cycle
+               if ( val>=dis ) cycle
+               dis = val
+               ind = con
+            enddo
+            ! ----------------------------------------------------------------------
+            if ( ind/=0 ) then
+               val = sqrt(sum((me%Varval-me%Varref+me%Vardes*dis/Desnor)**2))
+               if ( val>me%Varmax ) ind = 0
+            endif
+            ! ----------------------------------------------------------------------
+            if ( ind/=0 ) then
+               if ( me%Confix(ind)<=0 ) then
+                  if ( val>me%Varmax*1.0e-1_wp ) ind = 0
+               endif
+            endif
+            ! ----------------------------------------------------------------------
+            if ( ind/=0 ) then
+               imp = dis*Desnor
+               con = ind
+               tht = 1.0_wp
+               bet = 0.0_wp
+               nam = me%Constr(con)
+               len = me%Conlen(con)
+               write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,11X,1(1X,D10.3),1X,D16.9,22X,1X,I4,1X,A)') &
+                  dis , imp , me%Conval(cos) + cosimp , con , nam(1:len)
+               call me%ogwrit(2,str)
+               Varacc = Varacc + dis
+               me%Varval = me%Varval + dis*me%Vardes/Desnor
+               do con = 1 , me%Numcon + 1
+                  val = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))
+                  me%Conval(con) = me%Conval(con) + val*dis/Desnor
+               enddo
+               cycle main
+            endif
+            exit inner
+         enddo inner
+
+         inner2: do
+            ! ======================================================================
+            ! ----------------------------------------------------------------------
+            call me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
+            do var = 1 , me%Numvar
+               val = me%Conder(cos,var)
+               do act = 1 ,me%Numact
+                  con = me%Actcon(act)
+                  val = val + me%Conder(con,var)*cosact(act)
+               enddo
+               desprv(var) = val
+            enddo
+            Desnor = sqrt(sum(desprv**2))
+            write (str,'("DESNOR=",D13.6)') Desnor
+!              CALL me%ogwrit (2,STR)
+            ! ----------------------------------------------------------------------
+            call me%ogrigt(-me%Conred(prv,1:me%Numact),cosact)
+            do var = 1 , me%Numvar
+               val = me%Conder(prv,var)
+               do act = 1 , me%Numact
+                  con = me%Actcon(act)
+                  val = val + me%Conder(con,var)*cosact(act)
+               enddo
+               varprv(var) = val
+            enddo
+            norprv = sqrt(sum(varprv**2))
+            write (str,'("NORPRV=",D13.6)') norprv
+!              CALL me%ogwrit (2,STR)
+            ! ----------------------------------------------------------------------
+            call me%ogrigt(-me%Conred(des,1:me%Numact),cosact)
+            do var = 1 , me%Numvar
+               val = desder(var)
+               do act = 1 , me%Numact
+                  con = me%Actcon(act)
+                  val = val + me%Conder(con,var)*cosact(act)
+               enddo
+               me%Vardir(var) = val
+            enddo
+            nor = sqrt(sum(me%Vardir**2))
+            write (str,'("NOR=",D13.6)') nor
+!              CALL me%ogwrit (2,STR)
+            met = me%Optmet
+            tht = 1.0_wp
+            bet = 0.0_wp
+            select case (met)
+               case ( 0 ) ! STEEPEST DESCENT METHOD
+               case ( 1 ) ! MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
+               varvec = desprv - varprv
+               if ( norprv**2>1.0e-12_wp ) then
+                  tht = -dot_product(me%Vardir,varvec)/norprv**2
+                  bet = Desnor**2/norprv**2
+               endif
+               case ( 2 ) ! SPECTRAL CONJUGATE GRADIENT METHOD
+               varvec = desprv - varprv
+               varwrk = me%Varref - me%Vargrd
+               val = dot_product(varwrk,varvec)
+               fac = dot_product(me%Vardir,varvec)
+               if ( abs(val)>1.0e-12_wp .and. abs(fac)>1.0e-12_wp ) then
+                  tht = -dot_product(varwrk,varwrk)/val
+                  varwrk = -varvec*tht - varwrk
+                  bet = dot_product(varwrk,desprv)/fac
+               endif
+               case ( 3 ) ! CONJUGATE GRADIENT METHOD
+               if ( norprv/=0.0_wp ) then
+                  tht = 1.0_wp
+                  bet = Desnor**2/norprv**2
+               endif
+            end select
+!           WRITE (STR,'("THT=",D13.6)') THT
+!           CALL me%ogwrit (3,STR)
+!           WRITE (STR,'("BET=",D13.6)') BET
+!           CALL me%ogwrit (3,STR)
+            ! ----------------------------------------------------------------------
+            eps = 1.0e-03_wp
+!           WRITE (STR,*) "THT/BET=",THT,BET
+!           CALL me%ogwrit (2,STR)
+            me%Vardes = tht*desprv + bet*me%Vardir
+            Desnor = sqrt(sum(me%Vardes**2))
+            nor = Desnor
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
+               if ( me%Conact(con)/=0 ) cycle
+               del = dot_product(me%Conder(con,1:me%Numvar),me%Vardes(1:me%Numvar))/nor
+               val = abs(del)*me%Varmax
+               if ( val<eps ) cycle
+               fac = dot_product(me%Conder(con,1:me%Numvar),me%Conder(con,1:me%Numvar))
+               del = del/sqrt(fac)
+               nam = me%Constr(con)
+               len = me%Conlen(con)
+               typ = me%Contyp(con)
+               if ( del<0.0_wp ) then
+!                 CALL OGINCL (CON)
+                  act = me%Conact(con)
+!                 WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
+!                    CON,ACT,+NOR,VAL,DEL,NAM(1:LEN)
+!                 CALL me%ogwrit (2,STR)
+                  if ( act/=0 ) cycle inner2
                   bet = 0.0_wp
                   tht = 1.0_wp
                endif
-               me%Vardes = tht*desprv + bet*me%Vardir
-               Desnor = sqrt(sum(me%Vardes**2))
-               exit inner2
-            enddo inner2
+               if ( me%Contyp(con)/=0 ) cycle
+               del = -del
+               if ( del<0.0_wp ) then
+!                 CALL OGINCL (CON)
+                  act = me%Conact(con)
+!                 WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
+!                    CON,ACT,-NOR,VAL,DEL,NAM(1:LEN)
+!                 CALL me%ogwrit (2,STR)
+                  if ( act/=0 ) cycle inner2
+                  bet = 0.0_wp
+                  tht = 1.0_wp
+                  del = dot_product(me%Conder(con,1:me%Numvar),me%Conder(cos,1:me%Numvar))
+                  val = abs(del)*me%Varmax/Desnor
+!                 WRITE (STR,'(5X,2I4,3(1X,D10.3),1X,A)') &
+!                    CON,TYP,-DESNOR,VAL,DEL,NAM(1:LEN)
+!                 CALL me%ogwrit (2,STR)
+               endif
+            enddo
+            cosco1 = dot_product(me%Vardes,me%Conder(cos,1:me%Numvar))/Desnor
+            if ( cosco1<0.0_wp ) then
+               write (str,*) "COSCO1=" , cosco1
+               call me%ogwrit(2,str)
+               bet = 0.0_wp
+               tht = 1.0_wp
+            endif
+            me%Vardes = tht*desprv + bet*me%Vardir
+            Desnor = sqrt(sum(me%Vardes**2))
+            exit inner2
+         enddo inner2
 
-            inner3: do
-!              WRITE (STR,*) "THT/BET=",THT,BET
-!              CALL me%ogwrit (2,STR)
-               ! ======================================================================
-               ! SECOND ORDER DERIVATIVES BY NUMERICAL DIFFERENCING
-               ! ----------------------------------------------------------------------
-               call me%ogwrit(3,"")
-               write (str,'("SECOND ORDER CORRECTION")')
-               call me%ogwrit(3,str)
-               me%Vardes = tht*desprv + bet*me%Vardir
-               Desnor = sqrt(sum(me%Vardes**2))
-               ! ----------------------------------------------------------------------
-               ! MAXIMUM TRAVEL DISTANCE
-               ! ----------------------------------------------------------------------
-               dis = me%Varmax
-               varvec = me%Varval - me%Varref
-               co0 = dot_product(varvec,varvec) - dis**2
-               if ( co0>=0.0_wp ) then
-                  dis = 0.0_wp
-               else
-                  co1 = dot_product(me%Vardes,varvec)
-                  co2 = Desnor**2
-                  det = co1**2 - co0*co2
-                  dis = (sqrt(det)-co1)/co2
-               endif
-               dis = dis*Desnor
-               maxdis = dis
-               ! ======================================================================
-               ! COMPUTE SECOND ORDER EFFECTS
-               ! ----------------------------------------------------------------------
-               nnn = 0
-               if ( me%Senopt>=+1 ) then
-                  do con = 1 , me%Numcon
-                     if ( me%Contyp(con)==-2 ) cycle
-                     act = me%Conact(con)
-                     ind = me%Senact(con)
-                     if ( act==-1 .and. ind==-1 ) cycle
-                     if ( act==0 .and. ind==0 ) cycle
-                     if ( act>0 .and. ind>0 ) cycle
-                     nam = me%Constr(con)
-                     len = me%Conlen(con)
-                     write (str,'(I4,1X,I4,1X,I4,1X,A)') con , act , ind , nam(1:len)
-                     call me%ogwrit(2,str)
-                     nnn = 1
-                  enddo
-               endif
-               if ( me%Senopt<=0 .or. nnn==1 ) then
-                  fac = me%Varstp/Desnor
-                  varvec = me%Varref + me%Vardes*me%Varstp/Desnor
-                  call me%ogeval(varvec,convec,0,me%Conder)
-                  conqua = matmul(me%Conder(1:cos,1:me%Numvar),me%Vardes(1:me%Numvar))
-                  conqua = 2.0_wp*(convec-me%Conref-conqua*fac)/fac**2
-               endif
-               if ( me%Senopt==-1 ) then
-                  me%Senqua = conqua
-               elseif ( me%Senopt>=+1 .and. nnn==0 ) then
-                  conqua = me%Senqua
-               endif
-               ! ======================================================================
-               ! COMPUTE CORRECTION VECTOR
-               ! ----------------------------------------------------------------------
-               do act = 1 , me%Numact
-                  con = me%Actcon(act)
-                  corvec(act) = conqua(con)
-               enddo
-               call me%ogleft(corvec,corvec)
-               ! ----------------------------------------------------------------------
-               cornor = sqrt(sum(corvec(1:me%Numact)**2))*0.5_wp/Desnor/Desnor
-               call me%ogwrit(3,"")
-               write (str,'("STEEPEST ASCENT  NORM: ",D13.6)') Desnor
-               call me%ogwrit(3,str)
-               write (str,'("ACCUMULATED  DISTANCE: ",D13.6)') Varacc
-               call me%ogwrit(3,str)
-               ! ======================================================================
-               ! GET EXTREMUM
-               ! ----------------------------------------------------------------------
-               cosco1 = dot_product(me%Vardes,me%Conder(cos,1:me%Numvar))/Desnor
-               cosco2 = conqua(cos) - dot_product(me%Conred(cos,1:me%Numact),corvec(1:me%Numact))
-               cosco2 = cosco2*0.5_wp/Desnor/Desnor
-               write (str,*) "COSCO2/COSCO1=" , cosco2 , cosco1
-               call me%ogwrit(3,str)
-               if ( cosco1<0.0_wp ) call me%ogwrit(2,str)
-               ! ----------------------------------------------------------------------
-               foldis = 0.0_wp
-               quacor = cornor*foldis*foldis
-               cosimp = foldis*(cosco1+foldis*cosco2)
-               call me%ogwrit(3,"")
-               write (str,'(    "STEEPEST ASCENT FOLLOW",'//'  5X,"DISTANCE",'//'  1X,"CORRECTION",'//'  2X,"MERIT_DEL",'//'  6X,"MERIT_VALUE")')
-               call me%ogwrit(3,str)
-               write (str,'("INITIAL.............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp ,me%Conval(cos) + cosimp
-               call me%ogwrit(3,str)
-               ! ======================================================================
-               if ( cosco2<0.0_wp ) then
-                  foldis = -0.5_wp*cosco1/cosco2
-                  quacor = cornor*foldis*foldis
-                  cosimp = foldis*(cosco1+foldis*cosco2)
-                  write (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
-                     foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  call me%ogwrit(3,str)
-                  staflg = 1
-               elseif ( cosco2>0.0_wp ) then
-                  foldis = me%Varmax
-                  quacor = cornor*foldis*foldis
-                  cosimp = foldis*(cosco1+foldis*cosco2)
-                  write (str,'("MERIT CONVEX........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
-                     foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  call me%ogwrit(3,str)
-                  staflg = 2
-               else
-                  foldis = me%Varmax
-                  quacor = cornor*foldis*foldis
-                  cosimp = foldis*(cosco1+foldis*cosco2)
-                  write (str,'("MERIT LINEAR........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
-                     foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  call me%ogwrit(3,str)
-                  staflg = 2
-               endif
-               ! ======================================================================
-               ! IF MAXIMUM DISTANCE IS HIT
-               ! ----------------------------------------------------------------------
-               if ( foldis>me%Varmax ) then
-                  foldis = me%Varmax
-                  quacor = cornor*foldis*foldis
-                  cosimp = foldis*(cosco1+foldis*cosco2)
-                  write (str,'("MAXIMUM DISTANCE....:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
-                     foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  call me%ogwrit(3,str)
-                  staflg = 2
-               endif
-               ! ======================================================================
-               ! IF CONVERGENCE
-               ! ----------------------------------------------------------------------
-               if ( abs(cosimp)<=1.0_wp ) then
-                  write (str,'("FINAL...............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9,2D11.3)') &
-                     foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
-                  call me%ogwrit(2,str)
-                  if ( tht/=1.0_wp .or. bet/=0.0_wp ) then
-                     tht = 1.0_wp
-                     bet = 0.0_wp
-                     cycle
-                  endif
-                  foldis = 0.0_wp
-                  Finish = 1
-                  spag_nextblock_1 = 3
-                  cycle main
-               endif
-               ! ======================================================================
-               ! IF REMAINING DISTANCE IS HIT
-               ! ----------------------------------------------------------------------
-               if ( foldis>maxdis ) then
-                  foldis = maxdis
-                  quacor = cornor*foldis*foldis
-                  cosimp = foldis*(cosco1+foldis*cosco2)
-                  write (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
-                     foldis , quacor , cosimp , me%Conval(cos) + cosimp
-                  call me%ogwrit(3,str)
-                  staflg = 2
-               endif
-               ! ======================================================================
-               ! IF CONSTRAINT IS HIT
-               ! ----------------------------------------------------------------------
-               ind = 0
+         inner3: do
+!           WRITE (STR,*) "THT/BET=",THT,BET
+!           CALL me%ogwrit (2,STR)
+            ! ======================================================================
+            ! SECOND ORDER DERIVATIVES BY NUMERICAL DIFFERENCING
+            ! ----------------------------------------------------------------------
+            call me%ogwrit(3,"")
+            write (str,'("SECOND ORDER CORRECTION")')
+            call me%ogwrit(3,str)
+            me%Vardes = tht*desprv + bet*me%Vardir
+            Desnor = sqrt(sum(me%Vardes**2))
+            ! ----------------------------------------------------------------------
+            ! MAXIMUM TRAVEL DISTANCE
+            ! ----------------------------------------------------------------------
+            dis = me%Varmax
+            varvec = me%Varval - me%Varref
+            co0 = dot_product(varvec,varvec) - dis**2
+            if ( co0>=0.0_wp ) then
+               dis = 0.0_wp
+            else
+               co1 = dot_product(me%Vardes,varvec)
+               co2 = Desnor**2
+               det = co1**2 - co0*co2
+               dis = (sqrt(det)-co1)/co2
+            endif
+            dis = dis*Desnor
+            maxdis = dis
+            ! ======================================================================
+            ! COMPUTE SECOND ORDER EFFECTS
+            ! ----------------------------------------------------------------------
+            nnn = 0
+            if ( me%Senopt>=+1 ) then
                do con = 1 , me%Numcon
                   if ( me%Contyp(con)==-2 ) cycle
-                  if ( me%Conact(con)/=-1 ) cycle
-                  co2 = conqua(con) - dot_product(me%Conred(con,1:me%Numact),corvec(1:me%Numact))
-                  co1 = dot_product(me%Conder(con,1:me%Numvar),me%Vardes(1:me%Numvar))
-                  co0 = me%Conval(con)*2.0_wp
-                  if ( co2/=0.0_wp ) then
-                     det = co1**2 - co2*co0
-                     if ( det<0.0_wp ) cycle
-                     det = sqrt(det)
-                     val = 1.0e10_wp
-                     fac = (-co1+det)/co2
-                     if ( fac>0.0_wp .and. fac<val ) val = fac
-                     fac = (-co1-det)/co2
-                     if ( fac>0.0_wp .and. fac<val ) val = fac
-                  elseif ( co1/=0.0_wp ) then
-                     val = -co0/co1*0.5_wp
-                  else
-                     cycle
-                  endif
-                  val = val*Desnor
-                  if ( val>0.0_wp .and. val<foldis ) then
-                     foldis = val
-                     ind = con
-                  endif
-               enddo
-               ! ----------------------------------------------------------------------
-               if ( ind/=0 ) then
-                  quacor = cornor*foldis*foldis
-                  cosimp = foldis*(cosco1+foldis*cosco2)
-                  con = ind
+                  act = me%Conact(con)
+                  ind = me%Senact(con)
+                  if ( act==-1 .and. ind==-1 ) cycle
+                  if ( act==0 .and. ind==0 ) cycle
+                  if ( act>0 .and. ind>0 ) cycle
                   nam = me%Constr(con)
                   len = me%Conlen(con)
-                  write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,2(1X,D10.3),1X,D16.9,1X,I4,1X,A)') &
-                     foldis , quacor , cosimp , me%Conval(cos) + cosimp , con , nam(1:len)
-                  call me%ogwrit(3,str)
-                  staflg = 3
-               endif
-               ! ======================================================================
-               ! UPDATE
-               ! ----------------------------------------------------------------------
-               refdis = foldis
-               exit inner3
-            enddo inner3
-
-            inner4: do
-               write (str,'("FINAL...............:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  write (str,'(I4,1X,I4,1X,I4,1X,A)') con , act , ind , nam(1:len)
+                  call me%ogwrit(2,str)
+                  nnn = 1
+               enddo
+            endif
+            if ( me%Senopt<=0 .or. nnn==1 ) then
+               fac = me%Varstp/Desnor
+               varvec = me%Varref + me%Vardes*me%Varstp/Desnor
+               call me%ogeval(varvec,convec,0,me%Conder)
+               conqua = matmul(me%Conder(1:cos,1:me%Numvar),me%Vardes(1:me%Numvar))
+               conqua = 2.0_wp*(convec-me%Conref-conqua*fac)/fac**2
+            endif
+            if ( me%Senopt==-1 ) then
+               me%Senqua = conqua
+            elseif ( me%Senopt>=+1 .and. nnn==0 ) then
+               conqua = me%Senqua
+            endif
+            ! ======================================================================
+            ! COMPUTE CORRECTION VECTOR
+            ! ----------------------------------------------------------------------
+            do act = 1 , me%Numact
+               con = me%Actcon(act)
+               corvec(act) = conqua(con)
+            enddo
+            call me%ogleft(corvec,corvec)
+            ! ----------------------------------------------------------------------
+            cornor = sqrt(sum(corvec(1:me%Numact)**2))*0.5_wp/Desnor/Desnor
+            call me%ogwrit(3,"")
+            write (str,'("STEEPEST ASCENT  NORM: ",D13.6)') Desnor
+            call me%ogwrit(3,str)
+            write (str,'("ACCUMULATED  DISTANCE: ",D13.6)') Varacc
+            call me%ogwrit(3,str)
+            ! ======================================================================
+            ! GET EXTREMUM
+            ! ----------------------------------------------------------------------
+            cosco1 = dot_product(me%Vardes,me%Conder(cos,1:me%Numvar))/Desnor
+            cosco2 = conqua(cos) - dot_product(me%Conred(cos,1:me%Numact),corvec(1:me%Numact))
+            cosco2 = cosco2*0.5_wp/Desnor/Desnor
+            write (str,*) "COSCO2/COSCO1=" , cosco2 , cosco1
+            call me%ogwrit(3,str)
+            if ( cosco1<0.0_wp ) call me%ogwrit(2,str)
+            ! ----------------------------------------------------------------------
+            foldis = 0.0_wp
+            quacor = cornor*foldis*foldis
+            cosimp = foldis*(cosco1+foldis*cosco2)
+            call me%ogwrit(3,"")
+            write (str,'(    "STEEPEST ASCENT FOLLOW",'//'  5X,"DISTANCE",'//'  1X,"CORRECTION",'//'  2X,"MERIT_DEL",'//'  6X,"MERIT_VALUE")')
+            call me%ogwrit(3,str)
+            write (str,'("INITIAL.............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp ,me%Conval(cos) + cosimp
+            call me%ogwrit(3,str)
+            ! ======================================================================
+            if ( cosco2<0.0_wp ) then
+               foldis = -0.5_wp*cosco1/cosco2
+               quacor = cornor*foldis*foldis
+               cosimp = foldis*(cosco1+foldis*cosco2)
+               write (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
                   foldis , quacor , cosimp , me%Conval(cos) + cosimp
                call me%ogwrit(3,str)
-               ! ----------------------------------------------------------------------
-               fac = foldis/Desnor
-               ! ----------------------------------------------------------------------
-               ! VARIABLE DELTA
-               ! ----------------------------------------------------------------------
-               call me%ogrigt(corvec,cosact)
-               dis = 0.0_wp
-               do var = 1 , me%Numvar
-                  val = 0.0_wp
-                  do act = 1 , me%Numact
-                     ind = me%Actcon(act)
-                     val = val - cosact(act)*me%Conder(ind,var)
-                  enddo
-                  varvec(var) = fac*(me%Vardes(var)+(val*fac*0.5_wp))
-                  dis = dis + varvec(var)*varvec(var)
-               enddo
-               dis = sqrt(dis)
-               ! ----------------------------------------------------------------------
-               write (str,*) "REFDIS=" , refdis
+               staflg = 1
+            elseif ( cosco2>0.0_wp ) then
+               foldis = me%Varmax
+               quacor = cornor*foldis*foldis
+               cosimp = foldis*(cosco1+foldis*cosco2)
+               write (str,'("MERIT CONVEX........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  foldis , quacor , cosimp , me%Conval(cos) + cosimp
                call me%ogwrit(3,str)
-               write (str,*) "FOLDIS=" , foldis
+               staflg = 2
+            else
+               foldis = me%Varmax
+               quacor = cornor*foldis*foldis
+               cosimp = foldis*(cosco1+foldis*cosco2)
+               write (str,'("MERIT LINEAR........:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  foldis , quacor , cosimp , me%Conval(cos) + cosimp
                call me%ogwrit(3,str)
-               write (str,*) "DIS=" , dis
+               staflg = 2
+            endif
+            ! ======================================================================
+            ! IF MAXIMUM DISTANCE IS HIT
+            ! ----------------------------------------------------------------------
+            if ( foldis>me%Varmax ) then
+               foldis = me%Varmax
+               quacor = cornor*foldis*foldis
+               cosimp = foldis*(cosco1+foldis*cosco2)
+               write (str,'("MAXIMUM DISTANCE....:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  foldis , quacor , cosimp , me%Conval(cos) + cosimp
                call me%ogwrit(3,str)
-               if ( dis>refdis*1.2_wp .and. me%Senopt>0 ) then
-                  faccnt = faccnt + 1
-                  if ( faccnt>=10 ) exit inner4
-                  foldis = foldis*0.5_wp
-                  quacor = cornor*foldis*foldis
-                  cosimp = foldis*(cosco1+foldis*cosco2)
+               staflg = 2
+            endif
+            ! ======================================================================
+            ! IF CONVERGENCE
+            ! ----------------------------------------------------------------------
+            if ( abs(cosimp)<=1.0_wp ) then
+               write (str,'("FINAL...............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9,2D11.3)') &
+                  foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
+               call me%ogwrit(2,str)
+               if ( tht/=1.0_wp .or. bet/=0.0_wp ) then
+                  tht = 1.0_wp
+                  bet = 0.0_wp
                   cycle
                endif
-               ! ----------------------------------------------------------------------
-               ! UPDATE VARIABLES
-               ! ----------------------------------------------------------------------
-               Varacc = Varacc + foldis
-               me%Varval = me%Varval + varvec
-               ccc = sqrt(sum((me%Varval-me%Varref)**2)) - me%Varmax**2
-               if ( ccc>=0.0_wp ) then
-                  write (str,*) "CCC > 0" , ccc
-                  call me%ogwrit(3,str)
-                  staflg = 2
+               foldis = 0.0_wp
+               Finish = 1
+               call done()
+               exit main
+            endif
+            ! ======================================================================
+            ! IF REMAINING DISTANCE IS HIT
+            ! ----------------------------------------------------------------------
+            if ( foldis>maxdis ) then
+               foldis = maxdis
+               quacor = cornor*foldis*foldis
+               cosimp = foldis*(cosco1+foldis*cosco2)
+               write (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+                  foldis , quacor , cosimp , me%Conval(cos) + cosimp
+               call me%ogwrit(3,str)
+               staflg = 2
+            endif
+            ! ======================================================================
+            ! IF CONSTRAINT IS HIT
+            ! ----------------------------------------------------------------------
+            ind = 0
+            do con = 1 , me%Numcon
+               if ( me%Contyp(con)==-2 ) cycle
+               if ( me%Conact(con)/=-1 ) cycle
+               co2 = conqua(con) - dot_product(me%Conred(con,1:me%Numact),corvec(1:me%Numact))
+               co1 = dot_product(me%Conder(con,1:me%Numvar),me%Vardes(1:me%Numvar))
+               co0 = me%Conval(con)*2.0_wp
+               if ( co2/=0.0_wp ) then
+                  det = co1**2 - co2*co0
+                  if ( det<0.0_wp ) cycle
+                  det = sqrt(det)
+                  val = 1.0e10_wp
+                  fac = (-co1+det)/co2
+                  if ( fac>0.0_wp .and. fac<val ) val = fac
+                  fac = (-co1-det)/co2
+                  if ( fac>0.0_wp .and. fac<val ) val = fac
+               elseif ( co1/=0.0_wp ) then
+                  val = -co0/co1*0.5_wp
+               else
+                  cycle
                endif
-
-               select case (staflg)
-
-                  case ( 1 )  ! MAXIMUM REACHED: NEXT ITERATION
-
-                     write (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9,2D11.3)') &
-                        foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
-                     call me%ogwrit(2,str)
-                     if ( me%Senopt>0 ) Finish = 1
-                     exit inner4
-
-                  case ( 2 )   ! MAXIMUM TRAVEL DISTANCE REACHED: NEXT ITERATION
-
-                     write (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9,2D11.3)') &
-                        foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
-                     call me%ogwrit(2,str)
-                     exit inner4
-
-                  case ( 3 )   ! CONSTRAINT HIT: UPDATE CONSTRAINT + CORRECT
-
-                     nam = me%Constr(con)
-                     len = me%Conlen(con)
-                     write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,2(1X,D10.3),1X,D16.9,2D11.3,1X,I4,1X,A)') &
-                              foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet , con , nam(1:len)
-                     call me%ogwrit(2,str)
-                     convec = conqua - matmul(me%Conred(1:cos,1:me%Numact),corvec(1:me%Numact))
-                     convec = convec*fac*0.5_wp
-                     convec = convec + matmul(me%Conder(1:cos,1:me%Numvar),me%Vardes(1:me%Numvar))
-                     me%Conval = me%Conval + convec*fac
-                     spag_nextblock_1 = 2
-                     cycle main
-
-               end select
-
-               exit inner4
-            enddo inner4
-            spag_nextblock_1 = 3
-          case (3)
+               val = val*Desnor
+               if ( val>0.0_wp .and. val<foldis ) then
+                  foldis = val
+                  ind = con
+               endif
+            enddo
             ! ----------------------------------------------------------------------
-            me%Funvar = desprv
-            me%Confix = me%Conact(1:me%Numcon)
-            if ( me%Senopt==-1 ) me%Senact = me%Conact(1:me%Numcon)
+            if ( ind/=0 ) then
+               quacor = cornor*foldis*foldis
+               cosimp = foldis*(cosco1+foldis*cosco2)
+               con = ind
+               nam = me%Constr(con)
+               len = me%Conlen(con)
+               write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,2(1X,D10.3),1X,D16.9,1X,I4,1X,A)') &
+                  foldis , quacor , cosimp , me%Conval(cos) + cosimp , con , nam(1:len)
+               call me%ogwrit(3,str)
+               staflg = 3
+            endif
+            ! ======================================================================
+            ! UPDATE
             ! ----------------------------------------------------------------------
-            deallocate (cosact)
-            deallocate (varvec)
-            deallocate (varwrk)
-            deallocate (corvec)
-            deallocate (desder)
-            deallocate (desprv)
-            deallocate (varprv)
-            deallocate (convec)
-            deallocate (conqua)
-            deallocate (concor)
-            exit main
-         end select
+            refdis = foldis
+            exit inner3
+         enddo inner3
+
+         inner4: do
+            write (str,'("FINAL...............:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9)') &
+               foldis , quacor , cosimp , me%Conval(cos) + cosimp
+            call me%ogwrit(3,str)
+            ! ----------------------------------------------------------------------
+            fac = foldis/Desnor
+            ! ----------------------------------------------------------------------
+            ! VARIABLE DELTA
+            ! ----------------------------------------------------------------------
+            call me%ogrigt(corvec,cosact)
+            dis = 0.0_wp
+            do var = 1 , me%Numvar
+               val = 0.0_wp
+               do act = 1 , me%Numact
+                  ind = me%Actcon(act)
+                  val = val - cosact(act)*me%Conder(ind,var)
+               enddo
+               varvec(var) = fac*(me%Vardes(var)+(val*fac*0.5_wp))
+               dis = dis + varvec(var)*varvec(var)
+            enddo
+            dis = sqrt(dis)
+            ! ----------------------------------------------------------------------
+            write (str,*) "REFDIS=" , refdis
+            call me%ogwrit(3,str)
+            write (str,*) "FOLDIS=" , foldis
+            call me%ogwrit(3,str)
+            write (str,*) "DIS=" , dis
+            call me%ogwrit(3,str)
+            if ( dis>refdis*1.2_wp .and. me%Senopt>0 ) then
+               faccnt = faccnt + 1
+               if ( faccnt>=10 ) exit inner4
+               foldis = foldis*0.5_wp
+               quacor = cornor*foldis*foldis
+               cosimp = foldis*(cosco1+foldis*cosco2)
+               cycle
+            endif
+            ! ----------------------------------------------------------------------
+            ! UPDATE VARIABLES
+            ! ----------------------------------------------------------------------
+            Varacc = Varacc + foldis
+            me%Varval = me%Varval + varvec
+            ccc = sqrt(sum((me%Varval-me%Varref)**2)) - me%Varmax**2
+            if ( ccc>=0.0_wp ) then
+               write (str,*) "CCC > 0" , ccc
+               call me%ogwrit(3,str)
+               staflg = 2
+            endif
+
+            select case (staflg)
+
+               case ( 1 )  ! MAXIMUM REACHED: NEXT ITERATION
+
+                  write (str,'("MERIT MAXIMUM.......:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9,2D11.3)') &
+                     foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
+                  call me%ogwrit(2,str)
+                  if ( me%Senopt>0 ) Finish = 1
+                  exit inner4
+
+               case ( 2 )   ! MAXIMUM TRAVEL DISTANCE REACHED: NEXT ITERATION
+
+                  write (str,'("REMAINING DISTANCE..:",1X,D13.6,'//'2(1X,D10.3),1X,D16.9,2D11.3)') &
+                     foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet
+                  call me%ogwrit(2,str)
+                  exit inner4
+
+               case ( 3 )   ! CONSTRAINT HIT: UPDATE CONSTRAINT + CORRECT
+
+                  nam = me%Constr(con)
+                  len = me%Conlen(con)
+                  write (str,'( "CONSTRAINT REACHED..:",'//'1X,D13.6,2(1X,D10.3),1X,D16.9,2D11.3,1X,I4,1X,A)') &
+                           foldis , quacor , cosimp , me%Conval(cos) + cosimp , tht , bet , con , nam(1:len)
+                  call me%ogwrit(2,str)
+                  convec = conqua - matmul(me%Conred(1:cos,1:me%Numact),corvec(1:me%Numact))
+                  convec = convec*fac*0.5_wp
+                  convec = convec + matmul(me%Conder(1:cos,1:me%Numvar),me%Vardes(1:me%Numvar))
+                  me%Conval = me%Conval + convec*fac
+                  cycle main
+
+            end select
+
+            exit inner4
+         enddo inner4
+
+         call done()
+         exit main
 
       enddo main
+
+      contains
+
+      subroutine done() ! 3
+
+         me%Funvar = desprv
+         me%Confix = me%Conact(1:me%Numcon)
+         if ( me%Senopt==-1 ) me%Senact = me%Conact(1:me%Numcon)
+
+         deallocate (cosact)
+         deallocate (varvec)
+         deallocate (varwrk)
+         deallocate (corvec)
+         deallocate (desder)
+         deallocate (desprv)
+         deallocate (varprv)
+         deallocate (convec)
+         deallocate (conqua)
+         deallocate (concor)
+
+      end subroutine done
 
    end subroutine ogopti
 
