@@ -706,7 +706,8 @@ contains
             ! ----------------------------------------------------------------------
             Toterr = conerr
             call me%ogwrit(3,"")
-            write (str,'("NUMFFF/TOTERR/NORERR/COSVAL=",I4,3(1X,D13.6))') numfff , Toterr , Norerr , me%Conval(me%Numcon+1)
+            write (str,'("NUMFFF/TOTERR/NORERR/COSVAL=",I4,3(1X,D13.6))') &
+                     numfff , Toterr , Norerr , me%Conval(me%Numcon+1)
             call me%ogwrit(2,str)
             call me%ogwrit(3,"")
             write (str,'("MAXIM TOTAL ERROR.: ",D13.6,I6)') conmax , conind
@@ -1423,7 +1424,8 @@ contains
          if ( cod==1 ) typ = "PAR"
          nam = me%Varstr(var)
          len = me%Varlen(var)
-         write (str,'("VAR/VAL/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') var , val*sca , sca , typ , nam(1:len)
+         write (str,'("VAR/VAL/SCA/TYP/NAM=",'//'  I5,D14.6,D9.1,1X,A3,1X,A)') &
+                  var , val*sca , sca , typ , nam(1:len)
          call me%ogwrit(4,str)
          write (str,'()')
          call me%ogwrit(4,str)
@@ -1674,7 +1676,8 @@ contains
                Finopt = 3
                Finite = me%Numite
                call me%ogwrit(1,"")
-               write (str,'("OPTGRA: Converged: not ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+               write (str,'("OPTGRA: Converged: not ITERAT=",2I4,2D11.3)') &
+                        me%Numite , me%Maxite , conerr , desnor
                call me%ogwrit(1,str)
 
                ! Final Pygmo output
@@ -1689,7 +1692,8 @@ contains
                me%Varval = varcor
                me%Conval = concor
                call me%ogwrit(1,"")
-               write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+               write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') &
+                        me%Numite , me%Maxite , conerr , desnor
                call me%ogwrit(1,str)
                call me%ogpwri_end(-Valcon(me%Numcon+1),numvio,convio)
 
@@ -1823,7 +1827,8 @@ contains
                Finopt = 4
                Finite = me%Numite
                call me%ogwrit(1,"")
-               write (str,'("OPTGRA: Converged: unf ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+               write (str,'("OPTGRA: Converged: unf ITERAT=",2I4,2D11.3)') &
+                        me%Numite , me%Maxite , conerr , desnor
                call me%ogwrit(1,str)
 
                ! Final Pygmo output
@@ -1854,7 +1859,8 @@ contains
                me%Varval = varcor
                me%Conval = concor
                call me%ogwrit(1,"")
-               write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+               write (str,'("OPTGRA: Converged: mat ITERAT=",2I4,2D11.3)') &
+                        me%Numite , me%Maxite , conerr , desnor
                call me%ogwrit(1,str)
 
                ! Final Pygmo output
@@ -1906,7 +1912,8 @@ contains
          Finopt = 1
          Finite = me%Numite
          call me%ogwrit(1,"")
-         write (str,'("OPTGRA: Converged: yes ITERAT=",2I4,2D11.3)') me%Numite , me%Maxite , conerr , desnor
+         write (str,'("OPTGRA: Converged: yes ITERAT=",2I4,2D11.3)') &
+                  me%Numite , me%Maxite , conerr , desnor
          call me%ogwrit(1,str)
          call me%ogwrit(3,"")
 
@@ -2118,7 +2125,8 @@ contains
             gam = dot_product(me%Conred(row,me%Numact:lst),me%Conred(Inc,me%Numact:lst))
             if ( gam/=0.0_wp ) then
                gam = gam*fac
-               me%Conred(row,me%Numact:lst) = me%Conred(row,me%Numact:lst) + me%Conred(Inc,me%Numact:lst)*gam
+               me%Conred(row,me%Numact:lst) = me%Conred(row,me%Numact:lst) + &
+                                              me%Conred(Inc,me%Numact:lst)*gam
             endif
          endif
       enddo
@@ -2332,7 +2340,8 @@ contains
                do con = 1 , me%Numcon
                   if ( me%Contyp(con)==-2 ) cycle
                   if ( me%Conact(con)/=0 ) cycle
-                  del = dot_product(me%Conred(con,me%Numact+1:me%Numvar),me%Conred(cos,me%Numact+1:me%Numvar))/Desnor
+                  del = dot_product(me%Conred(con,me%Numact+1:me%Numvar),&
+                                    me%Conred(cos,me%Numact+1:me%Numvar))/Desnor
                   val = abs(del)*me%Varmax
                   if ( val<eps ) cycle
                   fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
@@ -2674,9 +2683,11 @@ contains
             quacor = cornor*foldis*foldis
             cosimp = foldis*(cosco1+foldis*cosco2)
             call me%ogwrit(3,"")
-            write (str,'(    "STEEPEST ASCENT FOLLOW",'//'  5X,"DISTANCE",'//'  1X,"CORRECTION",'//'  2X,"MERIT_DEL",'//'  6X,"MERIT_VALUE")')
+            write (str,'(    "STEEPEST ASCENT FOLLOW",'//'  5X,"DISTANCE",'//&
+                       '  1X,"CORRECTION",'//'  2X,"MERIT_DEL",'//'  6X,"MERIT_VALUE")')
             call me%ogwrit(3,str)
-            write (str,'("INITIAL.............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9)') foldis , quacor , cosimp ,me%Conval(cos) + cosimp
+            write (str,'("INITIAL.............:",1X,D13.6,'//'  2(1X,D10.3),1X,D16.9)') &
+                     foldis , quacor , cosimp ,me%Conval(cos) + cosimp
             call me%ogwrit(3,str)
             ! ======================================================================
             if ( cosco2<0.0_wp ) then
