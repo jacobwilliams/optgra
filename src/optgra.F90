@@ -1,15 +1,18 @@
 !****************************************************************************************************
 !>
-!  Near-linear optimisation tool tailored for s/c trajectory design.
+!  Near-linear optimization tool tailored for s/c trajectory design.
 !
-!  This is a modernization of the original Fortran 77 code from: [pyoptgra](https://github.com/esa/pyoptgra)
+!  This is a modernization of the original Fortran 77 code from: [pyoptgra](https://github.com/esa/pyoptgra).
+!  It has been extensively refactored. The old common blocks were removed, and all data is now
+!  encapsulated in a single [[optgra]] class.
 !
 !### History
-!  * Jacob Williams, Feb 2025 : created.
-
-!TODO:
+!  * Original code by J. Schoenmaekers et al. (ESA) from [pyoptgra](https://github.com/esa/pyoptgra).
+!  * Jacob Williams, Feb 2025 : created new version.
+!
+!@todo
 ! * remove the STOP statement in one subroutine.
-! * see about removing the SPAG DISPATCH loop thing which I don't like (study original code).
+! * see about removing the SPAG DISPATCH loop thing which I don't like.
 
 module optgra_module
 
@@ -29,20 +32,23 @@ module optgra_module
    integer,parameter :: wp = real64   !! Real working precision if not specified [8 bytes]
 #endif
 
-   integer,parameter,public :: optgra_wp = wp   !! Working precision
+   integer,parameter,public :: optgra_wp = wp   !! Working real precision
 
-   integer(ip), parameter :: maxstr = 80 !! max string length for var names
+   integer(ip), parameter :: name_len = 80 !! max string length for var names
+   integer(ip), parameter :: str_len = 256 !! max string length for str prints
 
    type,public :: optgra
-      !! Main class.
+      !! Main class for OPTGRA algorithm.
+      !!
+      !! The main methods are [[optgra:initialize]], [[optgra:solve]], and [[optgra:destroy]].
 
       private
 
-      integer(ip) :: numvar = 0
+      integer(ip) :: numvar = 0 !! number of variables
       real(wp),      dimension(:  ), allocatable :: varval
       integer(ip),   dimension(:  ), allocatable :: vartyp
       real(wp),      dimension(:  ), allocatable :: varsca
-      character(len=maxstr),    dimension(:  ), allocatable :: varstr
+      character(len=name_len),    dimension(:  ), allocatable :: varstr
       integer(ip),   dimension(:  ), allocatable :: varlen
       real(wp),      dimension(:  ), allocatable :: varref
       real(wp),      dimension(:  ), allocatable :: vardes
@@ -51,12 +57,12 @@ module optgra_module
       real(wp),      dimension(:  ), allocatable :: funvar
       real(wp),      dimension(:  ), allocatable :: senvar
 
-      integer(ip) :: numcon = 0
+      integer(ip) :: numcon = 0 !! number of constraints
       real(wp),      dimension(:  ), allocatable :: conval
       integer(ip),   dimension(:  ), allocatable :: contyp
       integer(ip),   dimension(:  ), allocatable :: conpri
       real(wp),      dimension(:  ), allocatable :: consca
-      character(len=maxstr),    dimension(:  ), allocatable :: constr
+      character(len=name_len),    dimension(:  ), allocatable :: constr
       integer(ip),   dimension(:  ), allocatable :: conlen
       real(wp),      dimension(:  ), allocatable :: conref
       real(wp),      dimension(:  ), allocatable :: senqua
@@ -64,17 +70,17 @@ module optgra_module
       real(wp),      dimension(:  ), allocatable :: sendel
       integer(ip),   dimension(:  ), allocatable :: senact
 
-      integer(ip)  :: optmet = 2
-      integer(ip)  :: maxite = 10
+      integer(ip)  :: optmet = 2 !! optimization method
+      integer(ip)  :: maxite = 10 !! maximum number of iterations
       integer(ip)  :: corite = 10
       integer(ip)  :: optite = 10
       integer(ip)  :: divite = 10
       integer(ip)  :: cnvite = 10
-      real(wp)     :: Varmax = 10.0_wp
-      real(wp)     :: varsnd = 1.0_wp
+      real(wp)     :: Varmax = 10.0_wp !! maximum distance per iteration
+      real(wp)     :: varsnd = 1.0_wp !! perturbation for 2nd order derivatives
       real(wp)     :: varstp = 1.0_wp
 
-      integer(ip) :: varder = 1
+      integer(ip) :: varder = 1 !! derivatives computation mode
       real(wp),      dimension(:  ), allocatable :: varper
 
       integer(ip) :: loglun = output_unit  !! log file unit
@@ -83,15 +89,15 @@ module optgra_module
       integer(ip) :: loglup = output_unit  !! pygmo log file unit
       integer(ip) :: verbos = 0  !! pygmo verbosity
       integer(ip) :: fevals = 0  !! pygmo: number of const fun evals
-      integer(ip) :: pygfla = 0  !! pygmo: flag indicating status of optimisation
+      integer(ip) :: pygfla = 0  !! pygmo: flag indicating status of optimization
       integer(ip) :: numite = 0  !! number of iterations
 
       integer(ip) :: matlev = 0
 
-      integer(ip) :: tablun = output_unit
-      integer(ip) :: tablev = 0
+      integer(ip) :: tablun = output_unit !! logical unit for writing table
+      integer(ip) :: tablev = 0 !! level of tab
 
-      integer(ip) :: senopt = 0
+      integer(ip) :: senopt = 0 !! sensitivity optimization mode
 
       integer(ip) :: numact = 0
       integer(ip),   dimension(:  ), allocatable :: actcon
@@ -114,6 +120,11 @@ module optgra_module
       procedure,public :: solve => ogexec !! solve the problem
       procedure,public :: destroy => ogclos !! free memory when finished
 
+      ! are these intented to be user callable?
+      procedure,public :: ogsens
+      procedure,public :: ogssst
+
+      ! private methods:
       procedure :: ogrigt
       procedure :: ogincl
       procedure :: ogexcl
@@ -155,14 +166,22 @@ module optgra_module
 contains
 !****************************************************************************************************
 
-   subroutine initialize(me,Numvar,Numcon,Calval,Calder,Delcon,Conpri,Consca,Constr,Conlen,&
-      Contyp,Varder,Varper,Varmax,Varsnd,&
-      Maxite,Itecor,Iteopt,Itediv,Itecnv,&
-      Loglup,Verbos,Senopt,Varsca,&
-      Varstr,Varlen,Vartyp,Loglun,Loglev,Matlev,&
-      Tablun,Tablev,Optmet)
+   subroutine initialize(me,Numvar,Numcon,&
+                         Calval,Calder,Delcon,Conpri,Consca,Constr,Conlen,&
+                         Contyp,Varder,Varper,Varmax,Varsnd,&
+                         Maxite,Itecor,Iteopt,Itediv,Itecnv,&
+                         Loglup,Verbos,Senopt,Varsca,&
+                         Varstr,Varlen,Vartyp,Loglun,Loglev,Matlev,&
+                         Tablun,Tablev,Optmet)
 
       !! Initialize the class. This should be the first routine called.
+      !!
+      !! Note: this is a combination of the routines from the original code:
+      !! oginit, ogcdel, ogcpri, ogcsca, ogcstr, ogctyp, ogderi, ogdist,
+      !! ogiter, ogomet, ogplog, ogsopt, ogvsca, ogvstr, ogvtyp, ogwlog,
+      !! ogwmat, ogwtab
+      !!
+      !!@note Could make some of these optional and keep the default values.
 
       class(optgra),intent(out) :: me
       integer(ip),intent(in) :: Numvar !! NUMBER OF VARIABLES
@@ -175,21 +194,26 @@ contains
                                                !! (CONSTRAINT + MERIT CONVERGENCE THRESHOLDS)
       integer(ip),intent(in) :: Conpri(Numcon+1)   !! CONSTRAINTS PRIORITY (1:NUMCON)
                                                    !! -> 1-N
-      real(wp),intent(in) :: Consca(Numcon+1)  !! CONSTRAINTS CONVER THRESHOLD (1:NUMCON)
-                                               !! MERIT       CONVER THRESHOLD (1+NUMCON)
-      character(len=maxstr),intent(in) :: Constr(Numcon+1) !! CONIABLES NAME STRING
+                                                   !!
+                                                   !! lower constraint priorities are fulfilled earlier.
+                                                   !! During the initial constraint correction phase,
+                                                   !! only constraints with a priority at most k are
+                                                   !! considered in iteration k.
+      real(wp),intent(in) :: Consca(Numcon+1)  !! * CONSTRAINTS CONVER THRESHOLD (1:NUMCON)
+                                               !! * MERIT       CONVER THRESHOLD (1+NUMCON)
+      character(len=name_len),intent(in) :: Constr(Numcon+1) !! CONIABLES NAME STRING
       integer(ip),intent(in) :: Conlen(Numcon+1) !! CONIABLES NAME LENGTH
       integer(ip),intent(in) :: Contyp(Numcon+1) !! CONSTRAINTS TYPE (1:NUMCON)
                                                  !!
-                                                 !!  *  1=GTE
-                                                 !!  * -1=LTE
-                                                 !!  *  0=EQU
-                                                 !!  * -2=DERIVED DATA
+                                                 !!  *  1 = GTE (positive inequality constraints)
+                                                 !!  * -1 = LTE (inequality constraints that should be negative)
+                                                 !!  *  0 = EQU (equality constraints)
+                                                 !!  * -2 = DERIVED DATA (unenforced constraints)
                                                  !!
                                                  !! MERIT TYPE (1+NUMCON)
                                                  !!
-                                                 !!  * 1=MAX
-                                                 !!  * -1=MIN
+                                                 !!  *  1 = MAX (maximization problems)
+                                                 !!  * -1 = MIN (minimization problems)
       integer(ip),intent(in) :: Varder  !! DERIVATIVES COMPUTATION MODE
                                         !!
                                         !!  * 1: USER DEFINED
@@ -201,11 +225,13 @@ contains
                                     !!  -> SCALED
       real(wp),intent(in) :: Varsnd !! PERTURBATION FOR 2ND ORDER DERIVATIVES
                                     !!  -> SCALED
-      integer(ip),intent(in) :: Maxite !! MAXIMUM NUMBER OF ITERATIONS
-      integer(ip),intent(in) :: Itecor
-      integer(ip),intent(in) :: Iteopt
-      integer(ip),intent(in) :: Itediv
-      integer(ip),intent(in) :: Itecnv
+      integer(ip),intent(in) :: Maxite !! maximum number of iterations
+      integer(ip),intent(in) :: Itecor !! number of constraint correction iterations
+                                       !! in the beginning. If no feasible solution is
+                                       !! found within that many iterations, Optgra aborts
+      integer(ip),intent(in) :: Iteopt !! some other iter input ?
+      integer(ip),intent(in) :: Itediv !! some other iter input ?
+      integer(ip),intent(in) :: Itecnv !! some other iter input ?
       integer(ip),intent(in) :: Loglup !! LOGICAL UNIT FOR WRITING PYGMO LOG
       integer(ip),intent(in) :: Verbos !! VERBOSITY LEVEL:
                                        !!
@@ -213,7 +239,7 @@ contains
                                        !!  * 1 OUTPUT EVERY ITERATION
                                        !!  * 2 OUTPUT EVERY 2ND ITERATION
                                        !!  * N OUTPUT EVERY NTH ITERATION
-      integer(ip),intent(in) :: Senopt  !! SENSITIVITY OPTIMISATION MODE
+      integer(ip),intent(in) :: Senopt  !! sensitivity optimization mode
                                         !!
                                         !!  *  0: NO
                                         !!  * -1: INITIALISATION
@@ -223,7 +249,7 @@ contains
                                         !!  * +4: WITH CONSTRAINT BIAS / NO OPTIM
 
       real(wp),intent(in) :: Varsca(Numvar) !! VARIABLES SCALE FACTOR
-      character(len=maxstr),intent(in) :: Varstr(Numvar) !! VARIABLES NAME STRING
+      character(len=name_len),intent(in) :: Varstr(Numvar) !! VARIABLES NAME STRING
       integer(ip),intent(in) :: Varlen(Numvar) !! VARIABLES NAME LENGTH
       integer(ip),intent(in) :: Vartyp(Numvar) !! VARIABLES TYPE
                                                !!
@@ -238,12 +264,12 @@ contains
                                        !!
                                        !!  * 0=NO OUTPUT
                                        !!  * 1<ALL
-      integer(ip),intent(in) :: Tablun !! LOGICAL UNIT FOR WRITING TABLE
+      integer(ip),intent(in) :: Tablun !! logical unit for writing table
       integer(ip),intent(in) :: Tablev !! LEVEL OF TAB
                                        !!
                                        !!  * 0=NO OUTPUT
                                        !!  * 1<ALL
-      integer(ip),intent(in) :: Optmet !! OPTIMISATION METHOD:
+      integer(ip),intent(in) :: Optmet !! OPTIMIZATION METHOD:
                                        !!
                                        !!  * 3: CONJUGATE GRADIENT METHOD
                                        !!  * 2: SPECTRAL CONJUGATE GRADIENT METHOD
@@ -341,7 +367,7 @@ contains
       me%Tablun = output_unit     ! TABLE FILE
       me%Tablev = 0
 
-      me%Senopt = 0    ! LINEAR OPTIMISATION MODE
+      me%Senopt = 0    ! LINEAR OPTIMIZATION MODE
 
       ! WORKING VECTORS
       allocate (me%Actcon(me%Numcon+1))
@@ -368,7 +394,7 @@ contains
          me%Conpri(con) = Conpri(con)
          me%Consca(con) = Consca(con)
          me%Constr(con) = Constr(con)
-         me%Conlen(con) = min(Conlen(con),maxstr)
+         me%Conlen(con) = min(Conlen(con),name_len)
          me%Contyp(con) = Contyp(con)
       enddo
 
@@ -378,7 +404,7 @@ contains
          me%Varper(var) = Varper(var)
          me%Varsca(var) = Varsca(var)
          me%Varstr(var) = Varstr(var)
-         me%Varlen(var) = min(Varlen(var),maxstr)
+         me%Varlen(var) = min(Varlen(var),name_len)
          me%Vartyp(var) = Vartyp(var)
       enddo
 
@@ -480,7 +506,8 @@ contains
       real(wp) :: val , fac , upr , del , co2 , co1 , co0 , de2 , dis
       real(wp) :: eps , err , dlt , sca , dif
       real(wp) :: exc
-      character(len=256) :: str , nam
+      character(len=str_len) :: str
+      character(len=name_len) :: nam
       real(wp) , dimension(:) , allocatable :: cosact
       real(wp) , dimension(:) , allocatable :: varvec
       real(wp) , dimension(:) , allocatable :: varsav
@@ -1177,8 +1204,8 @@ contains
       !! 2008/01/16 | J. SCHOENMAEKERS | NEW
 
       class(optgra),intent(inout) :: me
-      real(wp),intent(in) :: Valvar(me%Numvar)
-      real(wp),intent(out) :: Valcon(me%Numcon+1)
+      real(wp),intent(in) :: Valvar(me%Numvar) !! SCALED VARIABLES
+      real(wp),intent(out) :: Valcon(me%Numcon+1) !! SCALED CONTRAINTS+MERIT AND DERIVATIVES
       integer(ip),intent(in) :: Varder !! DERIVATIVES COMPUTATION MODE
                                        !!
                                        !!  * 0: VALUES ONLY
@@ -1191,8 +1218,8 @@ contains
       real(wp) :: val , sca , fac , per , sav , der , err , conerr , convio
       character(len=3) :: typ
       character(len=3) :: sta
-      character(len=maxstr) :: nam
-      character(len=256) :: str
+      character(len=name_len) :: nam
+      character(len=str_len) :: str
 
       !real(wp) :: ggg(4,4) , bbb(4) , vvv(4)  ! JW : not sure what this was for
       real(wp) :: objval
@@ -1483,7 +1510,7 @@ contains
 
       real(wp) :: val , bet , gam
       integer(ip) :: row , col , act , con
-      character(len=256) :: str
+      character(len=str_len) :: str
 
       ! ======================================================================
       ! ADJUST LIST OF ACTIVE CONSTRAINTS
@@ -1560,7 +1587,8 @@ contains
       integer(ip) :: finish , itecor , iteopt
       integer(ip) :: var , con , typ , len , num , numvio
       real(wp) :: val , sca , red , der , fac , old , convio
-      character(len=256) :: str , nam
+      character(len=str_len) :: str
+      character(len=name_len) :: nam
 
       integer(ip) :: numequ , itediv , itecnv
       real(wp) :: varacc , cosnew , cosold , varsav , meamer
@@ -1569,6 +1597,7 @@ contains
       real(wp) , dimension(:) , allocatable :: varsum
       real(wp) , dimension(:) , allocatable :: varcor
       real(wp) , dimension(:) , allocatable :: concor
+      real(wp) , dimension(:,:) , allocatable :: conder_tmp !! JW: created to avoid "array temporary" warning
       integer :: spag_nextblock_1
 
       spag_nextblock_1 = 1
@@ -1579,6 +1608,7 @@ contains
             allocate (varsum(me%Numvar))
             allocate (varcor(me%Numvar))
             allocate (concor(me%Numcon+1))
+            allocate (conder_tmp(me%Numcon+1,me%Numvar))
             ! ======================================================================
             ! GENERAL
             ! ----------------------------------------------------------------------
@@ -1654,7 +1684,8 @@ contains
                   ! Final Pygmo output
                   ! TODO: can this final fitness call be avoided (just for output)?
                   me%Pygfla = 3 ! pygmo flag in COMMON: no covergence
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+                  me%Conder(1:me%Numcon+1,:) = conder_tmp
                   spag_nextblock_1 = 3
                   cycle main
                elseif ( me%Numite>=me%Maxite .or. (me%Numite-itecor>=me%Optite-1 .and. itecor/=0) ) then
@@ -1670,7 +1701,8 @@ contains
                   ! Final Pygmo output
                   ! TODO: can this final fitness call be avoided (just for output)?
                   me%Pygfla = 2 ! pygmo flag in COMMON: constraints matched
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+                  me%Conder(1:me%Numcon+1,:) = conder_tmp
                   spag_nextblock_1 = 3
                   cycle main
                endif
@@ -1684,10 +1716,13 @@ contains
                ! GET VALUES AND GRADIENTS
                ! ======================================================================
                if ( me%Senopt<=0 ) then
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  !call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:)) ! JW : original
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+                  me%Conder(1:me%Numcon+1,:) = conder_tmp
                elseif ( me%Senopt==+1 .or. me%Senopt==+3 ) then
                   me%Varval = me%Senvar
-                  call me%ogeval(me%Varval,me%Conval,0,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,0,conder_tmp)
+                  me%Conder(1:me%Numcon+1,:) = conder_tmp
                elseif ( me%Senopt==+2 .or. me%Senopt==+4 ) then
                   me%Varval = me%Senvar
                   do con = 1 , me%Numcon + 1
@@ -1703,7 +1738,8 @@ contains
                ! ======================================================================
                if ( me%Varder==-1 .and. me%Senopt<=0 ) then
                   me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:)
-                  call me%ogeval(me%Varval,me%Conval,2,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,2,conder_tmp)
+                  me%Conder(1:me%Numcon+1,:) = conder_tmp
                   write (str,'("GRADIENT CHECK")')
                   call me%ogwrit(1,str)
                   do var = 1 , me%Numvar
@@ -1796,7 +1832,8 @@ contains
                   ! Final Pygmo output
                   ! TODO: can this final fitness call be avoided (just for output)?
                   me%Pygfla = 4 ! pygmo flag in COMMON: infeasible
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+                  me%Conder(1:me%Numcon+1,:) = conder_tmp
                   spag_nextblock_1 = 3
                   cycle main
                endif
@@ -1827,14 +1864,15 @@ contains
                   ! Final Pygmo output
                   ! TODO: can this final fitness call be avoided (just for output)?
                   me%Pygfla = 2 ! pygmo flag in COMMON: matched
-                  call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+                  call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+                  me%Conder(1:me%Numcon+1,:) = conder_tmp
                   spag_nextblock_1 = 3
                   cycle main
                endif
                exit inner
             enddo inner
             ! ======================================================================
-            ! OPTIMISATION PART
+            ! OPTIMIZATION PART
             ! ----------------------------------------------------------------------
             ! ----------------------------------------------------------------------
             if ( me%Senopt<+3 ) then
@@ -1881,7 +1919,9 @@ contains
             ! Final Pygmo output
             ! TODO: can this final fitness call be avoided (just for output)?
             me%Pygfla = 1 ! covergence
-            call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:))
+            !call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:)) ! JW : original
+            call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+            me%Conder(1:me%Numcon+1,:) = conder_tmp
             spag_nextblock_1 = 3
           case (3)
 
@@ -1932,6 +1972,7 @@ contains
             deallocate (varsum)
             deallocate (varcor)
             deallocate (concor)
+            deallocate (conder_tmp)
             ! ----------------------------------------------------------------------
             call me%ogwrit(2,"")
             call me%ogwrit(2,"OPTGRA END")
@@ -1945,7 +1986,7 @@ contains
 
    subroutine oggsst(me,Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
 
-      !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
+      !! NEAR-LINEAR OPTIMIZATION TOOL SENSITIVITY ANALYSIS
       !!
       !! Function to get sensitivity state data, necessary for serialization.
       !! Do not use this directly except in serialization routines
@@ -2011,7 +2052,7 @@ contains
 
       real(wp) :: val , fac , gam , sav , max
       integer(ip) :: row , col , ind , lst
-      character(len=256) :: str
+      character(len=str_len) :: str
 
       ! GENERAL
       me%Numact = me%Numact + 1
@@ -2123,7 +2164,7 @@ contains
 
    subroutine ogopti(me,Varacc,Numequ,Finish,Desnor)
 
-      !! OPTIMISATION PART
+      !! OPTIMIZATION PART
       !!
       !! 2008/01/16 | J. SCHOENMAEKERS | NEW
 
@@ -2142,7 +2183,8 @@ contains
       real(wp) :: val , max , det , ccc , dis
       real(wp) :: fac , del , exc , eps , imp
       real(wp) :: bet , tht
-      character(len=256) :: str , nam
+      character(len=str_len) :: str
+      character(len=name_len) :: nam
 
       real(wp) , dimension(:) , allocatable :: cosact
       real(wp) , dimension(:) , allocatable :: varvec
@@ -2173,7 +2215,7 @@ contains
             allocate (conqua(me%Numcon+1))
             allocate (concor(me%Numcon+1))
             ! ======================================================================
-            ! OPTIMISATION PART
+            ! OPTIMIZATION PART
             ! ----------------------------------------------------------------------
             cos = me%Numcon + 1
             des = me%Numcon + 2
@@ -2185,7 +2227,7 @@ contains
             me%Conred(prv,:) = me%Funvar
             me%Conder(prv,:) = me%Funvar
             call me%ogwrit(3,"")
-            call me%ogwrit(3,"OPTIMISATION PART")
+            call me%ogwrit(3,"OPTIMIZATION PART")
             ! ----------------------------------------------------------------------
 !           WRITE (STR,'("NUMACT = ",I4)') NUMACT
 !           CALL me%ogwrit (3,STR)
@@ -2999,7 +3041,7 @@ contains
 
    subroutine ogsens(me,Consta,Concon,Convar,Varcon,Varvar)
 
-      !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
+      !! NEAR-LINEAR OPTIMIZATION TOOL SENSITIVITY ANALYSIS
       !!
       !! 2008/01/16 | J. SCHOENMAEKERS | NEW
 
@@ -3105,7 +3147,7 @@ contains
 
    subroutine ogssst(me,Varsen,Quasen,Consen,Actsen,Dersen,Actsav,Consav,Redsav,Dersav,Actnum)
 
-      !! NEAR-LINEAR OPTIMISATION TOOL SENSITIVITY ANALYSIS
+      !! NEAR-LINEAR OPTIMIZATION TOOL SENSITIVITY ANALYSIS
       !!
       !! Function to get sensitivity state data, necessary for serialization.
       !! Do not use this directly except in serialization routines

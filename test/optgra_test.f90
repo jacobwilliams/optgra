@@ -26,10 +26,10 @@ program optgra_test
                                         !! -> 1: USER DEFINED
                                         !! -> 2: NUMERIC WITH DOUBLE DIFFERENCING
                                         !! -> 3: NUMERIC WITH SINGLE DIFFERENCING
-    real(wp), dimension(varnum), parameter :: Pervar = [0.00001_wp]             !! VARIABLES PERTURBATION FOR DERIVATIVES
+    real(wp), dimension(varnum), parameter :: Pervar = [0.00001_wp]  !! VARIABLES PERTURBATION FOR DERIVATIVES
 
-    real(wp), parameter :: MAXVAR = 1.0_wp  !! MAXIMUM DISANCE PER ITERATION
-                                              !! -> SCALED
+    real(wp), parameter :: MAXVAR = 1.0_wp  !! MAXIMUM DISTANCE PER ITERATION
+                                            !! -> SCALED
     real(wp), parameter :: SNDVAR = 1.0_wp !! PERTURBATION FOR 2ND ORDER DERIVATIVES
                                            !! -> SCALED
     integer, parameter :: Itemax = 100 !! MAXIMUM NUMBER OF ITERATIONS
@@ -37,7 +37,7 @@ program optgra_test
     integer, parameter :: Iteopt = 10 !! THESE AREN'T DEFINED IN THE DOCSTRING ...
     integer, parameter :: Itediv = 10 !! THESE AREN'T DEFINED IN THE DOCSTRING ...
     integer, parameter :: Itecnv = 10 !! THESE AREN'T DEFINED IN THE DOCSTRING ...
-    integer, parameter :: Metopt = 2 !! OPTIMISATION METHOD
+    integer, parameter :: Metopt = 2 !! OPTIMIZATION METHOD
                                      !!
                                      !!  * 3: CONJUGATE GRADIENT METHOD
                                      !!  * 2: SPECTRAL CONJUGATE GRADIENT METHOD
@@ -49,10 +49,10 @@ program optgra_test
                                      !!  *  1 OUTPUT EVERY ITERATION
                                      !!  *  2 OUTPUT EVERY 2ND ITERATION
                                      !!  *  N OUTPUT EVERY NTH ITERATION
-    integer, parameter :: Optsen = 0  !! SENSITIVITY OPTIMISATION MODE
+    integer, parameter :: Optsen = 0  !! SENSITIVITY OPTIMIZATION MODE
                                       !!
                                       !!  *  0: NO
-                                      !!  * -1: INITIALISATION
+                                      !!  * -1: INITIALIZATION
                                       !!  * +1: WITH CONSTRAINT CALCULATION
                                       !!  * +2: WITH CONSTRAINT BIAS
                                       !!  * +3: WITH CONSTRAINT CALC / NO OPTIM
