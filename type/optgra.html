@@ -2268,7 +2268,7 @@ MERIT       VALUE (1+NUMCON)
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    private  subroutine <a href='../proc/ogrigt.html'>ogrigt</a>(me, Actinp, Actout)  
+    private  function <a href='../proc/ogrigt.html'>ogrigt</a>(me, Actinp) result(Actout)  
 </h3>
     
 
@@ -2316,24 +2316,14 @@ AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../pro
 <p>VECTOR INITAL</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" ></span>
-              real(kind=wp),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Actout</strong>(me%Numcon)</td>
-            <td>
-<p>VECTOR FINAL (MAY BE SAME AS ACTINP)</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=wp), (me%Numcon)</small>
+    </h4>
+    <p>VECTOR FINAL</p>
 
         </li>
     </ul>
@@ -2880,7 +2870,7 @@ FROM     SCALED VARIABLES</p><a href="../proc/ogeval.html" class="pull-right"><e
     <ul class="list-group">
         <li class="list-group-item">
                   <h3>
-    private  subroutine <a href='../proc/ogleft.html'>ogleft</a>(me, Actinp, Actout)  
+    private  function <a href='../proc/ogleft.html'>ogleft</a>(me, Actinp) result(Actout)  
 </h3>
     
 
@@ -2928,24 +2918,14 @@ AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../pro
 <p>VECTOR INITAL</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" ></span>
-              real(kind=wp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Actout</strong>(me%Numcon)</td>
-            <td>
-<p>VECTOR FINAL (MAY BE SAME AS ACTINP)</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+    <h4>
+    Return Value
+    <small>real(kind=wp), (me%Numcon)</small>
+    </h4>
+    <p>VECTOR FINAL</p>
 
         </li>
     </ul>
@@ -3068,7 +3048,7 @@ AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../pro
 </h3>
     
 
-  <p>Write a meessage to the log.</p><a href="../proc/ogwrit.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Write a message to the log.</p><a href="../proc/ogwrit.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">

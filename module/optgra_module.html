@@ -155,7 +155,19 @@
       </div>
     </div>
 
-  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#funcs-0"
+         aria-expanded="false" aria-controls="funcs-0">
+         <h4 class="card-header bg-primary text-white">Functions</h4>
+      </a>
+      <div id="funcs-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../module/optgra_module.html#proc-ogleft">ogleft</a>
+            <a class="list-group-item" href="../module/optgra_module.html#proc-ogrigt">ogrigt</a>
+        </div>
+      </div>
+    </div>
+
       <div class="card mb-4">
       <a data-bs-toggle="collapse" href="#subs-0"
          aria-expanded="false" aria-controls="subs-0">
@@ -171,12 +183,10 @@
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogexec">ogexec</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-oggsst">oggsst</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogincl">ogincl</a>
-            <a class="list-group-item" href="../module/optgra_module.html#proc-ogleft">ogleft</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogopti">ogopti</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogpwri">ogpwri</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogpwri_end">ogpwri_end</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogpwri_start">ogpwri_start</a>
-            <a class="list-group-item" href="../module/optgra_module.html#proc-ogrigt">ogrigt</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogsens">ogsens</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogssst">ogssst</a>
             <a class="list-group-item" href="../module/optgra_module.html#proc-ogwrit">ogwrit</a>
@@ -1671,6 +1681,132 @@ INPUT AND OUTPUT NOT SCALED</p>
         </section>
         <br>
 
+        <section>
+          <h2>Functions</h2>
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-ogleft"></span> <h3>private  function <a href='../proc/ogleft.html'>ogleft</a>(me, Actinp) result(Actout)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
+AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../proc/ogleft.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~11"></span>
+              class(<a href='../type/optgra.html'>optgra</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-actinp"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Actinp</strong>(me%Numcon)</td>
+            <td>
+<p>VECTOR INITAL</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=wp), (me%Numcon)</small>
+    </h4>
+    <p>VECTOR FINAL</p>
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-ogrigt"></span> <h3>private  function <a href='../proc/ogrigt.html'>ogrigt</a>(me, Actinp) result(Actout)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>RIGHT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
+AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../proc/ogrigt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~16"></span>
+              class(<a href='../type/optgra.html'>optgra</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-actinp~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Actinp</strong>(me%Numcon)</td>
+            <td>
+<p>VECTOR INITAL</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <h4>
+    Return Value
+    <small>real(kind=wp), (me%Numcon)</small>
+    </h4>
+    <p>VECTOR FINAL</p>
+
+    </div>
+  </div>
+
+        </section>
+        <br>
 
         <section>
           <h2>Subroutines</h2>
@@ -2879,77 +3015,6 @@ MERIT       VALUE (1+NUMCON)
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-ogleft"></span> <h3>private  subroutine <a href='../proc/ogleft.html'>ogleft</a>(me, Actinp, Actout)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
-AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../proc/ogleft.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-me~11"></span>
-              class(<a href='../type/optgra.html'>optgra</a>),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>me</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-actinp"></span>
-              real(kind=wp),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Actinp</strong>(me%Numcon)</td>
-            <td>
-<p>VECTOR INITAL</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-actout"></span>
-              real(kind=wp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Actout</strong>(me%Numcon)</td>
-            <td>
-<p>VECTOR FINAL (MAY BE SAME AS ACTINP)</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-ogopti"></span> <h3>private  subroutine <a href='../proc/ogopti.html'>ogopti</a>(me, Varacc, Numequ, Finish, Desnor, error)  
 </h3></div>
     <div class="card-body">
@@ -3275,77 +3340,6 @@ AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../pro
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-ogrigt"></span> <h3>private  subroutine <a href='../proc/ogrigt.html'>ogrigt</a>(me, Actinp, Actout)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>RIGHT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
-AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../proc/ogrigt.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-me~16"></span>
-              class(<a href='../type/optgra.html'>optgra</a>),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>me</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-actinp~2"></span>
-              real(kind=wp),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Actinp</strong>(me%Numcon)</td>
-            <td>
-<p>VECTOR INITAL</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-actout~2"></span>
-              real(kind=wp),
-            </td>
-<td>intent(inout)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Actout</strong>(me%Numcon)</td>
-            <td>
-<p>VECTOR FINAL (MAY BE SAME AS ACTINP)</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
     <div class="card-header codesum"><span class="anchor" id="proc-ogsens"></span> <h3>private  subroutine <a href='../proc/ogsens.html'>ogsens</a>(me, Consta, Concon, Convar, Varcon, Varvar)  
 </h3></div>
     <div class="card-body">
@@ -3656,7 +3650,7 @@ AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../pro
 </h3></div>
     <div class="card-body">
           
-  <p>Write a meessage to the log.</p><a href="../proc/ogwrit.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Write a message to the log.</p><a href="../proc/ogwrit.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">

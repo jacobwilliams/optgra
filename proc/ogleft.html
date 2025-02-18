@@ -66,7 +66,7 @@
     <div class="container">
   <div class="row">
     <h1>ogleft
-      <small>Subroutine</small>
+      <small>Function</small>
       
     </h1>
       <div class="container p-2 mb-4 bg-light border rounded-3">
@@ -141,7 +141,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine ogleft(me, Actinp, Actout)  
+    <h2>private  function ogleft(me, Actinp) result(Actout)  
 </h2>
     
 
@@ -193,24 +193,16 @@ AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p>
                 <p>VECTOR INITAL</p>
             </td>
         </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-actout"></span>
-              real(kind=wp),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Actout</strong>(me%Numcon)</td>
-            <td>
-                <p>VECTOR FINAL (MAY BE SAME AS ACTINP)</p>
-            </td>
-        </tr>
     </tbody>
   </table>
 
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-actout"></span>
+          real(kind=wp), (me%Numcon)
+        </small>
+      </h3>
+      <p>VECTOR FINAL</p>
     <br>
     <div class="card">
       <div class="card-header">
@@ -374,7 +366,7 @@ implementation in a submodule of an interface in a parent module.
     
     <section>
     <h2><span class="anchor" id="src"></span>Source Code</h2>
-    <div class="hl codehilite"><pre><span></span><span class="w">   </span><span class="k">subroutine </span><span class="n">ogleft</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">Actinp</span><span class="p">,</span><span class="n">Actout</span><span class="p">)</span>
+    <div class="hl codehilite"><pre><span></span><span class="w">   </span><span class="k">function </span><span class="n">ogleft</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">Actinp</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">Actout</span><span class="p">)</span>
 
 <span class="w">      </span><span class="c">!! LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION</span>
 <span class="w">      </span><span class="c">!! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</span>
@@ -383,7 +375,7 @@ implementation in a submodule of an interface in a parent module.
 
 <span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">optgra</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">me</span>
 <span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Actinp</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="p">)</span><span class="w"> </span><span class="c">!! VECTOR INITAL</span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Actout</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="p">)</span><span class="w"> </span><span class="c">!! VECTOR FINAL (MAY BE SAME AS ACTINP)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Actout</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="p">)</span><span class="w"> </span><span class="c">!! VECTOR FINAL</span>
 
 <span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">act</span>
 <span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">val</span>
@@ -397,7 +389,7 @@ implementation in a submodule of an interface in a parent module.
 <span class="k">         </span><span class="n">Actout</span><span class="p">(</span><span class="n">act</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val</span><span class="o">/</span><span class="n">me</span><span class="p">%</span><span class="n">Conred</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">act</span><span class="p">)</span>
 <span class="w">      </span><span class="k">enddo</span>
 
-<span class="k">   end subroutine </span><span class="n">ogleft</span>
+<span class="k">   end function </span><span class="n">ogleft</span>
 </pre></div>
 
     </section>
