@@ -2285,7 +2285,7 @@ contains
          nnn = 1
          inner: do
             nnn = nnn + 1
-            if ( nnn>999 ) then
+            if ( nnn>999 ) then     ! JW : some kind of max iter here? should this be an input?
                Finish = 0
                write (str,*) "NNN=" , nnn
                call me%ogwrit(2,str)
@@ -2466,8 +2466,7 @@ contains
 
          inner2: do
             ! ======================================================================
-            ! ----------------------------------------------------------------------
-         cosact = me%ogrigt(-me%Conred(cos,1:me%Numact))
+            cosact = me%ogrigt(-me%Conred(cos,1:me%Numact))
             do var = 1 , me%Numvar
                val = me%Conder(cos,var)
                do act = 1 ,me%Numact
@@ -2511,26 +2510,26 @@ contains
             select case (met)
                case ( 0 ) ! STEEPEST DESCENT METHOD
                case ( 1 ) ! MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD
-               varvec = desprv - varprv
-               if ( norprv**2>1.0e-12_wp ) then
-                  tht = -dot_product(me%Vardir,varvec)/norprv**2
-                  bet = Desnor**2/norprv**2
-               endif
+                  varvec = desprv - varprv
+                  if ( norprv**2>1.0e-12_wp ) then
+                     tht = -dot_product(me%Vardir,varvec)/norprv**2
+                     bet = Desnor**2/norprv**2
+                  endif
                case ( 2 ) ! SPECTRAL CONJUGATE GRADIENT METHOD
-               varvec = desprv - varprv
-               varwrk = me%Varref - me%Vargrd
-               val = dot_product(varwrk,varvec)
-               fac = dot_product(me%Vardir,varvec)
-               if ( abs(val)>1.0e-12_wp .and. abs(fac)>1.0e-12_wp ) then
-                  tht = -dot_product(varwrk,varwrk)/val
-                  varwrk = -varvec*tht - varwrk
-                  bet = dot_product(varwrk,desprv)/fac
-               endif
+                  varvec = desprv - varprv
+                  varwrk = me%Varref - me%Vargrd
+                  val = dot_product(varwrk,varvec)
+                  fac = dot_product(me%Vardir,varvec)
+                  if ( abs(val)>1.0e-12_wp .and. abs(fac)>1.0e-12_wp ) then
+                     tht = -dot_product(varwrk,varwrk)/val
+                     varwrk = -varvec*tht - varwrk
+                     bet = dot_product(varwrk,desprv)/fac
+                  endif
                case ( 3 ) ! CONJUGATE GRADIENT METHOD
-               if ( norprv/=0.0_wp ) then
-                  tht = 1.0_wp
-                  bet = Desnor**2/norprv**2
-               endif
+                  if ( norprv/=0.0_wp ) then
+                     tht = 1.0_wp
+                     bet = Desnor**2/norprv**2
+                  endif
             end select
 !           WRITE (STR,'("THT=",D13.6)') THT
 !           CALL me%ogwrit (3,STR)
