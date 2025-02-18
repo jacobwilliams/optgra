@@ -1683,8 +1683,7 @@ contains
                ! Final Pygmo output
                ! TODO: can this final fitness call be avoided (just for output)?
                me%Pygfla = 3 ! pygmo flag in COMMON: no covergence
-               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               call evaluation_func_and_der()
                exit main
             elseif ( me%Numite>=me%Maxite .or. (me%Numite-itecor>=me%Optite-1 .and. itecor/=0) ) then
                Finopt = 2
@@ -1700,8 +1699,7 @@ contains
                ! Final Pygmo output
                ! TODO: can this final fitness call be avoided (just for output)?
                me%Pygfla = 2 ! pygmo flag in COMMON: constraints matched
-               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               call evaluation_func_and_der()
                exit main
             endif
             ! ----------------------------------------------------------------------
@@ -1714,9 +1712,7 @@ contains
             ! GET VALUES AND GRADIENTS
             ! ======================================================================
             if ( me%Senopt<=0 ) then
-               !call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:)) ! JW : original
-               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               call evaluation_func_and_der()
             elseif ( me%Senopt==+1 .or. me%Senopt==+3 ) then
                me%Varval = me%Senvar
                call me%ogeval(me%Varval,me%Conval,0,conder_tmp)
@@ -1834,8 +1830,7 @@ contains
                ! Final Pygmo output
                ! TODO: can this final fitness call be avoided (just for output)?
                me%Pygfla = 4 ! pygmo flag in COMMON: infeasible
-               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               call evaluation_func_and_der()
                exit main
             endif
             ! ----------------------------------------------------------------------
@@ -1866,8 +1861,7 @@ contains
                ! Final Pygmo output
                ! TODO: can this final fitness call be avoided (just for output)?
                me%Pygfla = 2 ! pygmo flag in COMMON: matched
-               call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-               me%Conder(1:me%Numcon+1,:) = conder_tmp
+               call evaluation_func_and_der()
                exit main
             endif
             exit inner
@@ -1920,9 +1914,7 @@ contains
          ! Final Pygmo output
          ! TODO: can this final fitness call be avoided (just for output)?
          me%Pygfla = 1 ! covergence
-         !call me%ogeval(me%Varval,me%Conval,me%Varder,me%Conder(1:me%Numcon+1,:)) ! JW : original
-         call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
-         me%Conder(1:me%Numcon+1,:) = conder_tmp
+         call evaluation_func_and_der()
          exit main
 
       enddo main
@@ -1979,6 +1971,14 @@ contains
       call me%ogwrit(2,"")
       call me%ogwrit(2,"OPTGRA END")
       call me%ogwrit(2,"")
+
+      contains
+
+         subroutine evaluation_func_and_der()
+            !! evaluate the function and derivatives
+            call me%ogeval(me%Varval,me%Conval,me%Varder,conder_tmp)
+            me%Conder(1:me%Numcon+1,:) = conder_tmp
+         end subroutine evaluation_func_and_der
 
    end subroutine ogexec
 
@@ -2966,10 +2966,10 @@ contains
 
       ! Write termination message
       write (me%Loglup,'("")')
-      write (me%Loglup,'("Final values after iteration        ", I10:)') me%Numite
+      write (me%Loglup,'("Final values after iteration        ", I10:)')  me%Numite
       write (me%Loglup,'("Final objective value:              ", F10.4)') Objval
       write (me%Loglup,'("Final constraint violation:         ", F10.4)') Convio
-      write (me%Loglup,'("Final num. of violated constraints: ",I10)') Numvio
+      write (me%Loglup,'("Final num. of violated constraints: ", I10)')   Numvio
 
       select case (me%Pygfla)
        case ( 1 ); write (me%Loglup,'("Successful termination: Optimal solution found.")')
