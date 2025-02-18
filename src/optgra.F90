@@ -853,7 +853,7 @@ contains
                ! ----------------------------------------------------------------------
                ! MERIT PARTIAL W.R.T. CONSTRAINTS
                ! ----------------------------------------------------------------------
-               call me%ogrigt(corvec,cosact)
+               cosact = me%ogrigt(corvec)
                ! ----------------------------------------------------------------------
                ! CONSTRAINT REMOVAL
                ! ----------------------------------------------------------------------
@@ -2136,7 +2136,7 @@ contains
 
    end subroutine ogincl
 
-   subroutine ogleft(me,Actinp,Actout)
+   function ogleft(me,Actinp) result(Actout)
 
       !! LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
       !! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS
@@ -2145,7 +2145,7 @@ contains
 
       class(optgra),intent(inout) :: me
       real(wp),intent(in) :: Actinp(me%Numcon) !! VECTOR INITAL
-      real(wp),intent(out) :: Actout(me%Numcon) !! VECTOR FINAL (MAY BE SAME AS ACTINP)
+      real(wp) :: Actout(me%Numcon) !! VECTOR FINAL
 
       integer(ip) :: row , col , act
       real(wp) :: val
@@ -2159,7 +2159,7 @@ contains
          Actout(act) = val/me%Conred(row,act)
       enddo
 
-   end subroutine ogleft
+   end function ogleft
 
    subroutine ogopti(me,Varacc,Numequ,Finish,Desnor,error)
 
@@ -2296,7 +2296,7 @@ contains
             ! ======================================================================
             ! DERIVATIVES OF MERIT W.R.T. ACTIVE CONSTRAINTS
             ! ----------------------------------------------------------------------
-            call me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
+            cosact = me%ogrigt(-me%Conred(cos,1:me%Numact))
             Desnor = sqrt(sum(me%Conred(cos,me%Numact+1:me%Numvar)**2))
             ! ----------------------------------------------------------------------
             ! CONSTRAINT REMOVAL
@@ -2469,7 +2469,7 @@ contains
          inner2: do
             ! ======================================================================
             ! ----------------------------------------------------------------------
-            call me%ogrigt(-me%Conred(cos,1:me%Numact),cosact)
+         cosact = me%ogrigt(-me%Conred(cos,1:me%Numact))
             do var = 1 , me%Numvar
                val = me%Conder(cos,var)
                do act = 1 ,me%Numact
@@ -2480,9 +2480,9 @@ contains
             enddo
             Desnor = sqrt(sum(desprv**2))
             write (str,'("DESNOR=",D13.6)') Desnor
-!              CALL me%ogwrit (2,STR)
+!           CALL me%ogwrit (2,STR)
             ! ----------------------------------------------------------------------
-            call me%ogrigt(-me%Conred(prv,1:me%Numact),cosact)
+            cosact = me%ogrigt(-me%Conred(prv,1:me%Numact))
             do var = 1 , me%Numvar
                val = me%Conder(prv,var)
                do act = 1 , me%Numact
@@ -2495,7 +2495,7 @@ contains
             write (str,'("NORPRV=",D13.6)') norprv
 !              CALL me%ogwrit (2,STR)
             ! ----------------------------------------------------------------------
-            call me%ogrigt(-me%Conred(des,1:me%Numact),cosact)
+            cosact = me%ogrigt(-me%Conred(des,1:me%Numact))
             do var = 1 , me%Numvar
                val = desder(var)
                do act = 1 , me%Numact
@@ -2661,7 +2661,7 @@ contains
                con = me%Actcon(act)
                corvec(act) = conqua(con)
             enddo
-            call me%ogleft(corvec,corvec)
+            corvec = me%ogleft(corvec)
             ! ----------------------------------------------------------------------
             cornor = sqrt(sum(corvec(1:me%Numact)**2))*0.5_wp/Desnor/Desnor
             call me%ogwrit(3,"")
@@ -2813,7 +2813,7 @@ contains
             ! ----------------------------------------------------------------------
             ! VARIABLE DELTA
             ! ----------------------------------------------------------------------
-            call me%ogrigt(corvec,cosact)
+            cosact = me%ogrigt(corvec)
             dis = 0.0_wp
             do var = 1 , me%Numvar
                val = 0.0_wp
@@ -3008,7 +3008,7 @@ contains
 
    end subroutine ogpwri_start
 
-   subroutine ogrigt(me,Actinp,Actout)
+   function ogrigt(me,Actinp) result(Actout)
 
       !! RIGHT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
       !! AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS
@@ -3017,7 +3017,7 @@ contains
 
       class(optgra),intent(inout) :: me
       real(wp),intent(in) :: Actinp(me%Numcon) !! VECTOR INITAL
-      real(wp),intent(inout) :: Actout(me%Numcon) !! VECTOR FINAL (MAY BE SAME AS ACTINP)
+      real(wp) :: Actout(me%Numcon) !! VECTOR FINAL
 
       integer(ip) :: row , col , act
       real(wp) :: val
@@ -3032,7 +3032,7 @@ contains
          Actout(col) = val/me%Conred(row,col)
       enddo
 
-   end subroutine ogrigt
+   end function ogrigt
 
    subroutine ogsens(me,Consta,Concon,Convar,Varcon,Varvar)
 
@@ -3064,7 +3064,7 @@ contains
          if ( me%Conact(con)>0 ) Concon(con,con) = 1.0_wp
          if ( me%Conact(con)>0 ) cycle
          me%Conref = me%Conred(con,1:me%Numact)
-         call me%ogrigt(me%Conref,me%Conref)
+         me%Conref = me%ogrigt(me%Conref)
          do act = 1 , me%Numact
             ind = me%Actcon(act)
             Concon(con,ind) = -me%Conref(act)
@@ -3094,8 +3094,8 @@ contains
             con = me%Actcon(act)
             me%Conref(act) = me%Conder(con,var)
          enddo
-         call me%ogleft(me%Conref,me%Conref)
-         call me%ogrigt(me%Conref,me%Conref)
+         me%Conref = me%ogleft(me%Conref)
+         me%Conref = me%ogrigt(me%Conref)
          do act = 1 , me%Numact
             con = me%Actcon(act)
             Varcon(var,con) = -me%Conref(act)
