@@ -3203,7 +3203,7 @@ contains
 
    subroutine ogwrit(me,Lev,Str)
 
-      !! Write a meessage to the log.
+      !! Write a message to the log.
       !!
       !! 2014/07/29 | J. SCHOENMAEKERS | NEW
       !! 2025/02/09 | J. Williams | added trim()
