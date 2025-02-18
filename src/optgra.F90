@@ -1592,7 +1592,7 @@ contains
       real(wp) :: val , sca , red , der , fac , old , convio
       character(len=str_len) :: str
       character(len=name_len) :: nam
-      integer(ip) :: numequ , itediv , itecnv
+      integer(ip) ::  itediv , itecnv
       real(wp) :: varacc , cosnew , cosold , varsav , meamer
       real(wp) :: conerr , desnor , norerr , meaerr
       real(wp) , dimension(:) , allocatable :: varsum
@@ -1650,7 +1650,6 @@ contains
             me%Conact(con) = -2
          endif
       enddo
-      numequ = me%Numact
       me%Conact(me%Numcon+1) = -3
       me%Conact(me%Numcon+2) = -3
       ! ======================================================================
@@ -1873,7 +1872,7 @@ contains
          if ( me%Senopt<+3 ) then
             varsav = me%Varmax
             me%Varmax = me%Varmax*10.0e-1_wp
-            call me%ogopti(varacc,numequ,finish,desnor,error)
+            call me%ogopti(varacc,finish,desnor,error)
             if (error) then
                Finopt = -1
                return
@@ -2161,7 +2160,7 @@ contains
 
    end function ogleft
 
-   subroutine ogopti(me,Varacc,Numequ,Finish,Desnor,error)
+   subroutine ogopti(me,Varacc,Finish,Desnor,error)
 
       !! OPTIMIZATION PART
       !!
@@ -2169,7 +2168,6 @@ contains
 
       class(optgra),intent(inout) :: me
       real(wp),intent(inout) :: Varacc !! ITERATION SCALED DISTANCE ACCUMULATED
-      integer(ip),intent(in) :: Numequ !! NUMBER OF EQUALITY CONSTRAINTS [not used?]
       integer(ip),intent(out) :: Finish !! 0=LIMIT 1=OPTIM
       logical,intent(out) :: error !! if there was a fatal error
 
