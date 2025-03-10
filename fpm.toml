@@ -14,3 +14,7 @@ source-dir = "src"
 
 [install]
 library = true
+
+[dev-dependencies]
+pyplot-fortran = { git = "https://github.com/jacobwilliams/pyplot-fortran" }
+

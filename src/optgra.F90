@@ -489,21 +489,20 @@ contains
       !! 2008/01/16 | J. SCHOENMAEKERS | NEW
 
       class(optgra),intent(inout) :: me
-      real(wp) :: Varacc
-      integer(ip) :: Finish
-      real(wp) :: Toterr
-      real(wp) :: Norerr
+      real(wp),intent(inout) :: Varacc
+      integer(ip),intent(out) :: Finish
+      real(wp)    :: Toterr
+      real(wp)    :: Norerr
       logical,intent(out) :: error !! if there was a fatal error
 
-      integer(ip) :: coritr , numfff , minpri , maxpri , curpri
-      real(wp) :: cornor , foldis , cstval , conerr
-      real(wp) :: corinv , varvio , conmax , normax
-      integer(ip) :: conind , norind , inelop , maxitr
-      integer(ip) :: con , var , act , ind , len , cos , stp
-      integer(ip) :: typ , cor , pri , vio , fff
-      real(wp) :: val , fac , upr , del , co2 , co1 , co0 , de2 , dis
-      real(wp) :: eps , err , dlt , sca , dif
-      real(wp) :: exc
+      integer(ip) :: coritr , numfff , minpri , maxpri , curpri, &
+                     conind , norind , inelop , maxitr, &
+                     con , var , act , ind , len , cos , stp, &
+                     typ , cor , pri , vio , fff
+      real(wp) :: cornor , foldis , cstval , conerr, &
+                  corinv , varvio , conmax , normax, &
+                  val , fac , upr , del , co2 , co1 , co0 , de2 , dis, &
+                  eps , err , dlt , sca , dif , exc
       character(len=str_len) :: str
       character(len=name_len) :: nam
       real(wp) , dimension(:) , allocatable :: cosact
@@ -843,7 +842,6 @@ contains
                varvec = varvec - me%Conder(con,:)*fac
             enddo
             inner: do
-               ! ----------------------------------------------------------------------
                ! ----------------------------------------------------------------------
                ! STEEPEST ASCENT VECTOR
                ! ----------------------------------------------------------------------
@@ -1587,14 +1585,14 @@ contains
                                         !!  * -1 = Fatal error (constraints singular)
       integer(ip),intent(out) :: Finite !! ?
 
-      integer(ip) :: finish , itecor , iteopt
-      integer(ip) :: var , con , typ , len , num , numvio
-      real(wp) :: val , sca , red , der , fac , old , convio
       character(len=str_len) :: str
       character(len=name_len) :: nam
-      integer(ip) ::  itediv , itecnv
-      real(wp) :: varacc , cosnew , cosold , varsav , meamer
-      real(wp) :: conerr , desnor , norerr , meaerr
+      integer(ip) :: finish , itecor , iteopt, &
+                     var , con , typ , len , num , numvio, &
+                     itediv , itecnv
+      real(wp) :: val , sca , red , der , fac , old , convio, &
+                  varacc , cosnew , cosold , varsav , meamer, &
+                  conerr , desnor , norerr , meaerr
       real(wp) , dimension(:) , allocatable :: varsum
       real(wp) , dimension(:) , allocatable :: varcor
       real(wp) , dimension(:) , allocatable :: concor
