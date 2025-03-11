@@ -127,9 +127,9 @@ real(wp),dimension(:),allocatable :: obj_hist
 real(wp),dimension(varnum) :: valvar_known
 real(wp) :: j_known
 
-open(newunit=luplog, file = 'pygmo_log.txt', status='replace')
-open(newunit=lunlog, file = 'log.txt',       status='replace')
-open(newunit=luntab, file = 'table_log.txt', status='replace')
+open(newunit=luplog, file = 'tp71_pygmo_log.txt', status='replace')
+open(newunit=lunlog, file = 'tp71_log.txt',       status='replace')
+open(newunit=luntab, file = 'tp71_table_log.txt', status='replace')
 
 ! setup:
 write(*,*) 'initialize'

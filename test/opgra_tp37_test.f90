@@ -126,9 +126,9 @@ real(wp),dimension(:),allocatable :: obj_hist
 ! note pyoptgra has a bounds_to_constraints option
 ! to convert bounds to constraints.
 
-open(newunit=luplog, file = 'pygmo_log.txt', status='replace')
-open(newunit=lunlog, file = 'log.txt',       status='replace')
-open(newunit=luntab, file = 'table_log.txt', status='replace')
+open(newunit=luplog, file = 'tp37_pygmo_log.txt', status='replace')
+open(newunit=lunlog, file = 'tp37_log.txt',       status='replace')
+open(newunit=luntab, file = 'tp37_table_log.txt', status='replace')
 
 ! setup:
 write(*,*) 'initialize'
@@ -162,12 +162,12 @@ call plt%initialize(grid=.true.,xlabel='iteration',ylabel='constraint violation'
                     title='tp37 constraints',legend=.true.)
 call plt%add_plot(iter_hist,g1_hist,label='g(1)',linestyle='b.-',markersize=5,linewidth=2)
 call plt%add_plot(iter_hist,g2_hist,label='g(2)',linestyle='r.-',markersize=5,linewidth=2)
-call plt%savefig('iterations.png')
+call plt%savefig('tp37_iterations.png')
 
 call plt%initialize(grid=.true.,xlabel='iteration',ylabel='objective function value',&
                     title='tp37 objective function',legend=.true.)
 call plt%add_plot(iter_hist,obj_hist,label='obj',linestyle='k.-',markersize=5,linewidth=2)
-call plt%savefig('obj.png')
+call plt%savefig('tp37_obj.png')
 
 contains
 

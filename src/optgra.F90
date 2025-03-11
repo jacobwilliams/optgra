@@ -2959,10 +2959,10 @@ contains
 
       ! Write termination message
       write (me%Loglup,'("")')
-      write (me%Loglup,'("Final values after iteration        ", I10:)')  me%Numite
-      write (me%Loglup,'("Final objective value:              ", F10.4)') Objval
-      write (me%Loglup,'("Final constraint violation:         ", F10.4)') Convio
-      write (me%Loglup,'("Final num. of violated constraints: ", I10)')   Numvio
+      write (me%Loglup,'("Final values after iteration        ", I16:)')  me%Numite
+      write (me%Loglup,'("Final objective value:              ", F16.4)') Objval
+      write (me%Loglup,'("Final constraint violation:         ", F16.4)') Convio
+      write (me%Loglup,'("Final num. of violated constraints: ", I16)')   Numvio
 
       select case (me%Pygfla)
        case ( 1 ); write (me%Loglup,'("Successful termination: Optimal solution found.")')
