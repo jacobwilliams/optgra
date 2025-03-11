@@ -113,7 +113,7 @@ integer :: finopt !! termination status
 integer :: finite !! not documented ?
 
 type(pyplot) :: plt
-
+integer :: iter !! iteration counter
 real(wp),dimension(:),allocatable :: iter_hist
 real(wp),dimension(:),allocatable :: g1_hist
 real(wp),dimension(:),allocatable :: g2_hist
@@ -139,6 +139,7 @@ call solver%initialize(varnum,connum,calval,calder,delcon,pricon,scacon,strcon,l
                         strvar,lenvar,typvar,lunlog,levlog,levmat,&
                         luntab,levtab,metopt)
 
+iter = 0
 valvar = [10.0_wp, 10.0_wp, 10.0_wp] !! initial values
 call solver%solve(valvar,valcon,finopt,finite)
 
@@ -214,12 +215,14 @@ contains
         real(wp), dimension(:,:), intent(out) :: dercon !! size is numcon+1,numvar
 
         ! for now, just call this an iteration.... but not sure if that is always the case ?
-        integer,save :: i = 0 !! "iteration" counter
-        i = i + 1
+        iter = iter + 1
 
         call calval(me,x,convec,0)
 
-        write(*,'(a,i2,a,3(f10.6,1x),a,8(f10.6,1x),f15.6)') 'iter=', i, ' x:', x(1:varnum), ' f:', convec(1:connum+1)
+        write(*,'(a,i2,a,3(f10.6,1x),a,8(f10.6,1x),a,f15.6)') 'iter=', iter, &
+                                                              ' | x:', x(1:varnum), &
+                                                              ' | f:', convec(1:connum), &
+                                                              ' | j:', convec(connum+1)
 
         ! constraint gradient:
         dercon(1,:) = [1.0_wp,   2.0_wp,  2.0_wp]
@@ -244,7 +247,7 @@ contains
             allocate(g2_hist(0))
             allocate(obj_hist(0))
         end if
-        iter_hist = [iter_hist, real(i,wp)]
+        iter_hist = [iter_hist, real(iter,wp)]
         g1_hist   = [g1_hist,   convec(1) ]
         g2_hist   = [g2_hist,   convec(2) ]
         obj_hist  = [obj_hist,  convec(connum+1) ]

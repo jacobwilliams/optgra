@@ -9,8 +9,6 @@
 !### History
 !  * Original code by J. Schoenmaekers et al. (ESA) from [pyoptgra](https://github.com/esa/pyoptgra).
 !  * Jacob Williams, Feb 2025 : created new version.
-!
-!@todo finish removing the `spag_nextblock_1` loop thing which I don't like.
 
 module optgra_module
 
@@ -517,7 +515,7 @@ contains
       integer(ip) , dimension(:) , allocatable :: conhit
       integer(ip) , dimension(:) , allocatable :: fffcon
       integer(ip) , dimension(:) , allocatable :: prisav
-      integer :: spag_nextblock_1
+      integer :: ido  !! for a dispatch loop that replaced the original gotos
 
       error = .false.
 
@@ -595,10 +593,10 @@ contains
          enddo
       endif
       call me%ogwrit(3,"")
-      spag_nextblock_1 = 2
 
+      ido = 2 ! start the loop
       main: do
-         select case (spag_nextblock_1)
+         select case (ido)
           case (2)
             ! ======================================================================
             ! Evaluation loop
@@ -614,7 +612,7 @@ contains
             if ( me%Senopt>0 ) inelop = 1
             varsav = me%Varval
             consav = me%Conval
-            spag_nextblock_1 = 3
+            ido = 3
           case (3)
             ! ----------------------------------------------------------------------
             write (str,'("INELOP=",I2)') inelop
@@ -745,7 +743,7 @@ contains
             ! Priority loop
             ! ----------------------------------------------------------------------
             curpri = minpri
-            spag_nextblock_1 = 4
+            ido = 4
           case (4)
             ! ----------------------------------------------------------------------
             write (str,'("CURPRI=",I2,1X,I2)') curpri , maxpri
@@ -780,7 +778,7 @@ contains
             call me%ogwrit(3,"")
             write (str,'(" ACT  PAS  MOV",'//' " COST___VAL COST___GRD",'//' " DIST___DEL CONSTRAINT")')
             call me%ogwrit(3,str)
-            spag_nextblock_1 = 5
+            ido = 5
           case (5)
             ! ======================================================================
             ! Move loop
@@ -1009,13 +1007,13 @@ contains
                   enddo
                   ! ======================================================================
                   if ( me%Senopt<=0 ) call me%ogeval(me%Varval,me%Conval,0,me%Conder)
-                  spag_nextblock_1 = 2
+                  ido = 2
                   cycle main
                else
                   write (str,'("CURPRI=",I3)') curpri
                   call me%ogwrit(3,str)
                   curpri = curpri + 1
-                  spag_nextblock_1 = 4
+                  ido = 4
                   cycle main
                endif
                ! ----------------------------------------------------------------------
@@ -1030,7 +1028,7 @@ contains
                   write (str,'("INELOP=",I3)') inelop
                   call me%ogwrit(3,str)
                   inelop = inelop + 1
-                  spag_nextblock_1 = 3
+                  ido = 3
                   cycle main
                else
                   Finish = 0
@@ -1079,7 +1077,7 @@ contains
                   write (str,'("INELOP=",I3)') inelop
                   call me%ogwrit(3,str)
                   inelop = inelop + 1
-                  spag_nextblock_1 = 3
+                  ido = 3
                   cycle main
                else
                   me%Numact = 0
@@ -1106,7 +1104,7 @@ contains
             endif
             ! ----------------------------------------------------------------------
             conhit(con) = conhit(con) + 1
-            spag_nextblock_1 = 5
+            ido = 5
             cycle main
 
          end select
