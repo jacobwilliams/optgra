@@ -13,25 +13,38 @@ implicit none
 
 ! parameters:
 integer,parameter :: varnum = 3  !! number of variables
-integer,parameter :: connum = 2  !! number of constraints
+integer,parameter :: connum = 2 + 6  !! number of constraints (2 constraints + 4 bounds)
 
 type(optgra) :: solver
 
 ! jw : some of these i don't know what to set to ...
 !
 ! not sure what the difference is between delcon and scacon ???
+! ... delcon doesn't seem to have must effect on the solution ...
 
-real(wp), dimension(connum+1), parameter :: delcon = [0.0001_wp,0.0001_wp,0.0001_wp]    !! constraints deltas
-! real(wp), dimension(connum+1), parameter :: delcon = [1.0e-9_wp,1.0e-9_wp,1.0e-9_wp]    !! constraints deltas
-integer, dimension(connum+1), parameter :: pricon = [1,1,1]               !! constraints priorities
-real(wp), dimension(connum+1), parameter :: scacon = [1.0e-9_wp,1.0e-9_wp,1.0e-9_wp]    !! constraints conver threshold (1:numcon)
-                                                                                        !! merit       conver threshold (1+numcon)
-character(len=80), dimension(connum+1), parameter :: strcon = ['f1','f2', 'j ']    !! coniables name string
-integer, dimension(connum+1), parameter :: lencon = [2,2,1]                !! coniables name length
-integer, dimension(connum+1), parameter :: typcon = [-1,-1,-1] !! constraints type (1:numcon)
-                                                               !! -> 1=gte -1=lte 0=equ -2=derived data
-                                                               !! merit       type (1+numcon)
-                                                               !! -> 1=max -1=min
+real(wp), dimension(connum+1), parameter :: delcon = [1.0_wp,1.0_wp,&
+                                                      1.0_wp,1.0_wp,1.0_wp,1.0_wp,1.0_wp,1.0_wp,&
+                                                      1.0_wp]    !! constraints deltas
+integer, dimension(connum+1), parameter :: pricon = [1,1,0,0,0,0,0,0,1]   !! constraints priorities
+real(wp), dimension(connum+1), parameter :: scacon = [1.0e-9_wp,1.0e-9_wp,&
+                                                      1.0e-9_wp,1.0e-9_wp,1.0e-9_wp,1.0e-9_wp,1.0e-9_wp,1.0e-9_wp,&
+                                                      1.0e-4_wp]    !! constraints conver threshold (1:numcon)
+                                                                    !! merit       conver threshold (1+numcon)
+character(len=80), dimension(connum+1), parameter :: strcon = ['f1 ','f2 ', &
+                                                               'x1l', 'x1u', 'x2l', 'x2u', 'x3l', 'x3u', &
+                                                               'j  ']    !! coniables name string
+integer, dimension(connum+1), parameter :: lencon = [2,2,3,3,3,3,3,3,1]   !! coniables name length
+integer, dimension(connum+1), parameter :: typcon = [-1,-1,&
+                                                      1,-1,1,-1,1,-1,&
+                                                     -1] !!  * constraints type `(1:numcon)`
+                                                         !!    *  1 : >= constraint
+                                                         !!    * -1 : <= constraint
+                                                         !!    *  0 : == constraint
+                                                         !!    * -2 : derived data
+                                                         !!
+                                                         !!  * merit type `(1+numcon)`
+                                                         !!    *  1 : max
+                                                         !!    * -1 : min
 integer, parameter :: dervar = 1    !! derivatives computation mode
                                     !! -> 1: user defined
                                     !! -> 2: numeric with double differencing
@@ -74,14 +87,14 @@ integer, dimension(varnum), parameter :: typvar = [0,0,0] !! variables type
                                                           !! -> 0=free variable
                                                           !! -> 1=parameter for sensitivity
 integer, parameter :: levlog = 10 !! level of log
-                                 !! -> 0=no output
-                                 !! -> 1<all
+                                  !! -> 0=no output
+                                  !! -> 1<all
 integer, parameter :: levmat = 0 !! matlab level of log     <---- jw: don't think this is used
                                  !! -> 0=no output
                                  !! -> 1<all
 integer, parameter :: levtab = 1 !! level of tab
-                                  !! -> 0=no output
-                                  !! -> 1<all
+                                 !! -> 0=no output
+                                 !! -> 1<all
 
 integer :: luplog !! logical unit for writing pygmo log
 integer :: lunlog !! logical unit for writing log
@@ -108,12 +121,12 @@ real(wp),dimension(:),allocatable :: g1_hist
 real(wp),dimension(:),allocatable :: g2_hist
 real(wp),dimension(:),allocatable :: obj_hist
 
-!... can we set bounds with this method ???
-!     vlb(i) = 0.0_wp  ! lower bounds
-!     vub(i) = 42.0_wp ! upper bounds
+! the bounds will be cast as nonlinear constraints
+!     vlb(:) = 0.0_wp  ! lower bounds
+!     vub(:) = 42.0_wp ! upper bounds
 !
-! i think not. note pyoptgra has a bounds_to_constraints option
-! to convert bounds to constraints. so probably would have to do that.
+! note pyoptgra has a bounds_to_constraints option
+! to convert bounds to constraints.
 
 open(newunit=luplog, file = 'pygmo_log.txt', status='replace')
 open(newunit=lunlog, file = 'log.txt', status='replace')
@@ -169,16 +182,28 @@ contains
         real(wp), dimension(:), intent(out) :: valcon !! size is numcon+1
         integer, intent(in) :: i !! jw: this is not documented ?
 
-        real(wp) :: f(2), j
+        real(wp) :: f(8), j
 
         ! constraint values
         f(1) =  x(1) + 2.0_wp * x(2) + 2.0_wp * x(3) - 72.0_wp  ! <= 0
         f(2) = -x(1) - 2.0_wp * x(2) - 2.0_wp * x(3)            ! <= 0
 
+        ! bounds, cast as constraints:
+        !   0  <= x1  --> x1      >= 0
+        !   x1 <= 42  --> x1 - 42 <= 0
+        !   0  <= x2  --> x2      >= 0
+        !   x2 <= 42  --> x2 - 42 <= 0
+        f(3) = x(1)
+        f(4) = x(1) - 42.0_wp
+        f(5) = x(2)
+        f(6) = x(2) - 42.0_wp
+        f(7) = x(3)
+        f(8) = x(3) - 42.0_wp
+
         ! objective function
         j = -x(1) * x(2) * x(3)
 
-        valcon = [f,j]
+        valcon = [f(1:connum),j]
 
     end subroutine calval
 
@@ -196,14 +221,23 @@ contains
 
         call calval(me,x,convec,0)
 
-        print*, 'iter=', i, ':', x, ':', convec
+        write(*,'(a,i2,a,3(f10.6,1x),a,8(f10.6,1x),f15.6)') 'iter=', i, ' x:', x(1:varnum), ' f:', convec(1:connum+1)
 
         ! constraint gradient:
         dercon(1,:) = [1.0_wp,   2.0_wp,  2.0_wp]
         dercon(2,:) = [-1.0_wp, -2.0_wp, -2.0_wp]
 
+        dercon(3,:) = [1.0_wp, 0.0_wp, 0.0_wp]  ! for the bounds
+        dercon(4,:) = [1.0_wp, 0.0_wp, 0.0_wp]
+        dercon(5,:) = [0.0_wp, 1.0_wp, 0.0_wp]
+        dercon(6,:) = [0.0_wp, 1.0_wp, 0.0_wp]
+        dercon(7,:) = [0.0_wp, 0.0_wp, 1.0_wp]
+        dercon(8,:) = [0.0_wp, 0.0_wp, 1.0_wp]
+
         ! objective gradient:
-        dercon(3,:) = [-x(2) * x(3), -x(1) * x(3), -x(1) * x(2)]
+        dercon(9,:) = [-x(2) * x(3), &
+                       -x(1) * x(3), &
+                       -x(1) * x(2)]
 
         ! for the plot:
         if (.not. allocated(iter_hist)) then
@@ -215,7 +249,7 @@ contains
         iter_hist = [iter_hist, real(i,wp)]
         g1_hist   = [g1_hist,   convec(1) ]
         g2_hist   = [g2_hist,   convec(2) ]
-        obj_hist  = [obj_hist,  convec(3) ]
+        obj_hist  = [obj_hist,  convec(connum+1) ]
 
     end subroutine calder
 
