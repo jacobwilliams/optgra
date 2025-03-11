@@ -18,13 +18,11 @@ integer,parameter :: connum = 2 + 6  !! number of constraints (2 constraints + 4
 type(optgra) :: solver
 
 ! jw : some of these i don't know what to set to ...
-!
-! not sure what the difference is between delcon and scacon ???
-! ... delcon doesn't seem to have must effect on the solution ...
 
 real(wp), dimension(connum+1), parameter :: delcon = [1.0_wp,1.0_wp,&
                                                       1.0_wp,1.0_wp,1.0_wp,1.0_wp,1.0_wp,1.0_wp,&
                                                       1.0_wp]    !! constraints deltas
+                                                                 !! -- only used if `optsen=2` or `optsen=4`.
 integer, dimension(connum+1), parameter :: pricon = [1,1,0,0,0,0,0,0,1]   !! constraints priorities
 real(wp), dimension(connum+1), parameter :: scacon = [1.0e-9_wp,1.0e-9_wp,&
                                                       1.0e-9_wp,1.0e-9_wp,1.0e-9_wp,1.0e-9_wp,1.0e-9_wp,1.0e-9_wp,&
@@ -129,7 +127,7 @@ real(wp),dimension(:),allocatable :: obj_hist
 ! to convert bounds to constraints.
 
 open(newunit=luplog, file = 'pygmo_log.txt', status='replace')
-open(newunit=lunlog, file = 'log.txt', status='replace')
+open(newunit=lunlog, file = 'log.txt',       status='replace')
 open(newunit=luntab, file = 'table_log.txt', status='replace')
 
 ! setup:
