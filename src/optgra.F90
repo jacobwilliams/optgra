@@ -119,6 +119,7 @@ module optgra_module
       ! are these intented to be user callable?
       procedure,public :: ogsens
       procedure,public :: ogssst
+      procedure,public :: oggsst
 
       ! private methods:
       procedure :: ogrigt
@@ -3137,7 +3138,7 @@ contains
 
       !! NEAR-LINEAR OPTIMIZATION TOOL SENSITIVITY ANALYSIS
       !!
-      !! Function to get sensitivity state data, necessary for serialization.
+      !! Function to set sensitivity state data, necessary for serialization.
       !! Do not use this directly except in serialization routines
       !!
       !! 2021/07/19 | M. von Looz | NEW
@@ -3152,8 +3153,8 @@ contains
       integer(ip),intent(in) :: Consav(me%Numcon+4) !! STORED ACTIVE CONSTRAINTS
       real(wp),intent(in)    :: Redsav(me%Numcon+3,me%Numvar) !! STORED DERIVATIVE
       real(wp),intent(in)    :: Dersav(me%Numcon+3,me%Numvar) !! STORED DERIVATIVE
+      integer(ip),intent(in) :: Actnum
 
-      integer(ip) :: Actnum
       integer(ip) :: var , con
 
       ! Variable values saved for sensitivity
@@ -3212,83 +3213,83 @@ contains
 
    end subroutine ogwrit
 
-   pure subroutine mul2m(a1,m1,k1,l1,n1,a2,m2,k2,l2,n2,a,m,k,l,n)
+   ! pure subroutine mul2m(a1,m1,k1,l1,n1,a2,m2,k2,l2,n2,a,m,k,l,n)
 
-      !! Matrix multiply.
-      !!
-      !! `A(K:K+N1,L:L+N) = A1(K1:K1+N1,L1:L1+N2) * A2(K2:K2+N2,L2:L2+N3)`
+   !    !! Matrix multiply.
+   !    !!
+   !    !! `A(K:K+N1,L:L+N) = A1(K1:K1+N1,L1:L1+N2) * A2(K2:K2+N2,L2:L2+N3)`
 
-      integer,intent(in) :: m1, m2, m, k, k1, k2, l, l1 , l2 , n , n1 , n2
-      real(wp),intent(out) :: a(m,*)
-      real(wp),intent(in) :: a1(m1,*)
-      real(wp),intent(in) :: a2(m2,*)
+   !    integer,intent(in) :: m1, m2, m, k, k1, k2, l, l1 , l2 , n , n1 , n2
+   !    real(wp),intent(out) :: a(m,*)
+   !    real(wp),intent(in) :: a1(m1,*)
+   !    real(wp),intent(in) :: a2(m2,*)
 
-      real(wp) :: f1 , f2
-      integer(ip) :: i , i1 , i2 , ic , ir
+   !    real(wp) :: f1 , f2
+   !    integer(ip) :: i , i1 , i2 , ic , ir
 
-      do i1 = k , k + n1 - 1
-         do i = l , l + n - 1
-            a(i1,i) = 0.0_wp
-         end do
-      end do
+   !    do i1 = k , k + n1 - 1
+   !       do i = l , l + n - 1
+   !          a(i1,i) = 0.0_wp
+   !       end do
+   !    end do
 
-      do i1 = 0 , n1 - 1
-         do i2 = 0 , n2 - 1
-            if ( k1>=0 ) then
-               f1 = a1(i1+k1,i2+l1)
-            else
-               f1 = a1(i2-k1,i1+l1)
-            end if
-            if ( f1/=0.0_wp ) then
-               do i = 0 , n - 1
-                  if ( k2>=0 ) then
-                     f2 = a2(i2+k2,i+l2)
-                  else
-                     f2 = a2(i-k2,i2+l2)
-                  end if
-                  if ( f2/=0.0_wp ) then
-                     f2 = f2*f1
-                     ic = i1 + k
-                     ir = i + l
-                     a(ic,ir) = a(ic,ir) + f2
-                  end if
-               end do
-            end if
-         end do
-      end do
+   !    do i1 = 0 , n1 - 1
+   !       do i2 = 0 , n2 - 1
+   !          if ( k1>=0 ) then
+   !             f1 = a1(i1+k1,i2+l1)
+   !          else
+   !             f1 = a1(i2-k1,i1+l1)
+   !          end if
+   !          if ( f1/=0.0_wp ) then
+   !             do i = 0 , n - 1
+   !                if ( k2>=0 ) then
+   !                   f2 = a2(i2+k2,i+l2)
+   !                else
+   !                   f2 = a2(i-k2,i2+l2)
+   !                end if
+   !                if ( f2/=0.0_wp ) then
+   !                   f2 = f2*f1
+   !                   ic = i1 + k
+   !                   ir = i + l
+   !                   a(ic,ir) = a(ic,ir) + f2
+   !                end if
+   !             end do
+   !          end if
+   !       end do
+   !    end do
 
-   end subroutine mul2m
+   ! end subroutine mul2m
 
-   pure subroutine mulvs(x,a,z,Kd)
-      !! Scalar Vector multiply.
-      !!
-      !! `Z (1:KD) = X (1:KD) * A`
+   ! pure subroutine mulvs(x,a,z,Kd)
+   !    !! Scalar Vector multiply.
+   !    !!
+   !    !! `Z (1:KD) = X (1:KD) * A`
 
-      real(wp),intent(in) :: a !! SCALAR
-      real(wp),intent(in) :: x(*) !! VECTOR
-      real(wp),intent(out) :: z(*) !! VECTOR
-      integer(ip),intent(in) :: Kd !! NUMBER OF ELEMENTS TO BE USED
-      integer(ip) :: i
+   !    real(wp),intent(in) :: a !! SCALAR
+   !    real(wp),intent(in) :: x(*) !! VECTOR
+   !    real(wp),intent(out) :: z(*) !! VECTOR
+   !    integer(ip),intent(in) :: Kd !! NUMBER OF ELEMENTS TO BE USED
+   !    integer(ip) :: i
 
-      do i = 1 , Kd
-         z(i) = x(i)*a
-      end do
-   end subroutine mulvs
+   !    do i = 1 , Kd
+   !       z(i) = x(i)*a
+   !    end do
+   ! end subroutine mulvs
 
-   pure subroutine sum2v(v1,v2,v,k)
-      !! Vector addition.
-      !!
-      !! `V(1:K) = V1(1:K) + V2(1:K)`
+   ! pure subroutine sum2v(v1,v2,v,k)
+   !    !! Vector addition.
+   !    !!
+   !    !! `V(1:K) = V1(1:K) + V2(1:K)`
 
-      real(wp),intent(in) :: v1(*) , v2(*)
-      real(wp),intent(out) :: v(*)
-      integer(ip),intent(in) :: k
-      integer(ip) :: i
+   !    real(wp),intent(in) :: v1(*) , v2(*)
+   !    real(wp),intent(out) :: v(*)
+   !    integer(ip),intent(in) :: k
+   !    integer(ip) :: i
 
-      do i = 1 , k
-         v(i) = v1(i) + v2(i)
-      end do
-   end subroutine sum2v
+   !    do i = 1 , k
+   !       v(i) = v1(i) + v2(i)
+   !    end do
+   ! end subroutine sum2v
 
 !****************************************************************************************************
 end module optgra_module
