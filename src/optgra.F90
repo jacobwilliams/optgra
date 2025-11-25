@@ -145,7 +145,7 @@ module optgra_module
          class(optgra),intent(inout) :: me
          real(wp), dimension(:), intent(in) :: varvec !! size is Numvar
          real(wp), dimension(:), intent(out) :: Valcon !! size is Numcon+1
-         integer, intent(in) :: i !! JW: THIS IS NOT DOCUMENTED ?
+         integer, intent(in) :: i !! JW: THIS IS NOT DOCUMENTED ?  IFLAG?
       end subroutine calval_f
       subroutine calder_f(me,varvec,convec,Dercon)
          !! FUNCTION FOR VALUES AND DERIVATIVES
@@ -648,7 +648,7 @@ contains
             end if
             me%Numact = 0
             me%Conact = 0
-            me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:)
+            me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:)  ! CONRED=constraint gradient matrix (scaled)
             me%Conred(me%Numcon+2,:) = me%Vardir
             ! ----------------------------------------------------------------------
             ! CHECK CONSTRAINTS
@@ -1198,15 +1198,30 @@ contains
       !! 2008/01/16 | J. SCHOENMAEKERS | NEW
 
       class(optgra),intent(inout) :: me
-      real(wp),intent(in) :: Valvar(me%Numvar) !! SCALED VARIABLES
-      real(wp),intent(out) :: Valcon(me%Numcon+1) !! SCALED CONTRAINTS+MERIT AND DERIVATIVES
+      real(wp),intent(in) :: Valvar(me%Numvar) !! SCALED VARIABLES:
+                                               !! `valvar(var) = x_var / varsca(var)`
+      real(wp),intent(out) :: Valcon(me%Numcon+1) !! SCALED CONTRAINTS+MERIT AND DERIVATIVES:
+                                                  !!```
+                                                  !! CONSTRAINTS VALUE (1:NUMCON)
+                                                  !! MERIT       VALUE (NUMCON+1)
+                                                  !!```
+                                                  !!
+                                                  !!  * UNSCALED INSIDE CALVAL/CALDER (physical units)
+                                                  !!  * SCALED ON EXIT FROM [[ogeval]]: `valcon(con) = raw_value / consca(con)`
       integer(ip),intent(in) :: Varder !! DERIVATIVES COMPUTATION MODE
                                        !!
-                                       !!  * 0: VALUES ONLY
-                                       !!  * 1: USER DEFINED
+                                       !!  * 0: VALUES ONLY (DERCON UNCHANGED)
+                                       !!  * 1: USER DEFINED      (CALL CALDER)
+                                       !!  *-1: USER DEFINED, SPECIAL MODE
                                        !!  * 2: NUMERIC WITH DOUBLE DIFFERENCING
                                        !!  * 3: NUMERIC WITH SINGLE DIFFERENCING
       real(wp),intent(out) :: Dercon(me%Numcon+1,me%Numvar)
+                                       !! derivatives of scaled valcon w.r.t. scaled valvar:
+                                       !! `dercon(con,var) = d(valcon(con))/d(valvar(var))`
+                                       !!
+                                       !!  * set by calder if dervar=1 or -1
+                                       !!  * set by finite diff. if dervar=2 or 3
+                                       !!  * not modified if dervar=0
 
       integer(ip) :: var , con , cod , len , ind , numvio
       real(wp) :: val , sca , fac , per , sav , der , err , conerr , convio
@@ -1611,7 +1626,7 @@ contains
       call me%ogwrit(2,"")
       call me%ogwrit(2,"OPTGRA START")
       call me%ogwrit(2,"")
-      Finopt = 3
+      Finopt = 3  ! initialize with NOT MATCHED & NOT OPTIMAL
       itecor = 0
       iteopt = 0
       meaerr = 0.0_wp
@@ -1668,9 +1683,9 @@ contains
             ! ======================================================================
             ! NEW ITERATION
             ! ----------------------------------------------------------------------
-            if ( me%Numite>=me%Corite .and. itecor==0 ) then
-               Finopt = 3
-               Finite = me%Numite
+            if ( me%Numite>=me%Corite .and. itecor==0 ) then  ! correction limit reached
+               Finopt = 3 ! not matched and not optimal
+               Finite = me%Numite ! FINITE=Number of iterations at which termination occurred
                call me%ogwrit(1,"")
                write (str,'("OPTGRA: Converged: not ITERAT=",2I4,2D11.3)') &
                         me%Numite , me%Maxite , conerr , desnor
@@ -1682,7 +1697,8 @@ contains
                call evaluation_func_and_der()
                exit main
             elseif ( me%Numite>=me%Maxite .or. (me%Numite-itecor>=me%Optite-1 .and. itecor/=0) ) then
-               Finopt = 2
+               ! Maximum iteration reached or after correction phase
+               Finopt = 2 ! matched, but not optimal
                Finite = iteopt
                me%Varval = varcor
                me%Conval = concor
@@ -1699,7 +1715,7 @@ contains
                exit main
             end if
             ! ----------------------------------------------------------------------
-            me%Numite = me%Numite + 1
+            me%Numite = me%Numite + 1  ! new iteration
             ! ----------------------------------------------------------------------
             call me%ogwrit(3,"")
             write (str,'("ITERAT=",I5)')me%Numite
@@ -1707,13 +1723,13 @@ contains
             ! ======================================================================
             ! GET VALUES AND GRADIENTS
             ! ======================================================================
-            if ( me%Senopt<=0 ) then
+            if ( me%Senopt<=0 ) then ! No sensitivity analysis, only optimisation
                call evaluation_func_and_der()
-            elseif ( me%Senopt==+1 .or. me%Senopt==+3 ) then
+            elseif ( me%Senopt==+1 .or. me%Senopt==+3 ) then ! sens. WITH CONSTRAINT CALCULATION
                me%Varval = me%Senvar
                call me%ogeval(me%Varval,me%Conval,0,conder_tmp)
                me%Conder(1:me%Numcon+1,:) = conder_tmp
-            elseif ( me%Senopt==+2 .or. me%Senopt==+4 ) then
+            elseif ( me%Senopt==+2 .or. me%Senopt==+4 ) then ! sens. WITH CONSTRAINT BIAS
                me%Varval = me%Senvar
                do con = 1 , me%Numcon + 1
                   sca = me%Consca(con)
@@ -1721,13 +1737,14 @@ contains
                   me%Conval(con) = me%Sencon(con) - me%Sendel(con)/sca
                end do
             end if
-            if ( me%Senopt==-1 ) then
+            if ( me%Senopt==-1 ) then  ! intialisation of sensitivity analysis
                me%Senvar = me%Varval
                me%Sencon = me%Conval
             end if
             ! ======================================================================
+            ! Do finite-difference check of provided gradients if VARDER=-1 (documented options are 0,1,2,3)
             if ( me%Varder==-1 .and. me%Senopt<=0 ) then
-               me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:)
+               me%Conred(1:me%Numcon+1,:) = me%Conder(1:me%Numcon+1,:) ! CONDER=current constraint derivatives
                call me%ogeval(me%Varval,me%Conval,2,conder_tmp)
                me%Conder(1:me%Numcon+1,:) = conder_tmp
                write (str,'("GRADIENT CHECK")')
@@ -1762,12 +1779,12 @@ contains
 !              GOTO 9999
             end if
             ! ======================================================================
-            me%Sender = me%Conder
+            me%Sender = me%Conder  ! SENDER=derivatives for sensitivity analysis???
             do var = 1 , me%Numvar
-               if ( me%Vartyp(var)/=1 ) cycle
+               if ( me%Vartyp(var)/=1 ) cycle ! VARTYP=1 are sensitivity parameters, VARTYP=0 free params
 !              WRITE (STR,*) "VAR=",VAR,VARVAL(VAR)*VARSCA(VAR)
 !              CALL me%ogwrit (2,STR)
-               me%Conder(1:me%Numcon+1,var) = 0.0_wp
+               me%Conder(1:me%Numcon+1,var) = 0.0_wp ! zero derivatives of free parameters???
             end do
             ! ======================================================================
             if ( me%Numite==1 ) then
@@ -1778,15 +1795,15 @@ contains
             me%Varref = me%Varval
             me%Conref = me%Conval
             ! ======================================================================
-            varacc = 0.0_wp
+            varacc = 0.0_wp ! initialise ITERATION SCALED DISTANCE ACCUMULATED
             ! ======================================================================
             cosold = cosnew
-            cosnew = me%Conval(me%Numcon+1)
+            cosnew = me%Conval(me%Numcon+1) ! cost function value
             call me%ogwrit(3,"")
             write (str,'("OPTGRA: VALCOS=",D15.8,1X,D15.8)') cosnew , cosnew - cosold
             call me%ogwrit(3,str)
             ! ======================================================================
-            ! CORRECTION PART
+            ! CONSTRAINTS CORRECTION PART
             ! ----------------------------------------------------------------------
             call me%ogcorr(varacc,finish,conerr,norerr,error)
             if (error) then
@@ -2225,8 +2242,8 @@ contains
 !     WRITE (STR,'("NUMACT = ",I4)') NUMACT
 !     CALL me%ogwrit (3,STR)
       numcor = me%Numact
-      concor = me%Actcon
-      me%Numact = 0
+      concor = me%Actcon ! ACTCON = list of indices of active constraints
+      me%Numact = 0 ! number of active constraints
       me%Conact(1:des) = 0
 
       main: do
@@ -2251,15 +2268,15 @@ contains
          ! REMOVE PASSIVE INEQUALITY CONSTRAINTS
          ! ----------------------------------------------------------------------
          do act = me%Numact , 1 , -1
-            con = me%Actcon(act)
+            con = me%Actcon(act) ! CON=index of active constraint in CONVAL
             if ( me%Conval(con)<=1.0_wp ) cycle
             nam = me%Constr(con)
             len = me%Conlen(con)
             write (str,'(I4,5X,1X,A)') con , nam(1:len)
             call me%ogwrit(2,str)
-            call me%ogexcl(act,error)
+            call me%ogexcl(act,error) ! Exclude constraint ACT from active set
             if (error) return
-            me%Conact(con) = -1
+            me%Conact(con) = -1 ! Mark CON as blocked from inclusion in active set
          end do
          ! ----------------------------------------------------------------------
          ! INCLUDE VIOLATED INEQUALITY CONSTRAINTS AND SELECT PASSIVE ONES
@@ -2267,8 +2284,8 @@ contains
          ! ----------------------------------------------------------------------
          do con = 1 , me%Numcon
             if ( me%Contyp(con)==-2 ) cycle
-            if ( me%Conact(con)>0 ) then
-            elseif ( me%Contyp(con)==0 ) then
+            if ( me%Conact(con)>0 ) then ! CON is active, CONACT(CON) is the position of CON in active set
+            elseif ( me%Contyp(con)==0 ) then ! CON in inactive
                me%Conact(con) = 0
             elseif ( me%Conval(con)<-1.0_wp ) then
                me%Conact(con) = 0
@@ -2280,9 +2297,10 @@ contains
          end do
          ! ======================================================================
          nnn = 1
-         inner: do
+         inner: do ! Active set refinement loop
             nnn = nnn + 1
-            if ( nnn>999 ) then     ! JW : some kind of max iter here? should this be an input?
+            ! JW : some kind of max iter here? should this be an input?
+            if ( nnn>999 ) then ! saveguard active set refinement loop to continue forever
                Finish = 0
                write (str,*) "NNN=" , nnn
                call me%ogwrit(2,str)
@@ -2291,8 +2309,8 @@ contains
             ! ======================================================================
             ! DERIVATIVES OF MERIT W.R.T. ACTIVE CONSTRAINTS
             ! ----------------------------------------------------------------------
-            cosact = me%ogrigt(-me%Conred(cos,1:me%Numact))
-            Desnor = sqrt(sum(me%Conred(cos,me%Numact+1:me%Numvar)**2))
+            cosact = me%ogrigt(-me%Conred(cos,1:me%Numact)) ! COSACT=Lagrange multipliers???
+            Desnor = sqrt(sum(me%Conred(cos,me%Numact+1:me%Numvar)**2)) ! norm of cost function gradient
             ! ----------------------------------------------------------------------
             ! CONSTRAINT REMOVAL
             ! ----------------------------------------------------------------------
@@ -2300,7 +2318,7 @@ contains
             exc = -1.0e-12_wp
             max = exc
             do act = 1 , me%Numact
-               con = me%Actcon(act)
+               con = me%Actcon(act) ! ACT=index in active set, CON=index of constraint
                if ( me%Contyp(con)==0 ) cycle
                val = cosact(act)
                fac = dot_product(me%Conred(con,1:me%Numvar),me%Conred(con,1:me%Numvar))
@@ -2318,7 +2336,7 @@ contains
                len = me%Conlen(con)
                write (str,'(I4,5X,3(1X,D10.3),1X,A)') con , Desnor , max , me%Varmax , nam(1:len)
                call me%ogwrit(3,str)
-               call me%ogexcl(ind,error)
+               call me%ogexcl(ind,error)  ! Exclude constraint IND from active set
                if (error) return
                cycle
             end if
@@ -2601,6 +2619,21 @@ contains
             call me%ogwrit(3,str)
             me%Vardes = tht*desprv + bet*me%Vardir
             Desnor = sqrt(sum(me%Vardes**2))
+            ! ----------------------------------------------------------------------
+            ! SAFEGUARD: ZERO STEEPEST-ASCENT NORM => TREAT AS CONVERGENCE
+            ! ----------------------------------------------------------------------
+            ! NOTE: otherwise, DESNOR used in denominator later on may cause
+            ! NaN issues
+            ! see: https://github.com/esa/pyoptgra/pull/18/files
+            IF (Desnor == 0.0_wp) THEN
+               write (me%Loglup,'("OGOPTI WARN: Zero second order correction")')
+               write (me%Loglup,'("    Treating as convergence")')
+               foldis = 0.0_wp
+               quacor = 0.0_wp
+               cosimp = 0.0_wp
+               Finish = 1
+               exit main
+            END IF
             ! ----------------------------------------------------------------------
             ! MAXIMUM TRAVEL DISTANCE
             ! ----------------------------------------------------------------------
