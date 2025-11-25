@@ -1,0 +1,1184 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="A gradient descent algorithm specifically designed for nearlinear constrained problems">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>initialize &ndash; optgra</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">optgra </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../sourcefile/optgra.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>initialize
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 7.2% of total for procedures.">162 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/optgra.F90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/optgra.f90.html'>optgra.F90</a></li>
+                <li class="breadcrumb-item"><a href='../module/optgra_module.html'>optgra_module</a></li>
+            <li class="breadcrumb-item active" aria-current="page">initialize</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/initialize.html#src">initialize</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>private  subroutine initialize(me, Numvar, Numcon, Calval, Calder, Delcon, Conpri, Consca, Constr, Conlen, Contyp, Varder, Varper, Varmax, Varsnd, Maxite, Itecor, Iteopt, Itediv, Itecnv, Loglup, Verbos, Senopt, Varsca, Varstr, Varlen, Vartyp, Loglun, Loglev, Matlev, Tablun, Tablev, Optmet)  
+</h2>
+    
+
+    <p>Initialize the class. This should be the first routine called.</p>
+<p>Note: this is a combination of the routines from the original code:
+oginit, ogcdel, ogcpri, ogcsca, ogcstr, ogctyp, ogderi, ogdist,
+ogiter, ogomet, ogplog, ogsopt, ogvsca, ogvstr, ogvtyp, ogwlog,
+ogwmat, ogwtab</p>
+
+    <h3>Type Bound</h3>
+    <p><a href='../type/optgra.html'>optgra</a></p>
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~3"></span>
+              class(<a href='../type/optgra.html'>optgra</a>),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-numvar"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Numvar</strong></td>
+            <td>
+                <p>NUMBER OF VARIABLES</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-numcon"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Numcon</strong></td>
+            <td>
+                <p>NUMBER OF CONSTRAINTS</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-calval"></span>
+              procedure(<a href='../interface/calval_f.html'>calval_f</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Calval</strong></td>
+            <td>
+                <p>FUNCTION FOR VALUES
+-&gt; INPUT AND OUTPUT NOT SCALED</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-calder"></span>
+              procedure(<a href='../interface/calder_f.html'>calder_f</a>)
+            </td>
+<td></td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Calder</strong></td>
+            <td>
+                <p>FUNCTION FOR VALUES AND DERIVATIVES
+-&gt; INPUT AND OUTPUT NOT SCALED</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-delcon"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Delcon</strong>(Numcon+1)</td>
+            <td>
+                <p>CONSTRAINTS DELTAS
+(CONSTRAINT + MERIT CONVERGENCE THRESHOLDS)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-conpri"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Conpri</strong>(Numcon+1)</td>
+            <td>
+                <p>CONSTRAINTS PRIORITY (1:NUMCON)
+-&gt; 1-N</p>
+<p>lower constraint priorities are fulfilled earlier.
+During the initial constraint correction phase,
+only constraints with a priority at most k are
+considered in iteration k.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-consca"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Consca</strong>(Numcon+1)</td>
+            <td>
+                <ul>
+<li>CONSTRAINTS CONVER THRESHOLD (1:NUMCON)</li>
+<li>MERIT       CONVER THRESHOLD (1+NUMCON)</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-constr"></span>
+              character(len=name_len),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Constr</strong>(Numcon+1)</td>
+            <td>
+                <p>CONIABLES NAME STRING</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-conlen"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Conlen</strong>(Numcon+1)</td>
+            <td>
+                <p>CONIABLES NAME LENGTH</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-contyp"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Contyp</strong>(Numcon+1)</td>
+            <td>
+                <p>CONSTRAINTS TYPE (1:NUMCON)</p>
+<ul>
+<li>1 = GTE (positive inequality constraints)</li>
+<li>-1 = LTE (inequality constraints that should be negative)</li>
+<li>0 = EQU (equality constraints)</li>
+<li>-2 = DERIVED DATA (unenforced constraints)</li>
+</ul>
+<p>MERIT TYPE (1+NUMCON)</p>
+<ul>
+<li>1 = MAX (maximization problems)</li>
+<li>-1 = MIN (minimization problems)</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-varder"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Varder</strong></td>
+            <td>
+                <p>DERIVATIVES COMPUTATION MODE</p>
+<ul>
+<li>1: USER DEFINED</li>
+<li>2: NUMERIC WITH DOUBLE DIFFERENCING</li>
+<li>3: NUMERIC WITH SINGLE DIFFERENCING</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-varper"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Varper</strong>(Numvar)</td>
+            <td>
+                <p>VARIABLES PERTURBATION FOR DERIVATIVES
+-&gt; NOT SCALED</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-varmax~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Varmax</strong></td>
+            <td>
+                <p>MAXIMUM DISTANCE PER ITERATION
+ -&gt; SCALED</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-varsnd"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Varsnd</strong></td>
+            <td>
+                <p>PERTURBATION FOR 2ND ORDER DERIVATIVES
+ -&gt; SCALED</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-maxite"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Maxite</strong></td>
+            <td>
+                <p>maximum number of iterations</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-itecor"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Itecor</strong></td>
+            <td>
+                <p>number of constraint correction iterations
+in the beginning. If no feasible solution is
+found within that many iterations, Optgra aborts</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iteopt"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Iteopt</strong></td>
+            <td>
+                <p>some other iter input ?</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-itediv"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Itediv</strong></td>
+            <td>
+                <p>some other iter input ?</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-itecnv"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Itecnv</strong></td>
+            <td>
+                <p>some other iter input ?</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-loglup"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Loglup</strong></td>
+            <td>
+                <p>LOGICAL UNIT FOR WRITING PYGMO LOG</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-verbos"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Verbos</strong></td>
+            <td>
+                <p>VERBOSITY LEVEL:</p>
+<ul>
+<li>0=NO OUTPUT</li>
+<li>1 OUTPUT EVERY ITERATION</li>
+<li>2 OUTPUT EVERY 2ND ITERATION</li>
+<li>N OUTPUT EVERY NTH ITERATION</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-senopt"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Senopt</strong></td>
+            <td>
+                <p>sensitivity optimization mode</p>
+<ul>
+<li>0: NO</li>
+<li>-1: INITIALIZATION</li>
+<li>+1: WITH CONSTRAINT CALCULATION</li>
+<li>+2: WITH CONSTRAINT BIAS</li>
+<li>+3: WITH CONSTRAINT CALC / NO OPTIM</li>
+<li>+4: WITH CONSTRAINT BIAS / NO OPTIM</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-varsca"></span>
+              real(kind=wp),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Varsca</strong>(Numvar)</td>
+            <td>
+                <p>VARIABLES SCALE FACTOR</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-varstr"></span>
+              character(len=name_len),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Varstr</strong>(Numvar)</td>
+            <td>
+                <p>VARIABLES NAME STRING</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-varlen"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Varlen</strong>(Numvar)</td>
+            <td>
+                <p>VARIABLES NAME LENGTH</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vartyp"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vartyp</strong>(Numvar)</td>
+            <td>
+                <p>VARIABLES TYPE</p>
+<ul>
+<li>0=FREE VARIABLE</li>
+<li>1=PARAMETER FOR SENSITIVITY</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-loglun"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Loglun</strong></td>
+            <td>
+                <p>LOGICAL UNIT FOR WRITING LOG</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-loglev"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Loglev</strong></td>
+            <td>
+                <p>LEVEL OF LOG:</p>
+<ul>
+<li>0=NO OUTPUT</li>
+<li>1</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-matlev"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Matlev</strong></td>
+            <td>
+                <p>LEVEL OF LOG:</p>
+<ul>
+<li>0=NO OUTPUT</li>
+<li>1</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tablun"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Tablun</strong></td>
+            <td>
+                <p>logical unit for writing table</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tablev"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Tablev</strong></td>
+            <td>
+                <p>LEVEL OF TAB</p>
+<ul>
+<li>0=NO OUTPUT</li>
+<li>1</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-optmet"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Optmet</strong></td>
+            <td>
+                <p>OPTIMIZATION METHOD:</p>
+<ul>
+<li>3: CONJUGATE GRADIENT METHOD</li>
+<li>2: SPECTRAL CONJUGATE GRADIENT METHOD</li>
+<li>1: MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD</li>
+<li>0: STEEPEST DESCENT METHOD</li>
+</ul>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~initialize~~CallsGraph Pages: 1 -->
+<svg id="procinitializeCallsGraph" width="238pt" height="32pt"
+ viewBox="0.00 0.00 238.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~initialize~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<title>proc~~initialize~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 234,-28 234,4 -4,4"/>
+<!-- proc~initialize -->
+<g id="proc~~initialize~~CallsGraph_node1" class="node">
+<title>proc~initialize</title>
+<polygon fill="none" stroke="black" points="102,-24 0,-24 0,0 102,0 102,-24"/>
+<text text-anchor="middle" x="51" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">optgra%initialize</text>
+</g>
+<!-- proc~ogclos -->
+<g id="proc~~initialize~~CallsGraph_node2" class="node">
+<title>proc~ogclos</title>
+<g id="a_proc~~initialize~~CallsGraph_node2"><a xlink:href="../proc/ogclos.html" xlink:title="optgra%ogclos">
+<polygon fill="#d9534f" stroke="#d9534f" points="230,-24 138,-24 138,0 230,0 230,-24"/>
+<text text-anchor="middle" x="184" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogclos</text>
+</a>
+</g>
+</g>
+<!-- proc~initialize&#45;&gt;proc~ogclos -->
+<g id="proc~~initialize~~CallsGraph_edge1" class="edge">
+<title>proc~initialize&#45;&gt;proc~ogclos</title>
+<path fill="none" stroke="#000000" d="M102.27,-12C110.58,-12 119.24,-12 127.67,-12"/>
+<polygon fill="#000000" stroke="#000000" points="127.79,-15.5 137.79,-12 127.79,-8.5 127.79,-15.5"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">   </span><span class="k">subroutine </span><span class="n">initialize</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">Numvar</span><span class="p">,</span><span class="n">Numcon</span><span class="p">,&amp;</span>
+<span class="w">                         </span><span class="n">Calval</span><span class="p">,</span><span class="n">Calder</span><span class="p">,</span><span class="n">Delcon</span><span class="p">,</span><span class="n">Conpri</span><span class="p">,</span><span class="n">Consca</span><span class="p">,</span><span class="n">Constr</span><span class="p">,</span><span class="n">Conlen</span><span class="p">,&amp;</span>
+<span class="w">                         </span><span class="n">Contyp</span><span class="p">,</span><span class="n">Varder</span><span class="p">,</span><span class="n">Varper</span><span class="p">,</span><span class="n">Varmax</span><span class="p">,</span><span class="n">Varsnd</span><span class="p">,&amp;</span>
+<span class="w">                         </span><span class="n">Maxite</span><span class="p">,</span><span class="n">Itecor</span><span class="p">,</span><span class="n">Iteopt</span><span class="p">,</span><span class="n">Itediv</span><span class="p">,</span><span class="n">Itecnv</span><span class="p">,&amp;</span>
+<span class="w">                         </span><span class="n">Loglup</span><span class="p">,</span><span class="n">Verbos</span><span class="p">,</span><span class="n">Senopt</span><span class="p">,</span><span class="n">Varsca</span><span class="p">,&amp;</span>
+<span class="w">                         </span><span class="n">Varstr</span><span class="p">,</span><span class="n">Varlen</span><span class="p">,</span><span class="n">Vartyp</span><span class="p">,</span><span class="n">Loglun</span><span class="p">,</span><span class="n">Loglev</span><span class="p">,</span><span class="n">Matlev</span><span class="p">,&amp;</span>
+<span class="w">                         </span><span class="n">Tablun</span><span class="p">,</span><span class="n">Tablev</span><span class="p">,</span><span class="n">Optmet</span><span class="p">)</span>
+
+<span class="w">      </span><span class="c">!! Initialize the class. This should be the first routine called.</span>
+<span class="w">      </span><span class="c">!!</span>
+<span class="w">      </span><span class="c">!! Note: this is a combination of the routines from the original code:</span>
+<span class="w">      </span><span class="c">!! oginit, ogcdel, ogcpri, ogcsca, ogcstr, ogctyp, ogderi, ogdist,</span>
+<span class="w">      </span><span class="c">!! ogiter, ogomet, ogplog, ogsopt, ogvsca, ogvstr, ogvtyp, ogwlog,</span>
+<span class="w">      </span><span class="c">!! ogwmat, ogwtab</span>
+<span class="w">      </span><span class="c">!!</span>
+<span class="w">      </span><span class="c">!!@note Could make some of these optional and keep the default values.</span>
+
+<span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">optgra</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">me</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Numvar</span><span class="w"> </span><span class="c">!! NUMBER OF VARIABLES</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Numcon</span><span class="w"> </span><span class="c">!! NUMBER OF CONSTRAINTS</span>
+<span class="w">      </span><span class="k">procedure</span><span class="p">(</span><span class="n">Calval_f</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Calval</span><span class="w"> </span><span class="c">!! FUNCTION FOR VALUES</span>
+<span class="w">                                    </span><span class="c">!! -&gt; INPUT AND OUTPUT NOT SCALED</span>
+<span class="w">      </span><span class="k">procedure</span><span class="p">(</span><span class="n">Calder_f</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Calder</span><span class="w"> </span><span class="c">!! FUNCTION FOR VALUES AND DERIVATIVES</span>
+<span class="w">                                    </span><span class="c">!! -&gt; INPUT AND OUTPUT NOT SCALED</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Delcon</span><span class="p">(</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w">  </span><span class="c">!! CONSTRAINTS DELTAS</span>
+<span class="w">                                               </span><span class="c">!! (CONSTRAINT + MERIT CONVERGENCE THRESHOLDS)</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Conpri</span><span class="p">(</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w">   </span><span class="c">!! CONSTRAINTS PRIORITY (1:NUMCON)</span>
+<span class="w">                                                   </span><span class="c">!! -&gt; 1-N</span>
+<span class="w">                                                   </span><span class="c">!!</span>
+<span class="w">                                                   </span><span class="c">!! lower constraint priorities are fulfilled earlier.</span>
+<span class="w">                                                   </span><span class="c">!! During the initial constraint correction phase,</span>
+<span class="w">                                                   </span><span class="c">!! only constraints with a priority at most k are</span>
+<span class="w">                                                   </span><span class="c">!! considered in iteration k.</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Consca</span><span class="p">(</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w">  </span><span class="c">!! * CONSTRAINTS CONVER THRESHOLD (1:NUMCON)</span>
+<span class="w">                                               </span><span class="c">!! * MERIT       CONVER THRESHOLD (1+NUMCON)</span>
+<span class="w">      </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="n">name_len</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Constr</span><span class="p">(</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c">!! CONIABLES NAME STRING</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Conlen</span><span class="p">(</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c">!! CONIABLES NAME LENGTH</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Contyp</span><span class="p">(</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c">!! CONSTRAINTS TYPE (1:NUMCON)</span>
+<span class="w">                                                 </span><span class="c">!!</span>
+<span class="w">                                                 </span><span class="c">!!  *  1 = GTE (positive inequality constraints)</span>
+<span class="w">                                                 </span><span class="c">!!  * -1 = LTE (inequality constraints that should be negative)</span>
+<span class="w">                                                 </span><span class="c">!!  *  0 = EQU (equality constraints)</span>
+<span class="w">                                                 </span><span class="c">!!  * -2 = DERIVED DATA (unenforced constraints)</span>
+<span class="w">                                                 </span><span class="c">!!</span>
+<span class="w">                                                 </span><span class="c">!! MERIT TYPE (1+NUMCON)</span>
+<span class="w">                                                 </span><span class="c">!!</span>
+<span class="w">                                                 </span><span class="c">!!  *  1 = MAX (maximization problems)</span>
+<span class="w">                                                 </span><span class="c">!!  * -1 = MIN (minimization problems)</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Varder</span><span class="w">  </span><span class="c">!! DERIVATIVES COMPUTATION MODE</span>
+<span class="w">                                        </span><span class="c">!!</span>
+<span class="w">                                        </span><span class="c">!!  * 1: USER DEFINED</span>
+<span class="w">                                        </span><span class="c">!!  * 2: NUMERIC WITH DOUBLE DIFFERENCING</span>
+<span class="w">                                        </span><span class="c">!!  * 3: NUMERIC WITH SINGLE DIFFERENCING</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Varper</span><span class="p">(</span><span class="n">Numvar</span><span class="p">)</span><span class="w"> </span><span class="c">!! VARIABLES PERTURBATION FOR DERIVATIVES</span>
+<span class="w">                                            </span><span class="c">!! -&gt; NOT SCALED</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Varmax</span><span class="w"> </span><span class="c">!! MAXIMUM DISTANCE PER ITERATION</span>
+<span class="w">                                    </span><span class="c">!!  -&gt; SCALED</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Varsnd</span><span class="w"> </span><span class="c">!! PERTURBATION FOR 2ND ORDER DERIVATIVES</span>
+<span class="w">                                    </span><span class="c">!!  -&gt; SCALED</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Maxite</span><span class="w"> </span><span class="c">!! maximum number of iterations</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Itecor</span><span class="w"> </span><span class="c">!! number of constraint correction iterations</span>
+<span class="w">                                       </span><span class="c">!! in the beginning. If no feasible solution is</span>
+<span class="w">                                       </span><span class="c">!! found within that many iterations, Optgra aborts</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Iteopt</span><span class="w"> </span><span class="c">!! some other iter input ?</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Itediv</span><span class="w"> </span><span class="c">!! some other iter input ?</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Itecnv</span><span class="w"> </span><span class="c">!! some other iter input ?</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Loglup</span><span class="w"> </span><span class="c">!! LOGICAL UNIT FOR WRITING PYGMO LOG</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Verbos</span><span class="w"> </span><span class="c">!! VERBOSITY LEVEL:</span>
+<span class="w">                                       </span><span class="c">!!</span>
+<span class="w">                                       </span><span class="c">!!  * 0=NO OUTPUT</span>
+<span class="w">                                       </span><span class="c">!!  * 1 OUTPUT EVERY ITERATION</span>
+<span class="w">                                       </span><span class="c">!!  * 2 OUTPUT EVERY 2ND ITERATION</span>
+<span class="w">                                       </span><span class="c">!!  * N OUTPUT EVERY NTH ITERATION</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Senopt</span><span class="w">  </span><span class="c">!! sensitivity optimization mode</span>
+<span class="w">                                        </span><span class="c">!!</span>
+<span class="w">                                        </span><span class="c">!!  *  0: NO</span>
+<span class="w">                                        </span><span class="c">!!  * -1: INITIALIZATION</span>
+<span class="w">                                        </span><span class="c">!!  * +1: WITH CONSTRAINT CALCULATION</span>
+<span class="w">                                        </span><span class="c">!!  * +2: WITH CONSTRAINT BIAS</span>
+<span class="w">                                        </span><span class="c">!!  * +3: WITH CONSTRAINT CALC / NO OPTIM</span>
+<span class="w">                                        </span><span class="c">!!  * +4: WITH CONSTRAINT BIAS / NO OPTIM</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Varsca</span><span class="p">(</span><span class="n">Numvar</span><span class="p">)</span><span class="w"> </span><span class="c">!! VARIABLES SCALE FACTOR</span>
+<span class="w">      </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="n">name_len</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Varstr</span><span class="p">(</span><span class="n">Numvar</span><span class="p">)</span><span class="w"> </span><span class="c">!! VARIABLES NAME STRING</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Varlen</span><span class="p">(</span><span class="n">Numvar</span><span class="p">)</span><span class="w"> </span><span class="c">!! VARIABLES NAME LENGTH</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Vartyp</span><span class="p">(</span><span class="n">Numvar</span><span class="p">)</span><span class="w"> </span><span class="c">!! VARIABLES TYPE</span>
+<span class="w">                                               </span><span class="c">!!</span>
+<span class="w">                                               </span><span class="c">!!  *  0=FREE VARIABLE</span>
+<span class="w">                                               </span><span class="c">!!  *  1=PARAMETER FOR SENSITIVITY</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Loglun</span><span class="w"> </span><span class="c">!! LOGICAL UNIT FOR WRITING LOG</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Loglev</span><span class="w"> </span><span class="c">!! LEVEL OF LOG:</span>
+<span class="w">                                       </span><span class="c">!!</span>
+<span class="w">                                       </span><span class="c">!!  * 0=NO OUTPUT</span>
+<span class="w">                                       </span><span class="c">!!  * 1&lt;ALL</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Matlev</span><span class="w"> </span><span class="c">!! LEVEL OF LOG:</span>
+<span class="w">                                       </span><span class="c">!!</span>
+<span class="w">                                       </span><span class="c">!!  * 0=NO OUTPUT</span>
+<span class="w">                                       </span><span class="c">!!  * 1&lt;ALL</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Tablun</span><span class="w"> </span><span class="c">!! logical unit for writing table</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Tablev</span><span class="w"> </span><span class="c">!! LEVEL OF TAB</span>
+<span class="w">                                       </span><span class="c">!!</span>
+<span class="w">                                       </span><span class="c">!!  * 0=NO OUTPUT</span>
+<span class="w">                                       </span><span class="c">!!  * 1&lt;ALL</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Optmet</span><span class="w"> </span><span class="c">!! OPTIMIZATION METHOD:</span>
+<span class="w">                                       </span><span class="c">!!</span>
+<span class="w">                                       </span><span class="c">!!  * 3: CONJUGATE GRADIENT METHOD</span>
+<span class="w">                                       </span><span class="c">!!  * 2: SPECTRAL CONJUGATE GRADIENT METHOD</span>
+<span class="w">                                       </span><span class="c">!!  * 1: MODIFIED SPECTRAL CONJUGATE GRADIENT METHOD</span>
+<span class="w">                                       </span><span class="c">!!  * 0: STEEPEST DESCENT METHOD</span>
+
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">con</span><span class="p">,</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="c">!! counter</span>
+
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">destroy</span><span class="p">()</span>
+
+<span class="w">      </span><span class="c">! set the functions:</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Calval</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Calval</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Calder</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">Calder</span>
+
+<span class="w">      </span><span class="c">! VARIABLES</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Numvar</span>
+
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Vartyp</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varsca</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varstr</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varlen</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varref</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Vardes</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Vargrd</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Vardir</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Funvar</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Senvar</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+
+<span class="w">      </span><span class="k">do </span><span class="n">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Vartyp</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varsca</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varstr</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varlen</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varref</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Vardes</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Vargrd</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Vardir</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Funvar</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Senvar</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="k">end do</span>
+
+<span class="w">      </span><span class="c">! CONSTRAINTS</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Numcon</span>
+
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Conpri</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Consca</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Constr</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Conlen</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Conref</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Senqua</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Sencon</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Sendel</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Senact</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="w">      </span><span class="k">do </span><span class="n">con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Conpri</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Consca</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Constr</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Conlen</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Conref</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Senqua</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Sencon</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Sendel</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Senact</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="k">end do</span>
+
+<span class="w">      </span><span class="c">! CONTROL</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Optmet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Corite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Optite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Divite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Cnvite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Varmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Varsnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_wp</span>
+
+<span class="w">      </span><span class="c">! DERIVATIVES</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Varder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varper</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">do </span><span class="n">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varper</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-03_wp</span>
+<span class="w">      </span><span class="k">end do</span>
+
+<span class="k">      </span><span class="n">me</span><span class="p">%</span><span class="n">Loglun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">output_unit</span><span class="w">     </span><span class="c">! LOG FILE</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Loglev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Loglup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">output_unit</span><span class="w">     </span><span class="c">! PYGMO LOG FILE</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Loglev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Matlev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">               </span><span class="c">! MATLAB CONSOLE</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Tablun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">output_unit</span><span class="w">     </span><span class="c">! TABLE FILE</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Tablev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">    </span><span class="c">! LINEAR OPTIMIZATION MODE</span>
+
+<span class="w">      </span><span class="c">! WORKING VECTORS</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Actcon</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Confix</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">4</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Conred</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Sender</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="c">! ALLOCATE (me%Conopt(me%Numcon+1))</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Numact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Actcon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Confix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Conred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="c">!me%Conopt = 0</span>
+
+<span class="w">      </span><span class="c">! NOTE: should the last element also be set? (not done in original)  ?????</span>
+<span class="w">      </span><span class="k">do </span><span class="n">con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Sendel</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Delcon</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end do</span>
+
+<span class="k">      do </span><span class="n">con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Conpri</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Conpri</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Consca</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Consca</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Constr</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Constr</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Conlen</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">Conlen</span><span class="p">(</span><span class="n">con</span><span class="p">),</span><span class="n">name_len</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end do</span>
+
+<span class="k">      </span><span class="n">me</span><span class="p">%</span><span class="n">Varder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Varder</span>
+
+<span class="w">      </span><span class="k">do </span><span class="n">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varper</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Varper</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varsca</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Varsca</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varstr</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Varstr</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varlen</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">Varlen</span><span class="p">(</span><span class="n">var</span><span class="p">),</span><span class="n">name_len</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Vartyp</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Vartyp</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end do</span>
+
+<span class="k">      </span><span class="n">me</span><span class="p">%</span><span class="n">Varmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Varmax</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Varsnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Varsnd</span>
+
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Maxite</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Corite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Itecor</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Optite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Iteopt</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Divite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Itediv</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Cnvite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Itecnv</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Corite</span><span class="o">&gt;</span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Corite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Optite</span><span class="o">&gt;</span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Optite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Divite</span><span class="o">&gt;</span><span class="n">me</span><span class="p">%</span><span class="n">Corite</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Divite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Corite</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Cnvite</span><span class="o">&gt;</span><span class="n">me</span><span class="p">%</span><span class="n">Optite</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Cnvite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Optite</span>
+
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Loglup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Loglup</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Verbos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Verbos</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Fevals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">     </span><span class="c">! initialize number of cost fun evaluations</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Pygfla</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">     </span><span class="c">! pygmo output status flag: 0: continue iterating, 1: final output</span>
+
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Senopt</span>
+
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Loglun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Loglun</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Loglev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Loglev</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Matlev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Matlev</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Tablun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tablun</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Tablev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tablev</span>
+
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Optmet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Optmet</span>
+
+<span class="w">   </span><span class="k">end subroutine </span><span class="n">initialize</span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              optgra
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

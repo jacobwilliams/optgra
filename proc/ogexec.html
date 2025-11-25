@@ -1,0 +1,1068 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="A gradient descent algorithm specifically designed for nearlinear constrained problems">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>ogexec &ndash; optgra</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">optgra </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../sourcefile/optgra.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>ogexec
+      <small>Subroutine</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title="12.7% of total for procedures.">285 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/optgra.F90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/optgra.f90.html'>optgra.F90</a></li>
+                <li class="breadcrumb-item"><a href='../module/optgra_module.html'>optgra_module</a></li>
+            <li class="breadcrumb-item active" aria-current="page">ogexec</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    <div class="card card-primary">
+      <div class="card-header text-left"><h3 class="card-title">Source Code</h3></div>
+      <div class="list-group">
+        <a class="list-group-item" href="../proc/ogexec.html#src">ogexec</a>
+      </div>
+    </div>
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>private  subroutine ogexec(me, Valvar, Valcon, Finopt, Finite)  
+</h2>
+    
+
+    <p>Main routine.</p>
+<p>2008/01/16 | J. SCHOENMAEKERS | NEW</p>
+
+    <h3>Type Bound</h3>
+    <p><a href='../type/optgra.html'>optgra</a></p>
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-me~8"></span>
+              class(<a href='../type/optgra.html'>optgra</a>),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>me</strong></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-valvar~2"></span>
+              real(kind=wp),
+            </td>
+<td>intent(inout)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Valvar</strong>(me%Numvar)</td>
+            <td>
+                <p>VARIABLES VALUE
+-&gt; NOT SCALED</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-valcon~3"></span>
+              real(kind=wp),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Valcon</strong>(me%Numcon+1)</td>
+            <td>
+                <p>CONSTRAINTS VALUE (1:NUMCON)
+MERIT       VALUE (1+NUMCON)
+-&gt; NOT SCALED</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-finopt"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Finopt</strong></td>
+            <td>
+                <p>TERMINATION STATUS</p>
+<ul>
+<li>1 =     MATCHED &amp;     OPTIMAL</li>
+<li>2 =     MATCHED &amp; NOT OPTIMAL</li>
+<li>3 = NOT MATCHED &amp; NOT OPTIMAL</li>
+<li>4 = NOT FEASIBL &amp; NOT OPTIMAL</li>
+<li>-1 = Fatal error (constraints singular)</li>
+</ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-finite"></span>
+              integer(kind=ip),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Finite</strong></td>
+            <td>
+                <p>?</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: proc~~ogexec~~CallsGraph Pages: 1 -->
+<svg id="procogexecCallsGraph" width="641pt" height="322pt"
+ viewBox="0.00 0.00 641.00 322.36" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~ogexec~~CallsGraph" class="graph" transform="scale(0.98 0.98) rotate(0) translate(4 323.89)">
+<title>proc~~ogexec~~CallsGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-323.89 648,-323.89 648,4 -4,4"/>
+<!-- proc~ogexec -->
+<g id="proc~~ogexec~~CallsGraph_node1" class="node">
+<title>proc~ogexec</title>
+<polygon fill="none" stroke="black" points="96,-155.89 0,-155.89 0,-131.89 96,-131.89 96,-155.89"/>
+<text text-anchor="middle" x="48" y="-141.49" font-family="Helvetica,sans-Serif" font-size="10.50">optgra%ogexec</text>
+</g>
+<!-- proc~ogcorr -->
+<g id="proc~~ogexec~~CallsGraph_node2" class="node">
+<title>proc~ogcorr</title>
+<g id="a_proc~~ogexec~~CallsGraph_node2"><a xlink:href="../proc/ogcorr.html" xlink:title="optgra%ogcorr">
+<polygon fill="#d9534f" stroke="#d9534f" points="225,-217.89 132,-217.89 132,-193.89 225,-193.89 225,-217.89"/>
+<text text-anchor="middle" x="178.5" y="-203.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogcorr</text>
+</a>
+</g>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogcorr -->
+<g id="proc~~ogexec~~CallsGraph_edge1" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogcorr</title>
+<path fill="none" stroke="#000000" d="M74.08,-155.99C93.8,-165.51 121.49,-178.87 143.25,-189.37"/>
+<polygon fill="#000000" stroke="#000000" points="141.95,-192.63 152.48,-193.82 145,-186.32 141.95,-192.63"/>
+</g>
+<!-- proc~ogeval -->
+<g id="proc~~ogexec~~CallsGraph_node3" class="node">
+<title>proc~ogeval</title>
+<g id="a_proc~~ogexec~~CallsGraph_node3"><a xlink:href="../proc/ogeval.html" xlink:title="optgra%ogeval">
+<polygon fill="#d9534f" stroke="#d9534f" points="355,-319.89 261,-319.89 261,-295.89 355,-295.89 355,-319.89"/>
+<text text-anchor="middle" x="308" y="-305.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogeval</text>
+</a>
+</g>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogeval -->
+<g id="proc~~ogexec~~CallsGraph_edge2" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogeval</title>
+<path fill="none" stroke="#000000" d="M58.65,-155.94C73.11,-173.39 101.92,-205.9 132,-226.89 172.95,-255.48 225.59,-278.25 262.4,-292.28"/>
+<polygon fill="#000000" stroke="#000000" points="261.28,-295.6 271.87,-295.83 263.74,-289.05 261.28,-295.6"/>
+</g>
+<!-- proc~ogopti -->
+<g id="proc~~ogexec~~CallsGraph_node4" class="node">
+<title>proc~ogopti</title>
+<g id="a_proc~~ogexec~~CallsGraph_node4"><a xlink:href="../proc/ogopti.html" xlink:title="optgra%ogopti">
+<polygon fill="#d9534f" stroke="#d9534f" points="224,-155.89 133,-155.89 133,-131.89 224,-131.89 224,-155.89"/>
+<text text-anchor="middle" x="178.5" y="-141.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogopti</text>
+</a>
+</g>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogopti -->
+<g id="proc~~ogexec~~CallsGraph_edge3" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogopti</title>
+<path fill="none" stroke="#000000" d="M96.12,-143.89C104.77,-143.89 113.86,-143.89 122.72,-143.89"/>
+<polygon fill="#000000" stroke="#000000" points="122.95,-147.39 132.95,-143.89 122.95,-140.39 122.95,-147.39"/>
+</g>
+<!-- proc~ogpwri_end -->
+<g id="proc~~ogexec~~CallsGraph_node5" class="node">
+<title>proc~ogpwri_end</title>
+<g id="a_proc~~ogexec~~CallsGraph_node5"><a xlink:href="../proc/ogpwri_end.html" xlink:title="optgra%ogpwri_end">
+<polygon fill="#d9534f" stroke="#d9534f" points="642,-158.89 523,-158.89 523,-134.89 642,-134.89 642,-158.89"/>
+<text text-anchor="middle" x="582.5" y="-144.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogpwri_end</text>
+</a>
+</g>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogpwri_end -->
+<g id="proc~~ogexec~~CallsGraph_edge4" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogpwri_end</title>
+<path fill="none" stroke="#000000" d="M53.9,-131.87C64.29,-108.15 90.98,-55.67 132,-32.89 218.75,15.28 258.91,2.86 355,-21.89 435.87,-42.73 518.75,-99.24 558.06,-128.61"/>
+<polygon fill="#000000" stroke="#000000" points="556.13,-131.54 566.21,-134.78 560.35,-125.96 556.13,-131.54"/>
+</g>
+<!-- proc~ogwrit -->
+<g id="proc~~ogexec~~CallsGraph_node6" class="node">
+<title>proc~ogwrit</title>
+<g id="a_proc~~ogexec~~CallsGraph_node6"><a xlink:href="../proc/ogwrit.html" xlink:title="optgra%ogwrit">
+<polygon fill="#d9534f" stroke="#d9534f" points="483.5,-197.89 392.5,-197.89 392.5,-173.89 483.5,-173.89 483.5,-197.89"/>
+<text text-anchor="middle" x="438" y="-183.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogwrit</text>
+</a>
+</g>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogwrit -->
+<g id="proc~~ogexec~~CallsGraph_edge5" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M62.64,-131.78C107.18,-93.78 251.41,17.12 355,-42.89 400.16,-69.06 422.6,-130.52 431.76,-163.71"/>
+<polygon fill="#000000" stroke="#000000" points="428.48,-164.99 434.38,-173.79 435.25,-163.23 428.48,-164.99"/>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogeval -->
+<g id="proc~~ogexec~~CallsGraph_edge6" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogeval</title>
+<path fill="none" stroke="#000000" d="M190.87,-218.17C205.95,-234.03 233.85,-261.99 261,-281.89 265.15,-284.93 269.69,-287.89 274.24,-290.65"/>
+<polygon fill="#000000" stroke="#000000" points="272.53,-293.7 282.93,-295.7 276.04,-287.65 272.53,-293.7"/>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogwrit -->
+<g id="proc~~ogexec~~CallsGraph_edge10" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M196.31,-217.91C212.13,-228.43 236.93,-242.93 261,-248.89 301.55,-258.94 315.44,-262.33 355,-248.89 380.19,-240.33 403.69,-220.58 419.02,-205.45"/>
+<polygon fill="#000000" stroke="#000000" points="421.77,-207.65 426.25,-198.05 416.76,-202.75 421.77,-207.65"/>
+</g>
+<!-- proc~ogexcl -->
+<g id="proc~~ogexec~~CallsGraph_node7" class="node">
+<title>proc~ogexcl</title>
+<g id="a_proc~~ogexec~~CallsGraph_node7"><a xlink:href="../proc/ogexcl.html" xlink:title="optgra%ogexcl">
+<polygon fill="#d9534f" stroke="#d9534f" points="354,-155.89 262,-155.89 262,-131.89 354,-131.89 354,-155.89"/>
+<text text-anchor="middle" x="308" y="-141.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogexcl</text>
+</a>
+</g>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogexcl -->
+<g id="proc~~ogexec~~CallsGraph_edge7" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogexcl</title>
+<path fill="none" stroke="#000000" d="M202.92,-193.82C219.15,-185.52 241.29,-174.34 261,-164.89 264.18,-163.37 267.5,-161.8 270.83,-160.25"/>
+<polygon fill="#000000" stroke="#000000" points="272.55,-163.31 280.16,-155.94 269.62,-156.95 272.55,-163.31"/>
+</g>
+<!-- proc~ogincl -->
+<g id="proc~~ogexec~~CallsGraph_node8" class="node">
+<title>proc~ogincl</title>
+<g id="a_proc~~ogexec~~CallsGraph_node8"><a xlink:href="../proc/ogincl.html" xlink:title="optgra%ogincl">
+<polygon fill="#d9534f" stroke="#d9534f" points="353,-239.89 263,-239.89 263,-215.89 353,-215.89 353,-239.89"/>
+<text text-anchor="middle" x="308" y="-225.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogincl</text>
+</a>
+</g>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogincl -->
+<g id="proc~~ogexec~~CallsGraph_edge8" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogincl</title>
+<path fill="none" stroke="#000000" d="M225.17,-213.77C234.2,-215.33 243.75,-216.98 253.02,-218.58"/>
+<polygon fill="#000000" stroke="#000000" points="252.48,-222.04 262.93,-220.29 253.67,-215.14 252.48,-222.04"/>
+</g>
+<!-- proc~ogrigt -->
+<g id="proc~~ogexec~~CallsGraph_node11" class="node">
+<title>proc~ogrigt</title>
+<g id="a_proc~~ogexec~~CallsGraph_node11"><a xlink:href="../proc/ogrigt.html" xlink:title="optgra%ogrigt">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="352.5,-197.89 263.5,-197.89 263.5,-173.89 352.5,-173.89 352.5,-197.89"/>
+<text text-anchor="middle" x="308" y="-183.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogrigt</text>
+</a>
+</g>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogrigt -->
+<g id="proc~~ogexec~~CallsGraph_edge9" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogrigt</title>
+<path fill="none" stroke="#000000" d="M225.17,-198.73C234.3,-197.3 243.97,-195.78 253.34,-194.31"/>
+<polygon fill="#000000" stroke="#000000" points="254.02,-197.75 263.35,-192.74 252.93,-190.83 254.02,-197.75"/>
+</g>
+<!-- proc~ogeval&#45;&gt;proc~ogwrit -->
+<g id="proc~~ogexec~~CallsGraph_edge12" class="edge">
+<title>proc~ogeval&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M334.38,-295.63C341.39,-291.7 348.77,-287.03 355,-281.89 382.26,-259.43 407.69,-227.21 422.8,-206.41"/>
+<polygon fill="#000000" stroke="#000000" points="425.84,-208.17 428.8,-198 420.14,-204.11 425.84,-208.17"/>
+</g>
+<!-- proc~ogpwri -->
+<g id="proc~~ogexec~~CallsGraph_node10" class="node">
+<title>proc~ogpwri</title>
+<g id="a_proc~~ogexec~~CallsGraph_node10"><a xlink:href="../proc/ogpwri.html" xlink:title="optgra%ogpwri">
+<polygon fill="#d9534f" stroke="#d9534f" points="485,-279.89 391,-279.89 391,-255.89 485,-255.89 485,-279.89"/>
+<text text-anchor="middle" x="438" y="-265.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogpwri</text>
+</a>
+</g>
+</g>
+<!-- proc~ogeval&#45;&gt;proc~ogpwri -->
+<g id="proc~~ogexec~~CallsGraph_edge11" class="edge">
+<title>proc~ogeval&#45;&gt;proc~ogpwri</title>
+<path fill="none" stroke="#000000" d="M347.4,-295.89C360.32,-291.85 374.91,-287.3 388.5,-283.05"/>
+<polygon fill="#000000" stroke="#000000" points="389.68,-286.35 398.18,-280.02 387.59,-279.67 389.68,-286.35"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogeval -->
+<g id="proc~~ogexec~~CallsGraph_edge13" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogeval</title>
+<path fill="none" stroke="#000000" d="M195.44,-156.07C204.76,-163.7 216.36,-174.1 225,-184.89 245.39,-210.37 242.92,-221.73 261,-248.89 269.95,-262.33 281.05,-276.63 290.11,-287.79"/>
+<polygon fill="#000000" stroke="#000000" points="287.51,-290.14 296.57,-295.64 292.92,-285.69 287.51,-290.14"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogwrit -->
+<g id="proc~~ogexec~~CallsGraph_edge18" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M211.44,-131.85C247.3,-120.2 306.77,-106.5 355,-122.89 380.19,-131.45 403.69,-151.21 419.02,-166.33"/>
+<polygon fill="#000000" stroke="#000000" points="416.76,-169.03 426.25,-173.74 421.77,-164.14 416.76,-169.03"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogexcl -->
+<g id="proc~~ogexec~~CallsGraph_edge14" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogexcl</title>
+<path fill="none" stroke="#000000" d="M224.09,-143.89C232.96,-143.89 242.38,-143.89 251.56,-143.89"/>
+<polygon fill="#000000" stroke="#000000" points="251.78,-147.39 261.78,-143.89 251.78,-140.39 251.78,-147.39"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogincl -->
+<g id="proc~~ogexec~~CallsGraph_edge15" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogincl</title>
+<path fill="none" stroke="#000000" d="M193.21,-156.09C208.86,-169.61 235.59,-191.55 261,-206.89 263.47,-208.38 266.06,-209.83 268.7,-211.23"/>
+<polygon fill="#000000" stroke="#000000" points="267.26,-214.43 277.77,-215.77 270.39,-208.17 267.26,-214.43"/>
+</g>
+<!-- proc~ogleft -->
+<g id="proc~~ogexec~~CallsGraph_node9" class="node">
+<title>proc~ogleft</title>
+<g id="a_proc~~ogexec~~CallsGraph_node9"><a xlink:href="../proc/ogleft.html" xlink:title="optgra%ogleft">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="352,-75.89 264,-75.89 264,-51.89 352,-51.89 352,-75.89"/>
+<text text-anchor="middle" x="308" y="-61.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogleft</text>
+</a>
+</g>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogleft -->
+<g id="proc~~ogexec~~CallsGraph_edge16" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogleft</title>
+<path fill="none" stroke="#000000" d="M197.07,-131.73C213.42,-120.54 238.57,-103.64 261,-89.89 265.79,-86.96 270.92,-83.94 275.96,-81.04"/>
+<polygon fill="#000000" stroke="#000000" points="277.85,-83.99 284.82,-76.01 274.4,-77.9 277.85,-83.99"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogrigt -->
+<g id="proc~~ogexec~~CallsGraph_edge17" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogrigt</title>
+<path fill="none" stroke="#000000" d="M216.04,-155.93C229.91,-160.5 245.89,-165.76 260.56,-170.59"/>
+<polygon fill="#000000" stroke="#000000" points="259.87,-174.05 270.46,-173.86 262.06,-167.4 259.87,-174.05"/>
+</g>
+<!-- proc~ogexcl&#45;&gt;proc~ogwrit -->
+<g id="proc~~ogexec~~CallsGraph_edge19" class="edge">
+<title>proc~ogexcl&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M345.68,-155.93C359.74,-160.54 375.96,-165.87 390.8,-170.73"/>
+<polygon fill="#000000" stroke="#000000" points="389.72,-174.06 400.31,-173.86 391.9,-167.41 389.72,-174.06"/>
+</g>
+<!-- proc~ogincl&#45;&gt;proc~ogwrit -->
+<g id="proc~~ogexec~~CallsGraph_edge20" class="edge">
+<title>proc~ogincl&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M345.68,-215.86C359.74,-211.24 375.96,-205.92 390.8,-201.05"/>
+<polygon fill="#000000" stroke="#000000" points="391.9,-204.37 400.31,-197.93 389.72,-197.72 391.9,-204.37"/>
+</g>
+<!-- proc~ogpwri&#45;&gt;proc~ogpwri_end -->
+<g id="proc~~ogexec~~CallsGraph_edge21" class="edge">
+<title>proc~ogpwri&#45;&gt;proc~ogpwri_end</title>
+<path fill="none" stroke="#000000" d="M453.18,-255.85C478.02,-234.76 529.56,-190.99 559.21,-165.82"/>
+<polygon fill="#000000" stroke="#000000" points="561.59,-168.39 566.95,-159.25 557.06,-163.05 561.59,-168.39"/>
+</g>
+<!-- proc~ogpwri_start -->
+<g id="proc~~ogexec~~CallsGraph_node12" class="node">
+<title>proc~ogpwri_start</title>
+<g id="a_proc~~ogexec~~CallsGraph_node12"><a xlink:href="../proc/ogpwri_start.html" xlink:title="optgra%ogpwri_start">
+<polygon fill="#d9534f" stroke="#d9534f" points="644,-279.89 521,-279.89 521,-255.89 644,-255.89 644,-279.89"/>
+<text text-anchor="middle" x="582.5" y="-265.49" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogpwri_start</text>
+</a>
+</g>
+</g>
+<!-- proc~ogpwri&#45;&gt;proc~ogpwri_start -->
+<g id="proc~~ogexec~~CallsGraph_edge22" class="edge">
+<title>proc~ogpwri&#45;&gt;proc~ogpwri_start</title>
+<path fill="none" stroke="#000000" d="M485.27,-267.89C493.44,-267.89 502.12,-267.89 510.79,-267.89"/>
+<polygon fill="#000000" stroke="#000000" points="510.93,-271.39 520.93,-267.89 510.93,-264.39 510.93,-271.39"/>
+</g>
+</g>
+</svg>
+</div>                <script>
+                  var panprocogexecCallsGraph = svgPanZoom('#procogexecCallsGraph',
+                    {zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,}
+                  );
+                </script>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    
+    
+
+    
+    
+
+
+
+    
+    <section>
+    <h2><span class="anchor" id="src"></span>Source Code</h2>
+    <div class="hl codehilite"><pre><span></span><span class="w">   </span><span class="k">subroutine </span><span class="n">ogexec</span><span class="p">(</span><span class="n">me</span><span class="p">,</span><span class="n">Valvar</span><span class="p">,</span><span class="n">Valcon</span><span class="p">,</span><span class="n">Finopt</span><span class="p">,</span><span class="n">Finite</span><span class="p">)</span>
+<span class="w">      </span><span class="c">!! Main routine.</span>
+<span class="w">      </span><span class="c">!!</span>
+<span class="w">      </span><span class="c">!! 2008/01/16 | J. SCHOENMAEKERS | NEW</span>
+
+<span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">optgra</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">me</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">inout</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Valvar</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">)</span><span class="w"> </span><span class="c">!! VARIABLES VALUE</span>
+<span class="w">                                                  </span><span class="c">!! -&gt; NOT SCALED</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Valcon</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c">!! CONSTRAINTS VALUE (1:NUMCON)</span>
+<span class="w">                                                  </span><span class="c">!! MERIT       VALUE (1+NUMCON)</span>
+<span class="w">                                                  </span><span class="c">!! -&gt; NOT SCALED</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Finopt</span><span class="w"> </span><span class="c">!! TERMINATION STATUS</span>
+<span class="w">                                        </span><span class="c">!!</span>
+<span class="w">                                        </span><span class="c">!!  *  1 =     MATCHED &amp;     OPTIMAL</span>
+<span class="w">                                        </span><span class="c">!!  *  2 =     MATCHED &amp; NOT OPTIMAL</span>
+<span class="w">                                        </span><span class="c">!!  *  3 = NOT MATCHED &amp; NOT OPTIMAL</span>
+<span class="w">                                        </span><span class="c">!!  *  4 = NOT FEASIBL &amp; NOT OPTIMAL</span>
+<span class="w">                                        </span><span class="c">!!  * -1 = Fatal error (constraints singular)</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Finite</span><span class="w"> </span><span class="c">!! ?</span>
+
+<span class="w">      </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="n">str_len</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">str</span>
+<span class="w">      </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="n">name_len</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nam</span>
+<span class="w">      </span><span class="kt">integer</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">finish</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">itecor</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">iteopt</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                     </span><span class="n">var</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">typ</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">numvio</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                     </span><span class="n">itediv</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">itecnv</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">sca</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">red</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">der</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">fac</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">old</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">convio</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                  </span><span class="n">varacc</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">cosnew</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">cosold</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">varsav</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">meamer</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                  </span><span class="n">conerr</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">desnor</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">norerr</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">meaerr</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(:)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">varsum</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(:)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">varcor</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(:)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">concor</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(:,:)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">conder_tmp</span><span class="w"> </span><span class="c">!! JW: created to avoid &quot;array temporary&quot; warning</span>
+<span class="w">      </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">error</span>
+
+<span class="w">      </span><span class="c">! initialize:</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">varsum</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">varcor</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">concor</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">      </span><span class="k">allocate</span><span class="w"> </span><span class="p">(</span><span class="n">conder_tmp</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">))</span>
+
+<span class="w">      </span><span class="c">! ======================================================================</span>
+<span class="w">      </span><span class="c">! GENERAL</span>
+<span class="w">      </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">      </span><span class="c">! LOGLEV = 2</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;OPTGRA START&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="c">! initialize with NOT MATCHED &amp; NOT OPTIMAL</span>
+<span class="w">      </span><span class="n">itecor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">iteopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">meaerr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="n">meamer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="n">itediv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">itecnv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="c">!me%Conopt = 0</span>
+<span class="w">      </span><span class="n">concor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="n">varcor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="n">desnor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Varstp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varsnd</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="n">cosnew</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="k">do </span><span class="n">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span>
+<span class="w">         </span><span class="n">varsum</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">         </span><span class="n">varcor</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">      </span><span class="k">end do</span>
+<span class="w">      </span><span class="c">! ======================================================================</span>
+<span class="w">      </span><span class="c">! EQUALTIY CONSTRAINTS IN ACTIVE SET</span>
+<span class="w">      </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Numact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="k">do </span><span class="n">con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span>
+<span class="c">!        IF (CONTYP(CON) == -2) CYCLE</span>
+<span class="w">         </span><span class="n">nam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Constr</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="nb">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conlen</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="s2">&quot;CON/PRI=&quot;</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conpri</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">nam</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">)</span>
+<span class="w">         </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Consca</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">1.0e+09_wp</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         elseif</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">==-</span><span class="mi">2</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span>
+<span class="w">         </span><span class="k">end if</span>
+<span class="k">      end do</span>
+<span class="k">      </span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">3</span>
+<span class="w">      </span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">3</span>
+<span class="w">      </span><span class="c">! ======================================================================</span>
+<span class="w">      </span><span class="c">! SCALE VARIABLES</span>
+<span class="w">      </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">      </span><span class="k">do </span><span class="n">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Valvar</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="o">/</span><span class="n">me</span><span class="p">%</span><span class="n">Varsca</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end do</span>
+<span class="w">      </span><span class="c">! ======================================================================</span>
+<span class="w">      </span><span class="c">! HEADER FOR TABLE</span>
+<span class="w">      </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Tablev</span><span class="o">&gt;=</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Tablun</span><span class="p">,</span><span class="s1">&#39;(&quot;ITER&quot;,1X,&quot;OPT&quot;,1X,*(1X,I10))&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">var</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="n">con</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="p">)</span>
+
+<span class="w">      </span><span class="n">main</span><span class="p">:</span><span class="w"> </span><span class="k">do</span>
+<span class="k">         </span><span class="n">inner</span><span class="p">:</span><span class="w"> </span><span class="k">do</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="c">! IF (NUMITE &gt;= 52) MATLEV = 3</span>
+<span class="w">            </span><span class="c">! IF (NUMITE &gt;= 55) MATLEV = 2</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="c">! NEW ITERATION</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="o">&gt;=</span><span class="n">me</span><span class="p">%</span><span class="n">Corite</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">itecor</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">! correction limit reached</span>
+<span class="w">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="c">! not matched and not optimal</span>
+<span class="w">               </span><span class="n">Finite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="c">! FINITE=Number of iterations at which termination occurred</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">               </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;OPTGRA: Converged: not ITERAT=&quot;,2I4,2D11.3)&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                        </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">conerr</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">desnor</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+
+<span class="w">               </span><span class="c">! Final Pygmo output</span>
+<span class="w">               </span><span class="c">! TODO: can this final fitness call be avoided (just for output)?</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Pygfla</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="c">! pygmo flag in COMMON: no covergence</span>
+<span class="w">               </span><span class="k">call </span><span class="n">evaluation_func_and_der</span><span class="p">()</span>
+<span class="w">               </span><span class="k">exit </span><span class="n">main</span>
+<span class="w">            </span><span class="k">elseif</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="o">&gt;=</span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="o">-</span><span class="n">itecor</span><span class="o">&gt;=</span><span class="n">me</span><span class="p">%</span><span class="n">Optite</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">itecor</span><span class="o">/=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">               </span><span class="c">! Maximum iteration reached or after correction phase</span>
+<span class="w">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c">! matched, but not optimal</span>
+<span class="w">               </span><span class="n">Finite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iteopt</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">varcor</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">concor</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">               </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;OPTGRA: Converged: mat ITERAT=&quot;,2I4,2D11.3)&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                        </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">conerr</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">desnor</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogpwri_end</span><span class="p">(</span><span class="o">-</span><span class="n">Valcon</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="n">numvio</span><span class="p">,</span><span class="n">convio</span><span class="p">)</span>
+
+<span class="w">               </span><span class="c">! Final Pygmo output</span>
+<span class="w">               </span><span class="c">! TODO: can this final fitness call be avoided (just for output)?</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Pygfla</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c">! pygmo flag in COMMON: constraints matched</span>
+<span class="w">               </span><span class="k">call </span><span class="n">evaluation_func_and_der</span><span class="p">()</span>
+<span class="w">               </span><span class="k">exit </span><span class="n">main</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="c">! new iteration</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;ITERAT=&quot;,I5)&#39;</span><span class="p">)</span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="c">! GET VALUES AND GRADIENTS</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">&lt;=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! No sensitivity analysis, only optimisation</span>
+<span class="w">               </span><span class="k">call </span><span class="n">evaluation_func_and_der</span><span class="p">()</span>
+<span class="w">            </span><span class="k">elseif</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">==+</span><span class="mi">1</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">==+</span><span class="mi">3</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! sens. WITH CONSTRAINT CALCULATION</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senvar</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogeval</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">conder_tmp</span><span class="p">)</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conder_tmp</span>
+<span class="w">            </span><span class="k">elseif</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">==+</span><span class="mi">2</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">==+</span><span class="mi">4</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">! sens. WITH CONSTRAINT BIAS</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senvar</span>
+<span class="w">               </span><span class="k">do </span><span class="n">con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">                  </span><span class="n">sca</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Consca</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">                  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">==-</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">sca</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">sca</span>
+<span class="w">                  </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Sencon</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Sendel</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">/</span><span class="n">sca</span>
+<span class="w">               </span><span class="k">end do</span>
+<span class="k">            end if</span>
+<span class="k">            if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">==-</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">  </span><span class="c">! intialisation of sensitivity analysis</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Senvar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Sencon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="c">! Do finite-difference check of provided gradients if VARDER=-1 (documented options are 0,1,2,3)</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varder</span><span class="o">==-</span><span class="mi">1</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">&lt;=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">me</span><span class="p">%</span><span class="n">Conred</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">,:)</span><span class="w"> </span><span class="c">! CONDER=current constraint derivatives</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogeval</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">conder_tmp</span><span class="p">)</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conder_tmp</span>
+<span class="w">               </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;GRADIENT CHECK&quot;)&#39;</span><span class="p">)</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">               </span><span class="k">do </span><span class="n">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span>
+<span class="w">                  </span><span class="k">do </span><span class="n">con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">                     </span><span class="n">fac</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varsca</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="o">/</span><span class="n">me</span><span class="p">%</span><span class="n">Consca</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">                     </span><span class="n">fac</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_wp</span>
+<span class="w">                     </span><span class="n">der</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="n">var</span><span class="p">)</span><span class="o">*</span><span class="n">fac</span>
+<span class="w">                     </span><span class="n">red</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conred</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="n">var</span><span class="p">)</span><span class="o">*</span><span class="n">fac</span>
+<span class="w">                     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">der</span><span class="p">)</span><span class="o">&lt;</span><span class="mf">1.0e-6_wp</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">red</span><span class="p">)</span><span class="o">&lt;</span><span class="mf">1.0e-6_wp</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span>
+<span class="k">                     if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">der</span><span class="o">-</span><span class="n">red</span><span class="p">)</span><span class="o">&lt;</span><span class="mf">1.0e-2_wp</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span>
+<span class="k">                     if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">der</span><span class="o">/=</span><span class="mf">0.0_wp</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">                        </span><span class="n">fac</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">red</span><span class="o">/</span><span class="n">der</span>
+<span class="w">                     </span><span class="k">else</span>
+<span class="k">                        </span><span class="n">fac</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span>
+<span class="w">                     </span><span class="k">end if</span>
+<span class="k">                     if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">fac</span><span class="o">-</span><span class="mf">1.0_wp</span><span class="p">)</span><span class="o">&lt;</span><span class="mf">1.0e-2_wp</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span>
+<span class="k">                     write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;VAR/CON/ANA/NUM/A2N=&quot;,2I4,3(1X,D13.6))&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">con</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">red</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">der</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">fac</span>
+<span class="w">                     </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">                     </span><span class="n">nam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varstr</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">                     </span><span class="nb">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varlen</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">                     </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;      VAR=&quot;,A,1X,D13.6)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">nam</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="o">*</span><span class="n">me</span><span class="p">%</span><span class="n">Varsca</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">                     </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">                     </span><span class="n">nam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Constr</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">                     </span><span class="nb">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conlen</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">                     </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;      CON=&quot;,A,1X,D13.6)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">nam</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">*</span><span class="n">me</span><span class="p">%</span><span class="n">Consca</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">                     </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">                  </span><span class="k">end do</span>
+<span class="k">               end do</span>
+<span class="c">!              CONDER(1:NUMCON+1,:) = CONRED(1:NUMCON+1,:)</span>
+<span class="c">!              GOTO 9999</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="n">me</span><span class="p">%</span><span class="n">Sender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="w">  </span><span class="c">! SENDER=derivatives for sensitivity analysis???</span>
+<span class="w">            </span><span class="k">do </span><span class="n">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span>
+<span class="w">               </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Vartyp</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="o">/=</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span><span class="w"> </span><span class="c">! VARTYP=1 are sensitivity parameters, VARTYP=0 free params</span>
+<span class="c">!              WRITE (STR,*) &quot;VAR=&quot;,VAR,VARVAL(VAR)*VARSCA(VAR)</span>
+<span class="c">!              CALL me%ogwrit (2,STR)</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w"> </span><span class="c">! zero derivatives of free parameters???</span>
+<span class="w">            </span><span class="k">end do</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="o">==</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">me</span><span class="p">%</span><span class="n">Vargrd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span>
+<span class="w">            </span><span class="k">else</span>
+<span class="k">               </span><span class="n">me</span><span class="p">%</span><span class="n">Vargrd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varref</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="k">            </span><span class="n">me</span><span class="p">%</span><span class="n">Varref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span>
+<span class="w">            </span><span class="n">me</span><span class="p">%</span><span class="n">Conref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="n">varacc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_wp</span><span class="w"> </span><span class="c">! initialise ITERATION SCALED DISTANCE ACCUMULATED</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="n">cosold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cosnew</span>
+<span class="w">            </span><span class="n">cosnew</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c">! cost function value</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;OPTGRA: VALCOS=&quot;,D15.8,1X,D15.8)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">cosnew</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">cosnew</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cosold</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">            </span><span class="c">! ======================================================================</span>
+<span class="w">            </span><span class="c">! CONSTRAINTS CORRECTION PART</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogcorr</span><span class="p">(</span><span class="n">varacc</span><span class="p">,</span><span class="n">finish</span><span class="p">,</span><span class="n">conerr</span><span class="p">,</span><span class="n">norerr</span><span class="p">,</span><span class="n">error</span><span class="p">)</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">               </span><span class="k">return</span>
+<span class="k">            end if</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Tablev</span><span class="o">&gt;=</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Tablun</span><span class="p">,</span><span class="s1">&#39;(I4,1X,&quot;COR&quot;,1X,*(1X,D10.3))&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">(</span><span class="n">var</span><span class="p">),</span><span class="n">var</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">con</span><span class="p">),</span><span class="n">con</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="p">)</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">/=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">finish</span><span class="o">/=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">exit </span><span class="n">inner</span>
+<span class="w">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">               </span><span class="k">exit </span><span class="n">main</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">finish</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">me</span><span class="p">%</span><span class="n">Numact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">               </span><span class="n">old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meaerr</span>
+<span class="w">               </span><span class="n">itediv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">itediv</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">               </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">itediv</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Divite</span><span class="p">)</span>
+<span class="w">               </span><span class="n">meaerr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">meaerr</span><span class="o">*</span><span class="p">(</span><span class="n">num</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">norerr</span><span class="p">)</span><span class="o">/</span><span class="n">num</span>
+<span class="c">!              WRITE (STR,*) &quot;MEAERR=&quot;,MEAERR</span>
+<span class="c">!              CALL me%ogwrit (2,STR)</span>
+<span class="w">               </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">itediv</span><span class="o">&lt;</span><span class="n">me</span><span class="p">%</span><span class="n">Divite</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">meaerr</span><span class="o">&lt;=</span><span class="n">old</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span>
+<span class="k">               </span><span class="n">finish</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">finish</span><span class="o">==-</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">               </span><span class="n">Finite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">               </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;OPTGRA: Converged: unf ITERAT=&quot;,2I4,2D11.3)&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                        </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">conerr</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">desnor</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+
+<span class="w">               </span><span class="c">! Final Pygmo output</span>
+<span class="w">               </span><span class="c">! TODO: can this final fitness call be avoided (just for output)?</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Pygfla</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="c">! pygmo flag in COMMON: infeasible</span>
+<span class="w">               </span><span class="k">call </span><span class="n">evaluation_func_and_der</span><span class="p">()</span>
+<span class="w">               </span><span class="k">exit </span><span class="n">main</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="n">itediv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">            </span><span class="n">iteopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">itecor</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">concor</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">varcor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span>
+<span class="w">               </span><span class="n">concor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="k">            if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">itecor</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">itecor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span>
+<span class="w">            </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">            </span><span class="n">old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meamer</span>
+<span class="w">            </span><span class="n">itecnv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">itecnv</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">            </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">min</span><span class="p">(</span><span class="n">itecnv</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Cnvite</span><span class="p">)</span>
+<span class="w">            </span><span class="n">meamer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">meamer</span><span class="o">*</span><span class="p">(</span><span class="n">num</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">concor</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="n">num</span>
+<span class="c">!           WRITE (STR,*) &quot;MEAMER=&quot;,ITECNV,NUM,MEAMER,OLD,OLD/MEAMER</span>
+<span class="c">!           CALL me%ogwrit (-1,STR)</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">itecnv</span><span class="o">&gt;=</span><span class="n">me</span><span class="p">%</span><span class="n">Cnvite</span><span class="w"> </span><span class="p">.</span><span class="nb">and</span><span class="p">.</span><span class="w"> </span><span class="n">meamer</span><span class="o">&lt;</span><span class="n">old</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">               </span><span class="n">Finite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iteopt</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">varcor</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">concor</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">               </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;OPTGRA: Converged: mat ITERAT=&quot;,2I4,2D11.3)&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                        </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">conerr</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">desnor</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+
+<span class="w">               </span><span class="c">! Final Pygmo output</span>
+<span class="w">               </span><span class="c">! TODO: can this final fitness call be avoided (just for output)?</span>
+<span class="w">               </span><span class="n">me</span><span class="p">%</span><span class="n">Pygfla</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c">! pygmo flag in COMMON: matched</span>
+<span class="w">               </span><span class="k">call </span><span class="n">evaluation_func_and_der</span><span class="p">()</span>
+<span class="w">               </span><span class="k">exit </span><span class="n">main</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="k">            exit </span><span class="n">inner</span>
+<span class="w">         </span><span class="k">end do </span><span class="n">inner</span>
+
+<span class="w">         </span><span class="c">! ======================================================================</span>
+<span class="w">         </span><span class="c">! OPTIMIZATION PART</span>
+<span class="w">         </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">&lt;+</span><span class="mi">3</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            </span><span class="n">varsav</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varmax</span>
+<span class="w">            </span><span class="n">me</span><span class="p">%</span><span class="n">Varmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varmax</span><span class="o">*</span><span class="mi">1</span><span class="mf">0.0e-1_wp</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogopti</span><span class="p">(</span><span class="n">varacc</span><span class="p">,</span><span class="n">finish</span><span class="p">,</span><span class="n">desnor</span><span class="p">,</span><span class="n">error</span><span class="p">)</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">               </span><span class="k">return</span>
+<span class="k">            end if</span>
+<span class="k">            </span><span class="n">me</span><span class="p">%</span><span class="n">Varmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">varsav</span>
+<span class="w">         </span><span class="k">end if</span>
+<span class="w">         </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Senopt</span><span class="o">/=</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">finish</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;OPTGRA sensitivity converged: not&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="k">else</span>
+<span class="k">               </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">               </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;OPTGRA sensitivity converged: yes&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="k">            exit </span><span class="n">main</span>
+<span class="w">         </span><span class="k">end if</span>
+<span class="w">         </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">finish</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">cycle </span><span class="n">main</span>
+
+<span class="w">         </span><span class="c">! ======================================================================</span>
+<span class="w">         </span><span class="c">! NOT CONVERGED</span>
+<span class="w">         </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">varacc</span><span class="o">/=</span><span class="mf">0.0_wp</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">cycle </span><span class="n">main</span>
+
+<span class="w">         </span><span class="c">! ======================================================================</span>
+<span class="w">         </span><span class="c">! CONVERGED</span>
+<span class="w">         </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">         </span><span class="n">Finopt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">         </span><span class="n">Finite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span>
+<span class="w">         </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">         </span><span class="k">write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(&quot;OPTGRA: Converged: yes ITERAT=&quot;,2I4,2D11.3)&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                  </span><span class="n">me</span><span class="p">%</span><span class="n">Numite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Maxite</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">conerr</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">desnor</span>
+<span class="w">         </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">         </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="w">         </span><span class="c">! Final Pygmo output</span>
+<span class="w">         </span><span class="c">! TODO: can this final fitness call be avoided (just for output)?</span>
+<span class="w">         </span><span class="n">me</span><span class="p">%</span><span class="n">Pygfla</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c">! covergence</span>
+<span class="w">         </span><span class="k">call </span><span class="n">evaluation_func_and_der</span><span class="p">()</span>
+<span class="w">         </span><span class="k">exit </span><span class="n">main</span>
+
+<span class="w">      </span><span class="k">end do </span><span class="n">main</span>
+
+<span class="c">!     WRITE (STR,*) &quot;DIF=&quot;,NORM2(VARVAL-VARREF)</span>
+<span class="c">!     CALL me%ogwrit (1,STR)</span>
+<span class="w">      </span><span class="c">! ======================================================================</span>
+<span class="w">      </span><span class="c">! DESCALE VARIABLES</span>
+<span class="w">      </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="c">!     CALL OGWMAT (3)</span>
+<span class="c">!     CALL me%ogeval (VARVAL, VALCON, 0, CONDER)</span>
+<span class="w">      </span><span class="k">do </span><span class="n">var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numvar</span>
+<span class="w">         </span><span class="n">Valvar</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="o">*</span><span class="n">me</span><span class="p">%</span><span class="n">Varsca</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+<span class="w">      </span><span class="k">end do</span>
+<span class="c">!     IF (SENOPT /= 0) THEN</span>
+<span class="c">!         CALL me%ogeval (VARVAL, VALCON, 0, CONDER)</span>
+<span class="c">!     end if</span>
+<span class="w">      </span><span class="c">! ======================================================================</span>
+<span class="w">      </span><span class="c">! DESCALE VALUES</span>
+<span class="w">      </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">      </span><span class="k">do </span><span class="n">con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">         </span><span class="n">typ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="n">sca</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Consca</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">typ</span><span class="o">==-</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="n">sca</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">sca</span>
+<span class="w">         </span><span class="n">Valcon</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">*</span><span class="n">sca</span>
+<span class="w">      </span><span class="k">end do</span>
+<span class="w">      </span><span class="c">! ======================================================================</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;STATUS OF CONSTRAINTS:&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot; ACT  PAS  NON COST___VAL CONSTRAINT&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">do </span><span class="n">con</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Contyp</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">==-</span><span class="mi">2</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span>
+<span class="k">         </span><span class="n">nam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Constr</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="nb">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conlen</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">(</span><span class="n">con</span><span class="p">)</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;( I4,5X,6X,D10.3,1X,A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">con</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">nam</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">)</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">         </span><span class="k">elseif</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;( 5X,I4,6X,D10.3,1X,A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">con</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">nam</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">)</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">         </span><span class="k">elseif</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">me</span><span class="p">%</span><span class="n">Conact</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">            write</span><span class="w"> </span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="s1">&#39;(10X,I4,1X,D10.3,1X,A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">con</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">nam</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">)</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">str</span><span class="p">)</span>
+<span class="w">         </span><span class="k">end if</span>
+<span class="k">      end do</span>
+
+<span class="k">      deallocate</span><span class="w"> </span><span class="p">(</span><span class="n">varsum</span><span class="p">)</span>
+<span class="w">      </span><span class="k">deallocate</span><span class="w"> </span><span class="p">(</span><span class="n">varcor</span><span class="p">)</span>
+<span class="w">      </span><span class="k">deallocate</span><span class="w"> </span><span class="p">(</span><span class="n">concor</span><span class="p">)</span>
+<span class="w">      </span><span class="k">deallocate</span><span class="w"> </span><span class="p">(</span><span class="n">conder_tmp</span><span class="p">)</span>
+<span class="w">      </span><span class="c">! ----------------------------------------------------------------------</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;OPTGRA END&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogwrit</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">contains</span>
+
+<span class="k">         subroutine </span><span class="n">evaluation_func_and_der</span><span class="p">()</span>
+<span class="w">            </span><span class="c">!! evaluate the function and derivatives</span>
+<span class="w">            </span><span class="k">call </span><span class="n">me</span><span class="p">%</span><span class="n">ogeval</span><span class="p">(</span><span class="n">me</span><span class="p">%</span><span class="n">Varval</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Conval</span><span class="p">,</span><span class="n">me</span><span class="p">%</span><span class="n">Varder</span><span class="p">,</span><span class="n">conder_tmp</span><span class="p">)</span>
+<span class="w">            </span><span class="n">me</span><span class="p">%</span><span class="n">Conder</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">me</span><span class="p">%</span><span class="n">Numcon</span><span class="o">+</span><span class="mi">1</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conder_tmp</span>
+<span class="w">         </span><span class="k">end subroutine </span><span class="n">evaluation_func_and_der</span>
+
+<span class="w">   </span><span class="k">end subroutine </span><span class="n">ogexec</span>
+</pre></div>
+
+    </section>
+    <br>
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              optgra
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

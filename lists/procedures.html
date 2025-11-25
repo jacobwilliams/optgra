@@ -1,0 +1,612 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="A gradient descent algorithm specifically designed for nearlinear constrained problems">
+    <meta name="author" content="Jacob Williams" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>All Procedures &ndash; optgra
+</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">optgra </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../sourcefile/optgra.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12" id='text'>
+			 <h1>Procedures</h1>
+			 <table class="table table-striped">
+			 <thead><tr><th>Procedure</th><th>Location</th><th>Procedure Type</th><th>Description</th></tr></thead>
+			 <tbody>
+			   <tr>
+                 <td><a href='../proc/initialize.html'>initialize</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Initialize the class. This should be the first routine called.</p><a href="../proc/initialize.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogclos.html'>ogclos</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>DEALLOCATION OF ARRAYS</p><a href="../proc/ogclos.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogcorr.html'>ogcorr</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>CORRECTION PART</p><a href="../proc/ogcorr.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogeval.html'>ogeval</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>COMPUTES SCALED CONTRAINTS+MERIT AND DERIVATIVES
+FROM     SCALED VARIABLES</p><a href="../proc/ogeval.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogexcl.html'>ogexcl</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>REMOVE CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES</p><a href="../proc/ogexcl.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogexec.html'>ogexec</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Main routine.</p><a href="../proc/ogexec.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/oggsst.html'>oggsst</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>NEAR-LINEAR OPTIMIZATION TOOL SENSITIVITY ANALYSIS</p><a href="../proc/oggsst.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogincl.html'>ogincl</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>ADDS CONSTRAINT TO ACTIVE SET AND REDUCES DERIVATIVES</p><a href="../proc/ogincl.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogleft.html'>ogleft</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Function</td>
+                 <td><p>LEFT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
+AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../proc/ogleft.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogopti.html'>ogopti</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>OPTIMIZATION PART</p><a href="../proc/ogopti.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogpwri.html'>ogpwri</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>WRITE OPTIMIZATION LOG IN PYGMO FORMAT</p><a href="../proc/ogpwri.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogpwri_end.html'>ogpwri_end</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>WRITE OPTIMIZATION END RESULT IN PYGMO FORMAT</p><a href="../proc/ogpwri_end.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogpwri_start.html'>ogpwri_start</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>WRITE OPTIMIZATION LOG IN PYGMO FORMAT</p><a href="../proc/ogpwri_start.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogrigt.html'>ogrigt</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Function</td>
+                 <td><p>RIGHT-MULTIPLIES VECTOR LOWER TRIANGULAR MATRIX OBTAINED BY REDUCTION
+AND SUBSEQUENT INVERSION OF DERIVATIVES OF ACTIVE CONSTRAINTS</p><a href="../proc/ogrigt.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogsens.html'>ogsens</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>NEAR-LINEAR OPTIMIZATION TOOL SENSITIVITY ANALYSIS</p><a href="../proc/ogsens.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogssst.html'>ogssst</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>NEAR-LINEAR OPTIMIZATION TOOL SENSITIVITY ANALYSIS</p><a href="../proc/ogssst.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/ogwrit.html'>ogwrit</a></td>
+                 <td><a href='../module/optgra_module.html'>optgra_module</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Write a message to the log.</p><a href="../proc/ogwrit.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			 </tbody></table>
+             <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: call~~graph~~CallGraph Pages: 1 -->
+<svg id="callgraphCallGraph" width="660pt" height="396pt"
+ viewBox="0.00 0.00 660.00 396.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="call~~graph~~CallGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 392)">
+<title>call~~graph~~CallGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-392 656,-392 656,4 -4,4"/>
+<!-- proc~initialize -->
+<g id="call~~graph~~CallGraph_node1" class="node">
+<title>proc~initialize</title>
+<g id="a_call~~graph~~CallGraph_node1"><a xlink:href="../proc/initialize.html" xlink:title="optgra%initialize">
+<polygon fill="#d9534f" stroke="#d9534f" points="102,-24 0,-24 0,0 102,0 102,-24"/>
+<text text-anchor="middle" x="51" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%initialize</text>
+</a>
+</g>
+</g>
+<!-- proc~ogclos -->
+<g id="call~~graph~~CallGraph_node2" class="node">
+<title>proc~ogclos</title>
+<g id="a_call~~graph~~CallGraph_node2"><a xlink:href="../proc/ogclos.html" xlink:title="optgra%ogclos">
+<polygon fill="#d9534f" stroke="#d9534f" points="231.5,-24 139.5,-24 139.5,0 231.5,0 231.5,-24"/>
+<text text-anchor="middle" x="185.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogclos</text>
+</a>
+</g>
+</g>
+<!-- proc~initialize&#45;&gt;proc~ogclos -->
+<g id="call~~graph~~CallGraph_edge1" class="edge">
+<title>proc~initialize&#45;&gt;proc~ogclos</title>
+<path fill="none" stroke="#000000" d="M102.09,-12C110.84,-12 119.98,-12 128.86,-12"/>
+<polygon fill="#000000" stroke="#000000" points="129.13,-15.5 139.13,-12 129.13,-8.5 129.13,-15.5"/>
+</g>
+<!-- proc~ogcorr -->
+<g id="call~~graph~~CallGraph_node3" class="node">
+<title>proc~ogcorr</title>
+<g id="a_call~~graph~~CallGraph_node3"><a xlink:href="../proc/ogcorr.html" xlink:title="optgra%ogcorr">
+<polygon fill="#d9534f" stroke="#d9534f" points="232,-268 139,-268 139,-244 232,-244 232,-268"/>
+<text text-anchor="middle" x="185.5" y="-253.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogcorr</text>
+</a>
+</g>
+</g>
+<!-- proc~ogeval -->
+<g id="call~~graph~~CallGraph_node4" class="node">
+<title>proc~ogeval</title>
+<g id="a_call~~graph~~CallGraph_node4"><a xlink:href="../proc/ogeval.html" xlink:title="optgra%ogeval">
+<polygon fill="#d9534f" stroke="#d9534f" points="363,-348 269,-348 269,-324 363,-324 363,-348"/>
+<text text-anchor="middle" x="316" y="-333.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogeval</text>
+</a>
+</g>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogeval -->
+<g id="call~~graph~~CallGraph_edge2" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogeval</title>
+<path fill="none" stroke="#000000" d="M204.31,-268.14C220.87,-279.31 246.34,-296.2 269,-310 273.8,-312.92 278.93,-315.93 283.97,-318.83"/>
+<polygon fill="#000000" stroke="#000000" points="282.41,-321.97 292.84,-323.86 285.87,-315.88 282.41,-321.97"/>
+</g>
+<!-- proc~ogexcl -->
+<g id="call~~graph~~CallGraph_node5" class="node">
+<title>proc~ogexcl</title>
+<g id="a_call~~graph~~CallGraph_node5"><a xlink:href="../proc/ogexcl.html" xlink:title="optgra%ogexcl">
+<polygon fill="#d9534f" stroke="#d9534f" points="362,-226 270,-226 270,-202 362,-202 362,-226"/>
+<text text-anchor="middle" x="316" y="-211.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogexcl</text>
+</a>
+</g>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogexcl -->
+<g id="call~~graph~~CallGraph_edge3" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogexcl</title>
+<path fill="none" stroke="#000000" d="M223.32,-243.96C237.44,-239.35 253.73,-234.03 268.62,-229.16"/>
+<polygon fill="#000000" stroke="#000000" points="269.75,-232.47 278.17,-226.04 267.58,-225.82 269.75,-232.47"/>
+</g>
+<!-- proc~ogincl -->
+<g id="call~~graph~~CallGraph_node8" class="node">
+<title>proc~ogincl</title>
+<g id="a_call~~graph~~CallGraph_node8"><a xlink:href="../proc/ogincl.html" xlink:title="optgra%ogincl">
+<polygon fill="#d9534f" stroke="#d9534f" points="361,-268 271,-268 271,-244 361,-244 361,-268"/>
+<text text-anchor="middle" x="316" y="-253.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogincl</text>
+</a>
+</g>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogincl -->
+<g id="call~~graph~~CallGraph_edge4" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogincl</title>
+<path fill="none" stroke="#000000" d="M232.17,-256C241.38,-256 251.16,-256 260.64,-256"/>
+<polygon fill="#000000" stroke="#000000" points="260.77,-259.5 270.77,-256 260.77,-252.5 260.77,-259.5"/>
+</g>
+<!-- proc~ogrigt -->
+<g id="call~~graph~~CallGraph_node14" class="node">
+<title>proc~ogrigt</title>
+<g id="a_call~~graph~~CallGraph_node14"><a xlink:href="../proc/ogrigt.html" xlink:title="optgra%ogrigt">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="360.5,-146 271.5,-146 271.5,-122 360.5,-122 360.5,-146"/>
+<text text-anchor="middle" x="316" y="-131.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogrigt</text>
+</a>
+</g>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogrigt -->
+<g id="call~~graph~~CallGraph_edge5" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogrigt</title>
+<path fill="none" stroke="#000000" d="M218.64,-243.87C223.68,-241.31 228.65,-238.35 233,-235 240.99,-228.84 277.77,-182.09 299.26,-154.4"/>
+<polygon fill="#000000" stroke="#000000" points="302.29,-156.2 305.64,-146.15 296.75,-151.92 302.29,-156.2"/>
+</g>
+<!-- proc~ogwrit -->
+<g id="call~~graph~~CallGraph_node17" class="node">
+<title>proc~ogwrit</title>
+<g id="a_call~~graph~~CallGraph_node17"><a xlink:href="../proc/ogwrit.html" xlink:title="optgra%ogwrit">
+<polygon fill="#d9534f" stroke="#d9534f" points="491.5,-247 400.5,-247 400.5,-223 491.5,-223 491.5,-247"/>
+<text text-anchor="middle" x="446" y="-232.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogwrit</text>
+</a>
+</g>
+</g>
+<!-- proc~ogcorr&#45;&gt;proc~ogwrit -->
+<g id="call~~graph~~CallGraph_edge6" class="edge">
+<title>proc~ogcorr&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M224.14,-268.09C260.19,-277.89 315.9,-288.36 363,-277 382.89,-272.2 403.37,-261.72 418.89,-252.42"/>
+<polygon fill="#000000" stroke="#000000" points="420.76,-255.38 427.41,-247.14 417.07,-249.43 420.76,-255.38"/>
+</g>
+<!-- proc~ogpwri -->
+<g id="call~~graph~~CallGraph_node11" class="node">
+<title>proc~ogpwri</title>
+<g id="a_call~~graph~~CallGraph_node11"><a xlink:href="../proc/ogpwri.html" xlink:title="optgra%ogpwri">
+<polygon fill="#d9534f" stroke="#d9534f" points="493,-348 399,-348 399,-324 493,-324 493,-348"/>
+<text text-anchor="middle" x="446" y="-333.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogpwri</text>
+</a>
+</g>
+</g>
+<!-- proc~ogeval&#45;&gt;proc~ogpwri -->
+<g id="call~~graph~~CallGraph_edge7" class="edge">
+<title>proc~ogeval&#45;&gt;proc~ogpwri</title>
+<path fill="none" stroke="#000000" d="M363.21,-336C371.46,-336 380.13,-336 388.63,-336"/>
+<polygon fill="#000000" stroke="#000000" points="388.86,-339.5 398.86,-336 388.86,-332.5 388.86,-339.5"/>
+</g>
+<!-- proc~ogeval&#45;&gt;proc~ogwrit -->
+<g id="call~~graph~~CallGraph_edge8" class="edge">
+<title>proc~ogeval&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M341.04,-323.76C348.31,-319.71 356.17,-314.96 363,-310 386.35,-293.06 410.4,-270.32 426.36,-254.34"/>
+<polygon fill="#000000" stroke="#000000" points="428.98,-256.67 433.51,-247.09 424,-251.75 428.98,-256.67"/>
+</g>
+<!-- proc~ogexcl&#45;&gt;proc~ogwrit -->
+<g id="call~~graph~~CallGraph_edge9" class="edge">
+<title>proc~ogexcl&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M362.13,-221.4C371.22,-222.9 380.87,-224.48 390.25,-226.02"/>
+<polygon fill="#000000" stroke="#000000" points="389.84,-229.5 400.28,-227.66 390.98,-222.59 389.84,-229.5"/>
+</g>
+<!-- proc~ogexec -->
+<g id="call~~graph~~CallGraph_node6" class="node">
+<title>proc~ogexec</title>
+<g id="a_call~~graph~~CallGraph_node6"><a xlink:href="../proc/ogexec.html" xlink:title="optgra%ogexec">
+<polygon fill="#d9534f" stroke="#d9534f" points="99,-268 3,-268 3,-244 99,-244 99,-268"/>
+<text text-anchor="middle" x="51" y="-253.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogexec</text>
+</a>
+</g>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogcorr -->
+<g id="call~~graph~~CallGraph_edge10" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogcorr</title>
+<path fill="none" stroke="#000000" d="M99.09,-256C108.69,-256 118.89,-256 128.76,-256"/>
+<polygon fill="#000000" stroke="#000000" points="128.9,-259.5 138.9,-256 128.9,-252.5 128.9,-259.5"/>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogeval -->
+<g id="call~~graph~~CallGraph_edge11" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogeval</title>
+<path fill="none" stroke="#000000" d="M91.66,-268.06C138.21,-282.22 215.42,-305.71 265.76,-321.02"/>
+<polygon fill="#000000" stroke="#000000" points="264.86,-324.41 275.45,-323.97 266.9,-317.71 264.86,-324.41"/>
+</g>
+<!-- proc~ogopti -->
+<g id="call~~graph~~CallGraph_node10" class="node">
+<title>proc~ogopti</title>
+<g id="a_call~~graph~~CallGraph_node10"><a xlink:href="../proc/ogopti.html" xlink:title="optgra%ogopti">
+<polygon fill="#d9534f" stroke="#d9534f" points="231,-226 140,-226 140,-202 231,-202 231,-226"/>
+<text text-anchor="middle" x="185.5" y="-211.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogopti</text>
+</a>
+</g>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogopti -->
+<g id="call~~graph~~CallGraph_edge12" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogopti</title>
+<path fill="none" stroke="#000000" d="M89.97,-243.96C104.52,-239.35 121.32,-234.03 136.68,-229.16"/>
+<polygon fill="#000000" stroke="#000000" points="138.05,-232.4 146.53,-226.04 135.94,-225.72 138.05,-232.4"/>
+</g>
+<!-- proc~ogpwri_end -->
+<g id="call~~graph~~CallGraph_node12" class="node">
+<title>proc~ogpwri_end</title>
+<g id="a_call~~graph~~CallGraph_node12"><a xlink:href="../proc/ogpwri_end.html" xlink:title="optgra%ogpwri_end">
+<polygon fill="#d9534f" stroke="#d9534f" points="650,-388 531,-388 531,-364 650,-364 650,-388"/>
+<text text-anchor="middle" x="590.5" y="-373.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogpwri_end</text>
+</a>
+</g>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogpwri_end -->
+<g id="call~~graph~~CallGraph_edge13" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogpwri_end</title>
+<path fill="none" stroke="#000000" d="M85.4,-268.05C91.12,-270.66 96.87,-273.66 102,-277 120.44,-289.01 119.21,-299.55 138,-311 257.45,-383.79 427,-387.08 520.66,-382.12"/>
+<polygon fill="#000000" stroke="#000000" points="521.08,-385.6 530.86,-381.53 520.68,-378.61 521.08,-385.6"/>
+</g>
+<!-- proc~ogexec&#45;&gt;proc~ogwrit -->
+<g id="call~~graph~~CallGraph_edge14" class="edge">
+<title>proc~ogexec&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M54.51,-243.65C61.53,-212.5 84.49,-130.48 138,-92 185.87,-57.58 210.22,-75.68 269,-71 310.65,-67.68 327.46,-49.04 363,-71 413.55,-102.24 433.98,-175.13 441.34,-212.31"/>
+<polygon fill="#000000" stroke="#000000" points="437.98,-213.41 443.22,-222.62 444.87,-212.15 437.98,-213.41"/>
+</g>
+<!-- proc~oggsst -->
+<g id="call~~graph~~CallGraph_node7" class="node">
+<title>proc~oggsst</title>
+<g id="a_call~~graph~~CallGraph_node7"><a xlink:href="../proc/oggsst.html" xlink:title="optgra%oggsst">
+<polygon fill="#d9534f" stroke="#d9534f" points="97,-310 5,-310 5,-286 97,-286 97,-310"/>
+<text text-anchor="middle" x="51" y="-295.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%oggsst</text>
+</a>
+</g>
+</g>
+<!-- proc~ogincl&#45;&gt;proc~ogwrit -->
+<g id="call~~graph~~CallGraph_edge15" class="edge">
+<title>proc~ogincl&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M361.05,-248.77C370.5,-247.22 380.59,-245.57 390.38,-243.96"/>
+<polygon fill="#000000" stroke="#000000" points="391.13,-247.38 400.43,-242.31 390,-240.48 391.13,-247.38"/>
+</g>
+<!-- proc~ogleft -->
+<g id="call~~graph~~CallGraph_node9" class="node">
+<title>proc~ogleft</title>
+<g id="a_call~~graph~~CallGraph_node9"><a xlink:href="../proc/ogleft.html" xlink:title="optgra%ogleft">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="360,-104 272,-104 272,-80 360,-80 360,-104"/>
+<text text-anchor="middle" x="316" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogleft</text>
+</a>
+</g>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogeval -->
+<g id="call~~graph~~CallGraph_edge16" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogeval</title>
+<path fill="none" stroke="#000000" d="M218.64,-226.13C223.68,-228.69 228.65,-231.65 233,-235 240.99,-241.16 277.77,-287.91 299.26,-315.6"/>
+<polygon fill="#000000" stroke="#000000" points="296.75,-318.08 305.64,-323.85 302.29,-313.8 296.75,-318.08"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogexcl -->
+<g id="call~~graph~~CallGraph_edge17" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogexcl</title>
+<path fill="none" stroke="#000000" d="M231.08,-214C240.24,-214 249.98,-214 259.47,-214"/>
+<polygon fill="#000000" stroke="#000000" points="259.63,-217.5 269.63,-214 259.63,-210.5 259.63,-217.5"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogincl -->
+<g id="call~~graph~~CallGraph_edge18" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogincl</title>
+<path fill="none" stroke="#000000" d="M223.32,-226.04C237.44,-230.65 253.73,-235.97 268.62,-240.84"/>
+<polygon fill="#000000" stroke="#000000" points="267.58,-244.18 278.17,-243.96 269.75,-237.53 267.58,-244.18"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogleft -->
+<g id="call~~graph~~CallGraph_edge19" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogleft</title>
+<path fill="none" stroke="#000000" d="M193.74,-201.91C206.6,-181.28 235.3,-139 269,-113 270.75,-111.65 272.6,-110.36 274.52,-109.14"/>
+<polygon fill="#000000" stroke="#000000" points="276.26,-112.17 283.21,-104.17 272.79,-106.09 276.26,-112.17"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogrigt -->
+<g id="call~~graph~~CallGraph_edge20" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogrigt</title>
+<path fill="none" stroke="#000000" d="M204.31,-201.86C220.87,-190.69 246.34,-173.8 269,-160 273.8,-157.08 278.93,-154.07 283.97,-151.17"/>
+<polygon fill="#000000" stroke="#000000" points="285.87,-154.12 292.84,-146.14 282.41,-148.03 285.87,-154.12"/>
+</g>
+<!-- proc~ogopti&#45;&gt;proc~ogwrit -->
+<g id="call~~graph~~CallGraph_edge21" class="edge">
+<title>proc~ogopti&#45;&gt;proc~ogwrit</title>
+<path fill="none" stroke="#000000" d="M224.14,-201.91C260.19,-192.11 315.9,-181.64 363,-193 382.89,-197.8 403.37,-208.28 418.89,-217.58"/>
+<polygon fill="#000000" stroke="#000000" points="417.07,-220.57 427.41,-222.86 420.76,-214.62 417.07,-220.57"/>
+</g>
+<!-- proc~ogpwri&#45;&gt;proc~ogpwri_end -->
+<g id="call~~graph~~CallGraph_edge22" class="edge">
+<title>proc~ogpwri&#45;&gt;proc~ogpwri_end</title>
+<path fill="none" stroke="#000000" d="M489.75,-348C504.42,-352.12 521,-356.77 536.38,-361.09"/>
+<polygon fill="#000000" stroke="#000000" points="535.71,-364.54 546.28,-363.87 537.6,-357.8 535.71,-364.54"/>
+</g>
+<!-- proc~ogpwri_start -->
+<g id="call~~graph~~CallGraph_node13" class="node">
+<title>proc~ogpwri_start</title>
+<g id="a_call~~graph~~CallGraph_node13"><a xlink:href="../proc/ogpwri_start.html" xlink:title="optgra%ogpwri_start">
+<polygon fill="#d9534f" stroke="#d9534f" points="652,-346 529,-346 529,-322 652,-322 652,-346"/>
+<text text-anchor="middle" x="590.5" y="-331.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogpwri_start</text>
+</a>
+</g>
+</g>
+<!-- proc~ogpwri&#45;&gt;proc~ogpwri_start -->
+<g id="call~~graph~~CallGraph_edge23" class="edge">
+<title>proc~ogpwri&#45;&gt;proc~ogpwri_start</title>
+<path fill="none" stroke="#000000" d="M493.27,-335.35C501.44,-335.24 510.12,-335.11 518.79,-334.99"/>
+<polygon fill="#000000" stroke="#000000" points="518.98,-338.49 528.93,-334.85 518.89,-331.49 518.98,-338.49"/>
+</g>
+<!-- proc~ogsens -->
+<g id="call~~graph~~CallGraph_node15" class="node">
+<title>proc~ogsens</title>
+<g id="a_call~~graph~~CallGraph_node15"><a xlink:href="../proc/ogsens.html" xlink:title="optgra%ogsens">
+<polygon fill="#d9534f" stroke="#d9534f" points="233,-125 138,-125 138,-101 233,-101 233,-125"/>
+<text text-anchor="middle" x="185.5" y="-110.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogsens</text>
+</a>
+</g>
+</g>
+<!-- proc~ogsens&#45;&gt;proc~ogleft -->
+<g id="call~~graph~~CallGraph_edge24" class="edge">
+<title>proc~ogsens&#45;&gt;proc~ogleft</title>
+<path fill="none" stroke="#000000" d="M233.25,-105.36C242.53,-103.84 252.33,-102.24 261.8,-100.69"/>
+<polygon fill="#000000" stroke="#000000" points="262.61,-104.11 271.91,-99.04 261.48,-97.2 262.61,-104.11"/>
+</g>
+<!-- proc~ogsens&#45;&gt;proc~ogrigt -->
+<g id="call~~graph~~CallGraph_edge25" class="edge">
+<title>proc~ogsens&#45;&gt;proc~ogrigt</title>
+<path fill="none" stroke="#000000" d="M233.25,-120.64C242.42,-122.14 252.11,-123.72 261.48,-125.25"/>
+<polygon fill="#000000" stroke="#000000" points="261.05,-128.73 271.49,-126.89 262.18,-121.82 261.05,-128.73"/>
+</g>
+<!-- proc~ogssst -->
+<g id="call~~graph~~CallGraph_node16" class="node">
+<title>proc~ogssst</title>
+<g id="a_call~~graph~~CallGraph_node16"><a xlink:href="../proc/ogssst.html" xlink:title="optgra%ogssst">
+<polygon fill="#d9534f" stroke="#d9534f" points="96.5,-352 5.5,-352 5.5,-328 96.5,-328 96.5,-352"/>
+<text text-anchor="middle" x="51" y="-337.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">optgra%ogssst</text>
+</a>
+</g>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
+<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
+<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
+<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
+<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
+<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
+<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
+<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              optgra
+ was developed by Jacob Williams<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>
