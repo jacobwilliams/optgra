@@ -3043,7 +3043,7 @@ contains
       !! 2008/01/16 | J. SCHOENMAEKERS | NEW
 
       class(optgra),intent(inout) :: me
-      real(wp),intent(in) :: Actinp(me%Numcon) !! VECTOR INITAL
+      real(wp),intent(in) :: Actinp(*) !! VECTOR INITAL (only the first Numact elements are referenced)
       real(wp) :: Actout(me%Numcon) !! VECTOR FINAL
 
       integer(ip) :: row , col , act
